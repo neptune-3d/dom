@@ -1,16 +1,16 @@
 {
-  "name": "tsdown-starter",
-  "version": "0.0.0",
-  "description": "A starter for creating a TypeScript package.",
+  "name": "neptune-htm",
+  "version": "0.0.1",
+  "description": "Helper classes and functions for the DOM.",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/author/library#readme",
+  "homepage": "https://github.com/dusanjovanov/neptune-htm#readme",
   "bugs": {
-    "url": "https://github.com/author/library/issues"
+    "url": "https://github.com/dusanjovanov/neptune-htm/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/author/library.git"
+    "url": "git+https://github.com/dusanjovanov/neptune-htm.git"
   },
   "author": "Dusan Jovanov <jovanovdusan1@gmail.com>",
   "files": [
