@@ -4,27 +4,27 @@ export class InputColor extends DomElement<"input"> {
   constructor() {
     super("input");
 
-    this.dom.type = "color";
+    this._dom.type = "color";
   }
 
   protected _rgb = { r: 1, g: 1, b: 1 };
 
   name(value: string) {
-    this.dom.name = value;
+    this._dom.name = value;
     return this;
   }
 
   value(value: string) {
-    this.dom.value = value;
+    this._dom.value = value;
     return this;
   }
 
   getValue() {
-    return this.dom.value;
+    return this._dom.value;
   }
 
   getRGB() {
-    const value = this.dom.value;
+    const value = this._dom.value;
     const r = parseInt(value.slice(1, 3), 16);
     const g = parseInt(value.slice(3, 5), 16);
     const b = parseInt(value.slice(5, 7), 16);
@@ -37,7 +37,7 @@ export class InputColor extends DomElement<"input"> {
   }
 
   getNormalizedRGB() {
-    const value = this.dom.value;
+    const value = this._dom.value;
     const r = parseInt(value.slice(1, 3), 16);
     const g = parseInt(value.slice(3, 5), 16);
     const b = parseInt(value.slice(5, 7), 16);

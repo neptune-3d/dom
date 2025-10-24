@@ -5,30 +5,30 @@ export class InputText extends DomElement<"input"> {
   constructor() {
     super("input");
 
-    this.dom.type = "text";
+    this._dom.type = "text";
   }
 
   name(value: string) {
-    this.dom.name = value;
+    this._dom.name = value;
     return this;
   }
 
   value(value: string) {
-    this.dom.value = value;
+    this._dom.value = value;
     return this;
   }
 
   getValue() {
-    return this.dom.value;
+    return this._dom.value;
   }
 
   textAlign(value: Property.TextAlign) {
-    this.dom.style.textAlign = value;
+    this._dom.style.textAlign = value;
     return this;
   }
 
   fontWeight(value: Property.FontWeight) {
-    this.dom.style.fontWeight = String(value);
+    this._dom.style.fontWeight = String(value);
     return this;
   }
 }

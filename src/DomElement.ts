@@ -8,33 +8,67 @@ export class DomElement<
   Tag extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap
 > {
   constructor(tag: Tag, el?: HTMLElementTagNameMap[Tag]) {
-    this.tag = tag;
-    this.dom = el ?? document.createElement(tag);
+    this._tag = tag;
+    this._dom = el ?? document.createElement(tag);
     this.sheet = StyleSheet.getSheet();
-    this.cssClassName = uniqueId(tag);
-    this.cssMap = new Map<string, { index: number; selector: string }>();
-
-    this.className(this.cssClassName);
   }
 
-  tag;
-  dom;
+  protected _tag;
+  protected _dom;
   protected sheet;
-  protected cssClassName;
-  protected cssMap;
+  protected _cssClassName: string | undefined;
+  protected _userClassName: string | undefined;
+
+  get tag() {
+    return this._tag;
+  }
+
+  get dom() {
+    return this._dom;
+  }
+
+  get cssClassName() {
+    if (!this._cssClassName) {
+      this._cssClassName = uniqueId(this.tag);
+    }
+
+    return this._cssClassName;
+  }
 
   getText() {
-    return this.dom.textContent;
+    return this._dom.textContent;
   }
 
   text(txt: any) {
-    this.dom.textContent = String(txt);
+    this._dom.textContent = String(txt);
     return this;
   }
 
   add(...nodes: DomElement<any>[]) {
-    this.dom.append(...nodes.map((n) => n.dom));
+    this._dom.append(...nodes.map((n) => n._dom));
     return this;
+  }
+
+  /**
+   * Inserts one or more DOM elements into a parent at the specified index.
+   * Each node is inserted sequentially starting from the given index.
+   *
+   * @param index - The zero-based index at which to start inserting.
+   * @param nodes - One or more DomElements to insert.
+   */
+  insertAtIndex(index: number, ...nodes: DomElement<any>[]): void {
+    const children = Array.from(this.dom.children);
+    let currentIndex = Math.max(0, Math.min(index, children.length));
+
+    for (const node of nodes) {
+      const referenceNode = children[currentIndex] ?? null;
+      this.dom.insertBefore(node.dom, referenceNode);
+      currentIndex++;
+    }
+  }
+
+  remove() {
+    this.dom.remove();
   }
 
   on<T extends keyof HTMLElementEventMap>(
@@ -44,7 +78,7 @@ export class DomElement<
     ) => void,
     options?: boolean | AddEventListenerOptions
   ) {
-    this.dom.addEventListener(type, handler as any, options);
+    this._dom.addEventListener(type, handler as any, options);
     return this;
   }
 
@@ -53,12 +87,12 @@ export class DomElement<
     handler: (ev: HTMLElementEventMap[T]) => void,
     options?: boolean | EventListenerOptions
   ) {
-    return this.dom.removeEventListener(type, handler as any, options);
+    return this._dom.removeEventListener(type, handler as any, options);
   }
 
   attr(obj: Record<string, any>) {
     for (const name in obj) {
-      this.dom.setAttribute(name, obj[name]);
+      this._dom.setAttribute(name, obj[name]);
     }
     return this;
   }
@@ -66,23 +100,23 @@ export class DomElement<
   props(obj: Record<string, any>) {
     for (const name in obj) {
       const value = obj[name];
-      (this.dom as any)[name] = value;
+      (this._dom as any)[name] = value;
     }
     return this;
   }
 
   prop(name: string, value: any) {
-    (this.dom as any)[name] = value;
+    (this._dom as any)[name] = value;
     return this;
   }
 
   getProp(name: string) {
-    return (this.dom as any)[name];
+    return (this._dom as any)[name];
   }
 
   style(obj: CssProperties) {
     for (const name in obj) {
-      (this.dom as any).style[name] = this.getStyleValue(
+      (this._dom as any).style[name] = this.getStyleValue(
         name,
         (obj as any)[name]
       );
@@ -91,82 +125,161 @@ export class DomElement<
   }
 
   id(value: string) {
-    this.dom.id = value;
+    this._dom.id = value;
     return this;
   }
 
   className(value: string) {
-    this.dom.className = value;
+    this._userClassName = value;
+
+    this._dom.className = this._cssClassName
+      ? `${value} ${this.cssClassName}`
+      : value;
     return this;
   }
 
   htmlFor(value: string) {
-    if (this.tag === "label") (this.dom as HTMLLabelElement).htmlFor = value;
+    if (this._tag === "label") (this._dom as HTMLLabelElement).htmlFor = value;
     return this;
   }
 
   p(value: Property.Padding) {
-    this.dom.style.padding = this.getStyleValue("padding", value);
+    this._dom.style.padding = this.getStyleValue("padding", value);
     return this;
   }
 
   pt(value: Property.PaddingTop) {
-    this.dom.style.paddingTop = this.getStyleValue("paddingTop", value);
+    this._dom.style.paddingTop = this.getStyleValue("paddingTop", value);
     return this;
   }
 
   pr(value: Property.PaddingRight) {
-    this.dom.style.paddingRight = this.getStyleValue("paddingRight", value);
+    this._dom.style.paddingRight = this.getStyleValue("paddingRight", value);
     return this;
   }
 
   pb(value: Property.PaddingBottom) {
-    this.dom.style.paddingBottom = this.getStyleValue("paddingBottom", value);
+    this._dom.style.paddingBottom = this.getStyleValue("paddingBottom", value);
     return this;
   }
 
   pl(value: Property.PaddingLeft) {
-    this.dom.style.paddingLeft = this.getStyleValue("paddingLeft", value);
+    this._dom.style.paddingLeft = this.getStyleValue("paddingLeft", value);
     return this;
   }
 
+  px(value: Property.PaddingLeft) {
+    return this.pl(value).pr(value);
+  }
+
+  py(value: Property.PaddingTop) {
+    return this.pt(value).pb(value);
+  }
+
   m(value: Property.Margin) {
-    this.dom.style.margin = this.getStyleValue("margin", value);
+    this._dom.style.margin = this.getStyleValue("margin", value);
     return this;
   }
 
   mt(value: Property.MarginTop) {
-    this.dom.style.marginTop = this.getStyleValue("paddingTop", value);
+    this._dom.style.marginTop = this.getStyleValue("paddingTop", value);
     return this;
   }
 
   mr(value: Property.MarginRight) {
-    this.dom.style.marginRight = this.getStyleValue("marginRight", value);
+    this._dom.style.marginRight = this.getStyleValue("marginRight", value);
     return this;
   }
 
   mb(value: Property.MarginBottom) {
-    this.dom.style.marginBottom = this.getStyleValue("marginBottom", value);
+    this._dom.style.marginBottom = this.getStyleValue("marginBottom", value);
     return this;
   }
 
   ml(value: Property.MarginLeft) {
-    this.dom.style.marginLeft = this.getStyleValue("marginLeft", value);
+    this._dom.style.marginLeft = this.getStyleValue("marginLeft", value);
     return this;
   }
 
-  display(value: Property.Display) {
-    this.dom.style.display = value;
+  br(value: Property.BorderRadius) {
+    this._dom.style.borderRadius = this.getStyleValue("borderRadius", value);
+    return this;
+  }
+
+  brTop(value: Property.BorderTopLeftRadius) {
+    this._dom.style.borderTopLeftRadius = this.getStyleValue(
+      "borderTopLeftRadius",
+      value
+    );
+    this._dom.style.borderTopRightRadius = this.getStyleValue(
+      "borderTopRightRadius",
+      value
+    );
+    return this;
+  }
+
+  display(value: Property.Display | undefined) {
+    if (value === undefined) {
+      this.dom.style.removeProperty("display");
+      return this;
+    }
+
+    this._dom.style.display = value;
     return this;
   }
 
   bgColor(value: Property.BackgroundColor) {
-    this.dom.style.backgroundColor = value;
+    this._dom.style.backgroundColor = value;
     return this;
   }
 
   color(value: Property.Color) {
-    this.dom.style.color = value;
+    this._dom.style.color = value;
+    return this;
+  }
+
+  h(value: Property.Height | number) {
+    this._dom.style.height = this.getStyleValue("height", value);
+    return this;
+  }
+
+  w(value: Property.Width | number) {
+    this._dom.style.width = this.getStyleValue("width", value);
+    return this;
+  }
+
+  b(value: Property.Border) {
+    this._dom.style.border = this.getStyleValue("border", value);
+    return this;
+  }
+
+  overflow(value: Property.Overflow) {
+    this._dom.style.overflow = value;
+    return this;
+  }
+
+  overflowY(value: Property.OverflowY) {
+    this._dom.style.overflowY = value;
+    return this;
+  }
+
+  overflowX(value: Property.OverflowX) {
+    this._dom.style.overflowX = value;
+    return this;
+  }
+
+  fontSize(value: Property.FontSize) {
+    this._dom.style.fontSize = this.getStyleValue("fontSize", value);
+    return this;
+  }
+
+  pos(value: Property.Position) {
+    this._dom.style.position = value;
+    return this;
+  }
+
+  cursor(value: Property.Cursor) {
+    this._dom.style.cursor = value;
     return this;
   }
 
@@ -191,19 +304,15 @@ export class DomElement<
     return this.css(":focus", props);
   }
 
-  css(selector: string, props: CssProperties) {
-    let s = this.cssMap.get(selector);
+  protected setCssClassName() {
+    this.dom.className = this._userClassName
+      ? `${this._userClassName} ${this.cssClassName}`
+      : this.cssClassName;
 
-    if (!s) {
-      const index = this.sheet.insert(
-        this.sheet.length,
-        `.${this.cssClassName}${selector}{}`
-      );
-      s = { index, selector };
-      this.cssMap.set(selector, s);
-    }
+    return this;
+  }
 
-    const rule = this.sheet.sheet.cssRules.item(s.index) as CSSStyleRule;
+  protected setRuleCss(rule: CSSStyleRule, props: CssProperties) {
     for (const name in props) {
       const isVendor = !!VENDOR_CSS_PROPS[name];
       const _name = camelToKebab(name);
@@ -213,8 +322,52 @@ export class DomElement<
         this.getStyleValue(name, (props as any)[name])
       );
     }
+  }
+
+  css(selector: string, props: CssProperties) {
+    this.setCssClassName();
+
+    const rule = this.sheet.getCssRule(`.${this.cssClassName}${selector}`);
+
+    this.setRuleCss(rule, props);
 
     return this;
+  }
+
+  mediaCss(mediaText: string, selector: string, props: CssProperties) {
+    this.setCssClassName();
+
+    const mRule = this.sheet.getMediaRule(mediaText);
+
+    const rule = mRule.getCssRule(`.${this.cssClassName}${selector}`);
+
+    this.setRuleCss(rule, props);
+
+    return this;
+  }
+
+  mediaRootCss(mediaText: string, props: CssProperties) {
+    return this.mediaCss(mediaText, "", props);
+  }
+
+  minWidthCss(minWidth: number | string, props: CssProperties) {
+    return this.mediaCss(
+      `min-width:${this.getStyleValue("width", minWidth)}`,
+      "",
+      props
+    );
+  }
+
+  maxWidthCss(maxWidth: number | string, props: CssProperties) {
+    return this.mediaCss(
+      `max-width:${this.getStyleValue("width", maxWidth)}`,
+      "",
+      props
+    );
+  }
+
+  clear() {
+    this._dom.innerHTML = "";
   }
 
   protected getStyleValue(name: string, value: string | number): string {

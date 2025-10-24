@@ -5,34 +5,44 @@ export class Canvas extends DomElement<"canvas"> {
     super("canvas", el);
   }
 
-  protected _size = { width: this.dom.width, height: this.dom.height };
+  protected _size = { width: this._dom.width, height: this._dom.height };
 
   getWidth() {
-    return this.dom.width;
+    return this._dom.width;
   }
 
   getHeight() {
-    return this.dom.height;
+    return this._dom.height;
+  }
+
+  width(value: number) {
+    this._dom.width = value;
+    return this;
+  }
+
+  height(value: number) {
+    this._dom.height = value;
+    return this;
   }
 
   setSize(width: number, height: number) {
-    this.dom.width = width;
-    this.dom.height = height;
+    this._dom.width = width;
+    this._dom.height = height;
     return this;
   }
 
   getSize() {
-    this._size.width = this.dom.width;
-    this._size.height = this.dom.height;
+    this._size.width = this._dom.width;
+    this._size.height = this._dom.height;
     return this._size;
   }
 
   getAspect() {
-    return this.dom.width / this.dom.height;
+    return this._dom.width / this._dom.height;
   }
 
   getAspectScale(target: { x: number; y: number; z: number }) {
-    const aspect = this.dom.width / this.dom.height;
+    const aspect = this._dom.width / this._dom.height;
 
     let x: number, y: number, z: number;
 

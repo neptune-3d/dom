@@ -11,17 +11,22 @@ export class Flex<
   }
 
   alignItems(value: Property.AlignItems = "center") {
-    this.dom.style.alignItems = value;
+    this._dom.style.alignItems = value;
     return this;
   }
 
   justifyContent(value: Property.JustifyContent = "center") {
-    this.dom.style.justifyContent = value;
+    this._dom.style.justifyContent = value;
     return this;
   }
 
   gap(value: Property.Gap) {
-    this.dom.style.gap = this.getStyleValue("gap", value);
+    this._dom.style.gap = this.getStyleValue("gap", value);
+    return this;
+  }
+
+  direction(value: Property.FlexDirection) {
+    this.dom.style.flexDirection = value;
     return this;
   }
 }

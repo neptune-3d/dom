@@ -11,22 +11,22 @@ export class Grid<
   }
 
   templateColumns(value: Property.GridTemplateColumns) {
-    this.dom.style.gridTemplateColumns = String(value);
+    this._dom.style.gridTemplateColumns = String(value);
     return this;
   }
 
   templateRows(value: Property.GridTemplateRows) {
-    this.dom.style.gridTemplateRows = String(value);
+    this._dom.style.gridTemplateRows = String(value);
     return this;
   }
 
   gap(value: Property.Gap) {
-    this.dom.style.gap = this.getStyleValue("gap", value);
+    this._dom.style.gap = this.getStyleValue("gap", value);
     return this;
   }
 
   alignItems(value: Property.AlignItems = "center") {
-    this.dom.style.alignItems = value;
+    this._dom.style.alignItems = value;
     return this;
   }
 }

@@ -4,11 +4,11 @@ export class InputCheckbox extends DomElement<"input"> {
   constructor() {
     super("input");
 
-    this.dom.type = "checkbox";
+    this._dom.type = "checkbox";
   }
 
   name(value: string) {
-    this.dom.name = value;
+    this._dom.name = value;
     return this;
   }
 
