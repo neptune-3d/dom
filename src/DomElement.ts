@@ -1,7 +1,7 @@
 import type { Property } from "csstype";
 import { UNITLESS_CSS_PROPS, VENDOR_CSS_PROPS } from "./constants";
 import { StyleSheet } from "./StyleSheet";
-import type { CssProperties } from "./types";
+import type { Autocomplete, CssProperties } from "./types";
 import { camelToKebab, uniqueId } from "./utils";
 
 export class DomElement<
@@ -224,57 +224,112 @@ export class DomElement<
       return this;
     }
 
-    this._dom.style.display = value;
+    this.dom.style.display = value;
+    return this;
+  }
+
+  flexShrink(value: Property.FlexShrink) {
+    this.dom.style.flexShrink = this.getStyleValue("flexShrink", value);
+    return this;
+  }
+
+  flex(value: Property.Flex) {
+    this.dom.style.flex = this.getStyleValue("flex", value);
     return this;
   }
 
   bgColor(value: Property.BackgroundColor) {
-    this._dom.style.backgroundColor = value;
+    this.dom.style.backgroundColor = value;
     return this;
   }
 
   color(value: Property.Color) {
-    this._dom.style.color = value;
+    this.dom.style.color = value;
     return this;
   }
 
   h(value: Property.Height | number) {
-    this._dom.style.height = this.getStyleValue("height", value);
+    this.dom.style.height = this.getStyleValue("height", value);
     return this;
   }
 
   w(value: Property.Width | number) {
-    this._dom.style.width = this.getStyleValue("width", value);
+    this.dom.style.width = this.getStyleValue("width", value);
     return this;
   }
 
   b(value: Property.Border) {
-    this._dom.style.border = this.getStyleValue("border", value);
+    this.dom.style.border = this.getStyleValue("border", value);
     return this;
   }
 
   overflow(value: Property.Overflow) {
-    this._dom.style.overflow = value;
+    this.dom.style.overflow = value;
     return this;
   }
 
   overflowY(value: Property.OverflowY) {
-    this._dom.style.overflowY = value;
+    this.dom.style.overflowY = value;
     return this;
   }
 
   overflowX(value: Property.OverflowX) {
-    this._dom.style.overflowX = value;
+    this.dom.style.overflowX = value;
     return this;
   }
 
   fontSize(value: Property.FontSize) {
-    this._dom.style.fontSize = this.getStyleValue("fontSize", value);
+    this.dom.style.fontSize = this.getStyleValue("fontSize", value);
+    return this;
+  }
+
+  fontWeight(value: Property.FontWeight) {
+    this.dom.style.fontWeight = this.getStyleValue("fontWeight", value);
+    return this;
+  }
+
+  fontFamily(value: Property.FontFamily) {
+    this.dom.style.fontFamily = this.getStyleValue("fontFamily", value);
+    return this;
+  }
+
+  fontStyle(value: Property.FontStyle) {
+    this.dom.style.fontStyle = this.getStyleValue("fontStyle", value);
+    return this;
+  }
+
+  textAlign(value: Property.TextAlign) {
+    this.dom.style.textAlign = value;
+    return this;
+  }
+
+  textDecoration(value: Property.TextDecoration) {
+    this.dom.style.textDecoration = this.getStyleValue("textDecoration", value);
     return this;
   }
 
   pos(value: Property.Position) {
-    this._dom.style.position = value;
+    this.dom.style.position = value;
+    return this;
+  }
+
+  posTop(value: Property.Top) {
+    this.dom.style.top = this.getStyleValue("top", value);
+    return this;
+  }
+
+  posBottom(value: Property.Bottom) {
+    this.dom.style.bottom = this.getStyleValue("bottom", value);
+    return this;
+  }
+
+  posLeft(value: Property.Left) {
+    this.dom.style.left = this.getStyleValue("left", value);
+    return this;
+  }
+
+  posRight(value: Property.Right) {
+    this.dom.style.right = this.getStyleValue("right", value);
     return this;
   }
 
@@ -370,7 +425,10 @@ export class DomElement<
     this._dom.innerHTML = "";
   }
 
-  protected getStyleValue(name: string, value: string | number): string {
+  protected getStyleValue(
+    name: Autocomplete<keyof CssProperties>,
+    value: string | number
+  ): string {
     if (typeof value === "number") {
       const isUnitless = !!UNITLESS_CSS_PROPS[name];
 
