@@ -10,12 +10,12 @@ export class DomElement<
   constructor(tag: Tag, el?: HTMLElementTagNameMap[Tag]) {
     this._tag = tag;
     this._dom = el ?? document.createElement(tag);
-    this.sheet = StyleSheet.getSheet();
+    this._sheet = StyleSheet.getSheet();
   }
 
   protected _tag;
   protected _dom;
-  protected sheet;
+  protected _sheet;
   protected _cssClassName: string | undefined;
   protected _userClassName: string | undefined;
 
@@ -50,13 +50,14 @@ export class DomElement<
   }
 
   /**
-   * Inserts one or more DOM elements into a parent at the specified index.
+   * Inserts one or more DomElements into a parent at the specified index.
    * Each node is inserted sequentially starting from the given index.
    *
    * @param index - The zero-based index at which to start inserting.
    * @param nodes - One or more DomElements to insert.
+   * @return This DomElement instance.
    */
-  insertAtIndex(index: number, ...nodes: DomElement<any>[]): void {
+  insertAtIndex(index: number, ...nodes: DomElement<any>[]) {
     const children = Array.from(this.dom.children);
     let currentIndex = Math.max(0, Math.min(index, children.length));
 
@@ -65,10 +66,28 @@ export class DomElement<
       this.dom.insertBefore(node.dom, referenceNode);
       currentIndex++;
     }
+
+    return this;
+  }
+
+  /**
+   * Replaces all existing child elements of this DOM node with the provided ones.
+   * Internally clears the current children and appends the new nodes in order.
+   *
+   * @param nodes - One or more DomElement instances to set as children.
+   * @return This DomElement instance.
+   */
+  setChildren(...nodes: DomElement<any>[]) {
+    return this.clear().add(...nodes);
   }
 
   remove() {
     this.dom.remove();
+  }
+
+  clear() {
+    this._dom.innerHTML = "";
+    return this;
   }
 
   on<T extends keyof HTMLElementEventMap>(
@@ -143,199 +162,180 @@ export class DomElement<
     return this;
   }
 
-  p(value: Property.Padding) {
-    this._dom.style.padding = this.getStyleValue("padding", value);
-    return this;
-  }
-
-  pt(value: Property.PaddingTop) {
-    this._dom.style.paddingTop = this.getStyleValue("paddingTop", value);
-    return this;
-  }
-
-  pr(value: Property.PaddingRight) {
-    this._dom.style.paddingRight = this.getStyleValue("paddingRight", value);
-    return this;
-  }
-
-  pb(value: Property.PaddingBottom) {
-    this._dom.style.paddingBottom = this.getStyleValue("paddingBottom", value);
-    return this;
-  }
-
-  pl(value: Property.PaddingLeft) {
-    this._dom.style.paddingLeft = this.getStyleValue("paddingLeft", value);
-    return this;
-  }
-
-  px(value: Property.PaddingLeft) {
-    return this.pl(value).pr(value);
-  }
-
-  py(value: Property.PaddingTop) {
-    return this.pt(value).pb(value);
-  }
-
-  m(value: Property.Margin) {
-    this._dom.style.margin = this.getStyleValue("margin", value);
-    return this;
-  }
-
-  mt(value: Property.MarginTop) {
-    this._dom.style.marginTop = this.getStyleValue("paddingTop", value);
-    return this;
-  }
-
-  mr(value: Property.MarginRight) {
-    this._dom.style.marginRight = this.getStyleValue("marginRight", value);
-    return this;
-  }
-
-  mb(value: Property.MarginBottom) {
-    this._dom.style.marginBottom = this.getStyleValue("marginBottom", value);
-    return this;
-  }
-
-  ml(value: Property.MarginLeft) {
-    this._dom.style.marginLeft = this.getStyleValue("marginLeft", value);
-    return this;
-  }
-
-  br(value: Property.BorderRadius) {
-    this._dom.style.borderRadius = this.getStyleValue("borderRadius", value);
-    return this;
-  }
-
-  brTop(value: Property.BorderTopLeftRadius) {
-    this._dom.style.borderTopLeftRadius = this.getStyleValue(
-      "borderTopLeftRadius",
-      value
-    );
-    this._dom.style.borderTopRightRadius = this.getStyleValue(
-      "borderTopRightRadius",
-      value
-    );
-    return this;
-  }
-
-  display(value: Property.Display | undefined) {
+  protected setStyleProp(
+    name: Autocomplete<keyof CssProperties>,
+    value: string | number | undefined
+  ) {
     if (value === undefined) {
-      this.dom.style.removeProperty("display");
+      this.dom.style.removeProperty(name);
       return this;
     }
 
-    this.dom.style.display = value;
+    this.dom.style.setProperty(
+      camelToKebab(name),
+      this.getStyleValue(name, value)
+    );
     return this;
   }
 
-  flexShrink(value: Property.FlexShrink) {
-    this.dom.style.flexShrink = this.getStyleValue("flexShrink", value);
-    return this;
+  p(value: Property.Padding | undefined) {
+    return this.setStyleProp("padding", value);
   }
 
-  flex(value: Property.Flex) {
-    this.dom.style.flex = this.getStyleValue("flex", value);
-    return this;
+  pt(value: Property.PaddingTop | undefined) {
+    return this.setStyleProp("paddingTop", value);
   }
 
-  bgColor(value: Property.BackgroundColor) {
-    this.dom.style.backgroundColor = value;
-    return this;
+  pr(value: Property.PaddingRight | undefined) {
+    return this.setStyleProp("paddingRight", value);
   }
 
-  color(value: Property.Color) {
-    this.dom.style.color = value;
-    return this;
+  pb(value: Property.PaddingBottom | undefined) {
+    return this.setStyleProp("paddingBottom", value);
   }
 
-  h(value: Property.Height | number) {
-    this.dom.style.height = this.getStyleValue("height", value);
-    return this;
+  pl(value: Property.PaddingLeft | undefined) {
+    return this.setStyleProp("paddingLeft", value);
   }
 
-  w(value: Property.Width | number) {
-    this.dom.style.width = this.getStyleValue("width", value);
-    return this;
+  px(value: Property.PaddingLeft | undefined) {
+    return this.pl(value).pr(value);
+  }
+
+  py(value: Property.PaddingTop | undefined) {
+    return this.pt(value).pb(value);
+  }
+
+  m(value: Property.Margin | undefined) {
+    return this.setStyleProp("margin", value);
+  }
+
+  mt(value: Property.MarginTop | undefined) {
+    return this.setStyleProp("marginTop", value);
+  }
+
+  mr(value: Property.MarginRight | undefined) {
+    return this.setStyleProp("marginRight", value);
+  }
+
+  mb(value: Property.MarginBottom | undefined) {
+    return this.setStyleProp("marginBottom", value);
+  }
+
+  ml(value: Property.MarginLeft | undefined) {
+    return this.setStyleProp("marginLeft", value);
+  }
+
+  radius(value: Property.BorderRadius | undefined) {
+    return this.setStyleProp("borderRadius", value);
+  }
+
+  radiusTopLeft(value: Property.BorderTopLeftRadius | undefined) {
+    return this.setStyleProp("borderTopLeftRadius", value);
+  }
+
+  radiusTopRight(value: Property.BorderTopRightRadius | undefined) {
+    return this.setStyleProp("borderTopRightRadius", value);
+  }
+
+  radiusTop(value: Property.BorderTopLeftRadius | undefined) {
+    return this.radiusTopLeft(value).radiusTopRight(value);
+  }
+
+  display(value: Property.Display | undefined) {
+    return this.setStyleProp("display", value);
+  }
+
+  flexShrink(value: Property.FlexShrink | undefined) {
+    return this.setStyleProp("flexShrink", value);
+  }
+
+  flex(value: Property.Flex | undefined) {
+    return this.setStyleProp("flex", value);
+  }
+
+  bgColor(value: Property.BackgroundColor | undefined) {
+    return this.setStyleProp("backgroundColor", value);
+  }
+
+  color(value: Property.Color | undefined) {
+    return this.setStyleProp("color", value);
+  }
+
+  h(value: Property.Height | number | undefined) {
+    return this.setStyleProp("height", value);
+  }
+
+  w(value: Property.Width | number | undefined) {
+    return this.setStyleProp("width", value);
   }
 
   b(value: Property.Border) {
-    this.dom.style.border = this.getStyleValue("border", value);
-    return this;
+    return this.setStyleProp("border", value);
   }
 
-  overflow(value: Property.Overflow) {
-    this.dom.style.overflow = value;
-    return this;
+  br(value: Property.BorderRight | undefined) {
+    return this.setStyleProp("borderRight", value);
   }
 
-  overflowY(value: Property.OverflowY) {
-    this.dom.style.overflowY = value;
-    return this;
+  overflow(value: Property.Overflow | undefined) {
+    return this.setStyleProp("overflow", value);
   }
 
-  overflowX(value: Property.OverflowX) {
-    this.dom.style.overflowX = value;
-    return this;
+  overflowY(value: Property.OverflowY | undefined) {
+    return this.setStyleProp("overflowY", value);
   }
 
-  fontSize(value: Property.FontSize) {
-    this.dom.style.fontSize = this.getStyleValue("fontSize", value);
-    return this;
+  overflowX(value: Property.OverflowX | undefined) {
+    return this.setStyleProp("overflowX", value);
   }
 
-  fontWeight(value: Property.FontWeight) {
-    this.dom.style.fontWeight = this.getStyleValue("fontWeight", value);
-    return this;
+  fontSize(value: Property.FontSize | undefined) {
+    return this.setStyleProp("fontSize", value);
   }
 
-  fontFamily(value: Property.FontFamily) {
-    this.dom.style.fontFamily = this.getStyleValue("fontFamily", value);
-    return this;
+  fontWeight(value: Property.FontWeight | undefined) {
+    return this.setStyleProp("fontWeight", value);
   }
 
-  fontStyle(value: Property.FontStyle) {
-    this.dom.style.fontStyle = this.getStyleValue("fontStyle", value);
-    return this;
+  fontFamily(value: Property.FontFamily | undefined) {
+    return this.setStyleProp("fontFamily", value);
   }
 
-  textAlign(value: Property.TextAlign) {
-    this.dom.style.textAlign = value;
-    return this;
+  fontStyle(value: Property.FontStyle | undefined) {
+    return this.setStyleProp("fontStyle", value);
   }
 
-  textDecoration(value: Property.TextDecoration) {
-    this.dom.style.textDecoration = this.getStyleValue("textDecoration", value);
-    return this;
+  textAlign(value: Property.TextAlign | undefined) {
+    return this.setStyleProp("textAlign", value);
   }
 
-  pos(value: Property.Position) {
-    this.dom.style.position = value;
-    return this;
+  textDecoration(value: Property.TextDecoration | undefined) {
+    return this.setStyleProp("textDecoration", value);
   }
 
-  posTop(value: Property.Top) {
-    this.dom.style.top = this.getStyleValue("top", value);
-    return this;
+  pos(value: Property.Position | undefined) {
+    return this.setStyleProp("position", value);
   }
 
-  posBottom(value: Property.Bottom) {
-    this.dom.style.bottom = this.getStyleValue("bottom", value);
-    return this;
+  posTop(value: Property.Top | undefined) {
+    return this.setStyleProp("top", value);
   }
 
-  posLeft(value: Property.Left) {
-    this.dom.style.left = this.getStyleValue("left", value);
-    return this;
+  posBottom(value: Property.Bottom | undefined) {
+    return this.setStyleProp("bottom", value);
   }
 
-  posRight(value: Property.Right) {
-    this.dom.style.right = this.getStyleValue("right", value);
-    return this;
+  posLeft(value: Property.Left | undefined) {
+    return this.setStyleProp("left", value);
   }
 
-  cursor(value: Property.Cursor) {
-    this._dom.style.cursor = value;
-    return this;
+  posRight(value: Property.Right | undefined) {
+    return this.setStyleProp("right", value);
+  }
+
+  cursor(value: Property.Cursor | undefined) {
+    return this.setStyleProp("cursor", value);
   }
 
   ref(refFn: (el: this) => void) {
@@ -382,7 +382,7 @@ export class DomElement<
   css(selector: string, props: CssProperties) {
     this.setCssClassName();
 
-    const rule = this.sheet.getCssRule(`.${this.cssClassName}${selector}`);
+    const rule = this._sheet.getCssRule(`.${this.cssClassName}${selector}`);
 
     this.setRuleCss(rule, props);
 
@@ -392,7 +392,7 @@ export class DomElement<
   mediaCss(mediaText: string, selector: string, props: CssProperties) {
     this.setCssClassName();
 
-    const mRule = this.sheet.getMediaRule(mediaText);
+    const mRule = this._sheet.getMediaRule(mediaText);
 
     const rule = mRule.getCssRule(`.${this.cssClassName}${selector}`);
 
@@ -419,10 +419,6 @@ export class DomElement<
       "",
       props
     );
-  }
-
-  clear() {
-    this._dom.innerHTML = "";
   }
 
   protected getStyleValue(

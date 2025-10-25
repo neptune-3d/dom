@@ -20,41 +20,48 @@ export class StyleSheet {
   }
 
   getCssRule(selector: string) {
-    let index = this.getCssMap().get(selector);
+    const map = this.getCssMap();
+    let index = map.get(selector);
 
     if (index == null) {
       index = this.sheet.insertRule(`${selector}{}`);
+      map.set(selector, index);
     }
 
     return this.sheet.cssRules.item(index) as CSSStyleRule;
   }
 
   deleteCssRule(selector: string) {
-    const index = this.getCssMap().get(selector);
+    const map = this.getCssMap();
+    const index = map.get(selector);
 
     if (index == null) return;
 
     this.sheet.deleteRule(index);
+    map.delete(selector);
   }
 
   getMediaRule(mediaText: string) {
-    let m = this.getMediaMap().get(mediaText);
+    const map = this.getMediaMap();
+    let m = map.get(mediaText);
 
     if (!m) {
       const index = this.sheet.insertRule(`@media(${mediaText}){}`);
-      m = new MediaRule(this.sheet.cssRules.item(index) as CSSMediaRule);
-      this.getMediaMap().set(mediaText, m);
+      m = new MediaRule(index, this.sheet.cssRules.item(index) as CSSMediaRule);
+      map.set(mediaText, m);
     }
 
     return m;
   }
 
   deleteMediaRule(mediaText: string) {
-    const index = this.getMediaMap().get(mediaText);
+    const map = this.getMediaMap();
+    const rule = map.get(mediaText);
 
-    if (index == null) return;
+    if (rule == null) return;
 
-    this.sheet.deleteRule(index);
+    this.sheet.deleteRule(rule.index);
+    map.delete(mediaText);
   }
 
   static getSheet() {
@@ -92,7 +99,7 @@ export class StyleSheet {
       (window as any).__neptuneMediaMap__ = map;
     }
 
-    return map;
+    return map as Map<string, MediaRule>;
   }
 
   static STYLE_ID = "__neptune-style__";
