@@ -1,16 +1,16 @@
 {
-  "name": "neptune-htm",
+  "name": "@neptune3d/dom",
   "version": "0.0.1",
   "description": "Helper classes and functions for the DOM.",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/dusanjovanov/neptune-htm#readme",
+  "homepage": "https://github.com/neptune-3d/dom#readme",
   "bugs": {
-    "url": "https://github.com/dusanjovanov/neptune-htm/issues"
+    "url": "https://github.com/neptune-3d/dom/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dusanjovanov/neptune-htm.git"
+    "url": "git+https://github.com/neptune-3d/dom.git"
   },
   "author": "Dusan Jovanov <jovanovdusan1@gmail.com>",
   "files": [
