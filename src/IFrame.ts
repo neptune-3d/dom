@@ -30,4 +30,8 @@ export class IFrame extends DomElement<"iframe"> {
     this._dom.height = this.getStyleValue("height", height);
     return this;
   }
+
+  reload() {
+    this.dom.src = this.dom.src;
+  }
 }

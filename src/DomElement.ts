@@ -81,12 +81,54 @@ export class DomElement<
     return this.clear().add(...nodes);
   }
 
+  /**
+   * Replaces child elements starting from the specified index with the provided nodes.
+   * All children before the index are preserved.
+   *
+   * @param index - The zero-based index at which replacement begins.
+   * @param nodes - One or more DomElement instances to insert.
+   * @return This DomElement instance.
+   */
+  setChildrenFromIndex(index: number, ...nodes: DomElement<any>[]) {
+    const children = Array.from(this._dom.children);
+    const len = children.length;
+    const clampedIndex = Math.max(0, Math.min(index, len));
+
+    // Remove all children from index onward
+    for (let i = clampedIndex; i < len; i++) {
+      this._dom.removeChild(children[i]);
+    }
+
+    // Insert new nodes at the clamped index
+    const referenceNode = this._dom.children[clampedIndex] ?? null;
+    for (const node of nodes) {
+      this._dom.insertBefore(node._dom, referenceNode);
+    }
+
+    return this;
+  }
+
   remove() {
     this.dom.remove();
   }
 
-  clear() {
-    this._dom.innerHTML = "";
+  /**
+   * Removes child elements within the specified index range.
+   * If no range is provided, removes all children.
+   *
+   * @param from - The starting index (inclusive). Defaults to 0.
+   * @param to - The ending index (exclusive). Defaults to all children.
+   * @returns This DomElement instance.
+   */
+  clear(from?: number, to?: number) {
+    const children = Array.from(this._dom.children);
+    const start = Math.max(0, from ?? 0);
+    const end = Math.min(children.length, to ?? children.length);
+
+    for (let i = start; i < end; i++) {
+      this._dom.removeChild(children[i]);
+    }
+
     return this;
   }
 
@@ -159,6 +201,11 @@ export class DomElement<
 
   htmlFor(value: string) {
     if (this._tag === "label") (this._dom as HTMLLabelElement).htmlFor = value;
+    return this;
+  }
+
+  title(value: string) {
+    this.dom.title = value;
     return this;
   }
 
@@ -270,7 +317,7 @@ export class DomElement<
     return this.setStyleProp("width", value);
   }
 
-  b(value: Property.Border) {
+  b(value: Property.Border | undefined) {
     return this.setStyleProp("border", value);
   }
 
@@ -336,6 +383,42 @@ export class DomElement<
 
   cursor(value: Property.Cursor | undefined) {
     return this.setStyleProp("cursor", value);
+  }
+
+  alignItems(value: Property.AlignItems | undefined) {
+    return this.setStyleProp("alignItems", value);
+  }
+
+  justifyContent(value: Property.JustifyContent | undefined) {
+    return this.setStyleProp("justifyContent", value);
+  }
+
+  gap(value: Property.Gap | undefined) {
+    return this.setStyleProp("gap", value);
+  }
+
+  flexDirection(value: Property.FlexDirection | undefined) {
+    return this.setStyleProp("flexDirection", value);
+  }
+
+  templateColumns(value: Property.GridTemplateColumns | undefined) {
+    return this.setStyleProp("gridTemplateColumns", value);
+  }
+
+  templateRows(value: Property.GridTemplateRows | undefined) {
+    return this.setStyleProp("gridTemplateRows", value);
+  }
+
+  appearance(value: Property.Appearance | undefined) {
+    return this.setStyleProp("appearance", value);
+  }
+
+  overflowEllipsis() {
+    return this.style({
+      overflow: "hidden",
+      whiteSpace: "nowrap",
+      textOverflow: "ellipsis",
+    });
   }
 
   ref(refFn: (el: this) => void) {
@@ -430,6 +513,7 @@ export class DomElement<
 
       return isUnitless ? String(value) : `${value}px`;
     }
+
     return value;
   }
 }

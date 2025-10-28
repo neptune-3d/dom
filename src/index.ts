@@ -1,4 +1,5 @@
 export * from "./AnchorElement";
+export * from "./Button";
 export * from "./Canvas";
 export * from "./constants";
 export * from "./DomBody";
