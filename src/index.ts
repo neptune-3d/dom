@@ -14,6 +14,7 @@ export * from "./InputNumber";
 export * from "./InputRange";
 export * from "./InputText";
 export * from "./OptionElement";
+export * from "./ProgressElement";
 export * from "./SelectElement";
 export * from "./StyleSheet";
 export * from "./types";
