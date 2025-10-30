@@ -1,7 +1,7 @@
 import type { Property } from "csstype";
 import { UNITLESS_CSS_PROPS, VENDOR_CSS_PROPS } from "./constants";
 import { StyleSheet } from "./StyleSheet";
-import type { Autocomplete, CssProperties } from "./types";
+import type { Autocomplete, CssProperties, DomElementChild } from "./types";
 import { camelToKebab, uniqueId } from "./utils";
 
 export class DomElement<
@@ -44,8 +44,14 @@ export class DomElement<
     return this;
   }
 
-  add(...nodes: DomElement<any>[]) {
-    this._dom.append(...nodes.map((n) => n._dom));
+  protected resolveNode(child: DomElementChild) {
+    return typeof child === "string" || typeof child === "number"
+      ? String(child)
+      : child.dom;
+  }
+
+  add(...nodes: DomElementChild[]) {
+    this._dom.append(...nodes.map((n) => this.resolveNode(n)));
     return this;
   }
 
@@ -57,13 +63,13 @@ export class DomElement<
    * @param nodes - One or more DomElements to insert.
    * @return This DomElement instance.
    */
-  insertAtIndex(index: number, ...nodes: DomElement<any>[]) {
+  insertAtIndex(index: number, ...nodes: DomElementChild[]) {
     const children = Array.from(this.dom.children);
     let currentIndex = Math.max(0, Math.min(index, children.length));
 
     for (const node of nodes) {
       const referenceNode = children[currentIndex] ?? null;
-      this.dom.insertBefore(node.dom, referenceNode);
+      this.dom.insertBefore(this.resolveNode(node), referenceNode);
       currentIndex++;
     }
 
@@ -77,7 +83,7 @@ export class DomElement<
    * @param nodes - One or more DomElement instances to set as children.
    * @return This DomElement instance.
    */
-  setChildren(...nodes: DomElement<any>[]) {
+  setChildren(...nodes: DomElementChild[]) {
     return this.clear().add(...nodes);
   }
 
@@ -89,7 +95,7 @@ export class DomElement<
    * @param nodes - One or more DomElement instances to insert.
    * @return This DomElement instance.
    */
-  setChildrenFromIndex(index: number, ...nodes: DomElement<any>[]) {
+  setChildrenFromIndex(index: number, ...nodes: DomElementChild[]) {
     const children = Array.from(this._dom.children);
     const len = children.length;
     const clampedIndex = Math.max(0, Math.min(index, len));
@@ -102,7 +108,7 @@ export class DomElement<
     // Insert new nodes at the clamped index
     const referenceNode = this._dom.children[clampedIndex] ?? null;
     for (const node of nodes) {
-      this._dom.insertBefore(node._dom, referenceNode);
+      this._dom.insertBefore(this.resolveNode(node), referenceNode);
     }
 
     return this;
@@ -317,12 +323,49 @@ export class DomElement<
     return this.setStyleProp("width", value);
   }
 
+  /**
+   * Sets the full border style.
+   * @param value - The CSS border value (e.g., "1px solid #ccc").
+   * @return This DomElement instance for chaining.
+   */
   b(value: Property.Border | undefined) {
     return this.setStyleProp("border", value);
   }
 
+  /**
+   * Sets the top border style.
+   * @param value - The CSS border-top value.
+   * @return This DomElement instance for chaining.
+   */
+  bt(value: Property.BorderTop | undefined) {
+    return this.setStyleProp("borderTop", value);
+  }
+
+  /**
+   * Sets the right border style.
+   * @param value - The CSS border-right value.
+   * @return This DomElement instance for chaining.
+   */
   br(value: Property.BorderRight | undefined) {
     return this.setStyleProp("borderRight", value);
+  }
+
+  /**
+   * Sets the bottom border style.
+   * @param value - The CSS border-bottom value.
+   * @return This DomElement instance for chaining.
+   */
+  bb(value: Property.BorderBottom | undefined) {
+    return this.setStyleProp("borderBottom", value);
+  }
+
+  /**
+   * Sets the left border style.
+   * @param value - The CSS border-left value.
+   * @return This DomElement instance for chaining.
+   */
+  bl(value: Property.BorderLeft | undefined) {
+    return this.setStyleProp("borderLeft", value);
   }
 
   overflow(value: Property.Overflow | undefined) {
@@ -530,12 +573,4 @@ export function $select<T extends keyof HTMLElementTagNameMap>(
     el.tagName.toLowerCase() as T,
     el as HTMLElementTagNameMap[T]
   );
-}
-
-export function $wrap<T extends keyof HTMLElementTagNameMap = "div">(
-  tag: T,
-  ...nodes: DomElement[]
-) {
-  const container = $(tag);
-  return container.add(...nodes);
 }

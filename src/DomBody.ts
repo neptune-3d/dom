@@ -36,3 +36,7 @@ export class DomBody {
     return this;
   }
 }
+
+export function $body() {
+  return new DomBody();
+}
