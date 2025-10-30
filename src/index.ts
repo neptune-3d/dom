@@ -4,8 +4,6 @@ export * from "./Canvas";
 export * from "./constants";
 export * from "./DomBody";
 export * from "./DomElement";
-export * from "./Flex";
-export * from "./Grid";
 export * from "./IFrame";
 export * from "./ImageElement";
 export * from "./InputCheckbox";
