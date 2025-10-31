@@ -220,7 +220,7 @@ export class DomElement<
     value: string | number | undefined
   ) {
     if (value === undefined) {
-      this.dom.style.removeProperty(name);
+      this.dom.style.removeProperty(camelToKebab(name));
       return this;
     }
 
