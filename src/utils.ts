@@ -1,5 +1,5 @@
-export function uniqueId(prefix: string): string {
-  return `${prefix}-${Date.now().toString(36)}-${(counter++).toString(36)}`;
+export function uniqueId(): string {
+  return `${Date.now().toString(36)}-${(counter++).toString(36)}`;
 }
 
 let counter = 0;

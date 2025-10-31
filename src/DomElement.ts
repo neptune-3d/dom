@@ -29,7 +29,7 @@ export class DomElement<
 
   get cssClassName() {
     if (!this._cssClassName) {
-      this._cssClassName = uniqueId(this.tag);
+      this._cssClassName = uniqueId();
     }
 
     return this._cssClassName;
@@ -42,12 +42,6 @@ export class DomElement<
   text(txt: any) {
     this._dom.textContent = String(txt);
     return this;
-  }
-
-  protected resolveNode(child: DomElementChild) {
-    return typeof child === "string" || typeof child === "number"
-      ? String(child)
-      : child.dom;
   }
 
   add(...nodes: DomElementChild[]) {
@@ -154,31 +148,79 @@ export class DomElement<
     handler: (ev: HTMLElementEventMap[T]) => void,
     options?: boolean | EventListenerOptions
   ) {
-    return this._dom.removeEventListener(type, handler as any, options);
+    this._dom.removeEventListener(type, handler as any, options);
   }
 
-  attr(obj: Record<string, any>) {
-    for (const name in obj) {
-      this._dom.setAttribute(name, obj[name]);
+  /**
+   * Retrieves the value of a single attribute.
+   * @param name - The attribute name to read (e.g. "aria-label", "role").
+   * @return The attribute value as a string, or null if not present.
+   */
+  getAttr(name: string): string | null {
+    return this.dom.getAttribute(name);
+  }
+
+  /**
+   * Sets a single attribute on the element.
+   * @param name - The attribute name (e.g. "aria-label", "role", "disabled").
+   * @param value - The attribute value. If undefined, the attribute is removed.
+   * @return This DomElement instance for chaining.
+   */
+  attr(name: string, value: string | number | boolean | undefined) {
+    if (value === undefined) {
+      this.dom.removeAttribute(name);
+    }
+    //
+    else {
+      this.dom.setAttribute(name, String(value));
     }
     return this;
   }
 
-  props(obj: Record<string, any>) {
-    for (const name in obj) {
-      const value = obj[name];
-      (this._dom as any)[name] = value;
+  /**
+   * Sets multiple attributes on the element.
+   * @param attributes - An object mapping attribute names to values.
+   *                     Attributes with undefined values are removed.
+   * @return This DomElement instance for chaining.
+   */
+  attrs(attributes: Record<string, string | number | boolean | undefined>) {
+    for (const [key, value] of Object.entries(attributes)) {
+      this.attr(key, value);
     }
     return this;
   }
 
+  /**
+   * Retrieves the value of a single property.
+   * @param name - The property name to read (e.g. "value", "checked", "disabled").
+   * @return The property value, or undefined if not present.
+   */
+  getProp(name: string): any {
+    return (this.dom as any)[name];
+  }
+
+  /**
+   * Sets a single property on the element.
+   * @param name - The property name (e.g. "checked", "value", "disabled").
+   * @param value - The property value. If undefined, the property is deleted.
+   * @return This DomElement instance for chaining.
+   */
   prop(name: string, value: any) {
-    (this._dom as any)[name] = value;
+    (this.dom as any)[name] = value;
     return this;
   }
 
-  getProp(name: string) {
-    return (this._dom as any)[name];
+  /**
+   * Sets multiple properties on the element.
+   * @param properties - An object mapping property names to values.
+   *                     Properties with undefined values are deleted.
+   * @return This DomElement instance for chaining.
+   */
+  props(properties: Record<string, any>) {
+    for (const [key, value] of Object.entries(properties)) {
+      this.prop(key, value);
+    }
+    return this;
   }
 
   style(obj: CssProperties) {
@@ -215,19 +257,22 @@ export class DomElement<
     return this;
   }
 
-  protected setStyleProp(
-    name: Autocomplete<keyof CssProperties>,
-    value: string | number | undefined
-  ) {
-    if (value === undefined) {
-      this.dom.style.removeProperty(camelToKebab(name));
-      return this;
-    }
+  /**
+   * Sets the `disabled` attribute to disable the element.
+   * Applicable to form controls like <button>, <input>, <select>, etc.
+   * @return This DomElement instance for chaining.
+   */
+  disable() {
+    this.dom.setAttribute("disabled", "");
+    return this;
+  }
 
-    this.dom.style.setProperty(
-      camelToKebab(name),
-      this.getStyleValue(name, value)
-    );
+  /**
+   * Removes the `disabled` attribute to enable the element.
+   * @return This DomElement instance for chaining.
+   */
+  enable() {
+    this.dom.removeAttribute("disabled");
     return this;
   }
 
@@ -279,20 +324,105 @@ export class DomElement<
     return this.setStyleProp("marginLeft", value);
   }
 
+  /**
+   * Sets the overall border radius.
+   * @param value - The CSS border-radius value (e.g., "8px", "50%").
+   * @return This DomElement instance for chaining.
+   */
   radius(value: Property.BorderRadius | undefined) {
     return this.setStyleProp("borderRadius", value);
   }
 
+  /**
+   * Sets the top-left corner border radius.
+   * @param value - The CSS border-top-left-radius value.
+   * @return This DomElement instance for chaining.
+   */
   radiusTopLeft(value: Property.BorderTopLeftRadius | undefined) {
     return this.setStyleProp("borderTopLeftRadius", value);
   }
 
+  /**
+   * Sets the top-right corner border radius.
+   * @param value - The CSS border-top-right-radius value.
+   * @return This DomElement instance for chaining.
+   */
   radiusTopRight(value: Property.BorderTopRightRadius | undefined) {
     return this.setStyleProp("borderTopRightRadius", value);
   }
 
+  /**
+   * Sets the bottom-left corner border radius.
+   * @param value - The CSS border-bottom-left-radius value.
+   * @return This DomElement instance for chaining.
+   */
+  radiusBottomLeft(value: Property.BorderBottomLeftRadius | undefined) {
+    return this.setStyleProp("borderBottomLeftRadius", value);
+  }
+
+  /**
+   * Sets the bottom-right corner border radius.
+   * @param value - The CSS border-bottom-right-radius value.
+   * @return This DomElement instance for chaining.
+   */
+  radiusBottomRight(value: Property.BorderBottomRightRadius | undefined) {
+    return this.setStyleProp("borderBottomRightRadius", value);
+  }
+
+  /**
+   * Sets the border radius for both top corners.
+   * @param value - The CSS border-radius value to apply to top-left and top-right corners.
+   * @return This DomElement instance for chaining.
+   */
   radiusTop(value: Property.BorderTopLeftRadius | undefined) {
     return this.radiusTopLeft(value).radiusTopRight(value);
+  }
+
+  /**
+   * Sets the border radius for both bottom corners.
+   * @param value - The CSS border-radius value to apply to bottom-left and bottom-right corners.
+   * @return This DomElement instance for chaining.
+   */
+  radiusBottom(value: Property.BorderBottomLeftRadius | undefined) {
+    return this.radiusBottomLeft(value).radiusBottomRight(value);
+  }
+
+  /**
+   * Sets the border radius for both left corners.
+   * @param value - The CSS border-radius value to apply to top-left and bottom-left corners.
+   * @return This DomElement instance for chaining.
+   */
+  radiusLeft(value: Property.BorderTopLeftRadius | undefined) {
+    return this.radiusTopLeft(value).radiusBottomLeft(value);
+  }
+
+  /**
+   * Sets the border radius for both right corners.
+   * @param value - The CSS border-radius value to apply to top-right and bottom-right corners.
+   * @return This DomElement instance for chaining.
+   */
+  radiusRight(value: Property.BorderTopRightRadius | undefined) {
+    return this.radiusTopRight(value).radiusBottomRight(value);
+  }
+
+  /**
+   * Sets the border radius for both left and right sides (horizontal corners).
+   * Applies to top-left, top-right, bottom-left, and bottom-right corners on the X axis.
+   * @param value - The CSS border-radius value to apply horizontally.
+   * @return This DomElement instance for chaining.
+   */
+  radiusX(value: Property.BorderRadius | undefined) {
+    return this.radiusLeft(value).radiusRight(value);
+  }
+
+  /**
+   * Sets the border radius for both top and bottom sides (vertical corners).
+   * Applies to top-left, top-right, bottom-left, and bottom-right corners on the Y axis.
+   * @param value - The CSS border-radius value to apply vertically.
+   * @return This DomElement instance for chaining.
+   */
+  radiusY(value: Property.BorderRadius | undefined) {
+    return this.radiusTop(value).radiusBottom(value);
   }
 
   display(value: Property.Display | undefined) {
@@ -368,6 +498,72 @@ export class DomElement<
     return this.setStyleProp("borderLeft", value);
   }
 
+  /**
+   * Sets the left and right border styles.
+   * @param value - The CSS border value to apply to both left and right sides.
+   * @return This DomElement instance for chaining.
+   */
+  bx(value: Property.BorderLeft | Property.BorderRight | undefined) {
+    this.setStyleProp("borderLeft", value);
+    this.setStyleProp("borderRight", value);
+    return this;
+  }
+
+  /**
+   * Sets the top and bottom border styles.
+   * @param value - The CSS border value to apply to both top and bottom sides.
+   * @return This DomElement instance for chaining.
+   */
+  by(value: Property.BorderTop | Property.BorderBottom | undefined) {
+    this.setStyleProp("borderTop", value);
+    this.setStyleProp("borderBottom", value);
+    return this;
+  }
+
+  /**
+   * Sets the top and left border styles.
+   * @param value - The CSS border value to apply to both top and left sides.
+   * @return This DomElement instance for chaining.
+   */
+  btl(value: Property.BorderTop | Property.BorderLeft | undefined) {
+    this.setStyleProp("borderTop", value);
+    this.setStyleProp("borderLeft", value);
+    return this;
+  }
+
+  /**
+   * Sets the top and right border styles.
+   * @param value - The CSS border value to apply to both top and right sides.
+   * @return This DomElement instance for chaining.
+   */
+  btr(value: Property.BorderTop | Property.BorderRight | undefined) {
+    this.setStyleProp("borderTop", value);
+    this.setStyleProp("borderRight", value);
+    return this;
+  }
+
+  /**
+   * Sets the bottom and left border styles.
+   * @param value - The CSS border value to apply to both bottom and left sides.
+   * @return This DomElement instance for chaining.
+   */
+  bbl(value: Property.BorderBottom | Property.BorderLeft | undefined) {
+    this.setStyleProp("borderBottom", value);
+    this.setStyleProp("borderLeft", value);
+    return this;
+  }
+
+  /**
+   * Sets the bottom and right border styles.
+   * @param value - The CSS border value to apply to both bottom and right sides.
+   * @return This DomElement instance for chaining.
+   */
+  bbr(value: Property.BorderBottom | Property.BorderRight | undefined) {
+    this.setStyleProp("borderBottom", value);
+    this.setStyleProp("borderRight", value);
+    return this;
+  }
+
   overflow(value: Property.Overflow | undefined) {
     return this.setStyleProp("overflow", value);
   }
@@ -404,22 +600,47 @@ export class DomElement<
     return this.setStyleProp("textDecoration", value);
   }
 
+  /**
+   * Sets the CSS `position` property.
+   * @param value - The positioning mode (e.g., "absolute", "relative", "fixed").
+   * @return This DomElement instance for chaining.
+   */
   pos(value: Property.Position | undefined) {
     return this.setStyleProp("position", value);
   }
 
+  /**
+   * Sets the CSS `top` offset.
+   * @param value - The top offset value (e.g., "10px", "50%").
+   * @return This DomElement instance for chaining.
+   */
   posTop(value: Property.Top | undefined) {
     return this.setStyleProp("top", value);
   }
 
+  /**
+   * Sets the CSS `bottom` offset.
+   * @param value - The bottom offset value (e.g., "0", "2rem").
+   * @return This DomElement instance for chaining.
+   */
   posBottom(value: Property.Bottom | undefined) {
     return this.setStyleProp("bottom", value);
   }
 
+  /**
+   * Sets the CSS `left` offset.
+   * @param value - The left offset value (e.g., "5px", "auto").
+   * @return This DomElement instance for chaining.
+   */
   posLeft(value: Property.Left | undefined) {
     return this.setStyleProp("left", value);
   }
 
+  /**
+   * Sets the CSS `right` offset.
+   * @param value - The right offset value (e.g., "1em", "0").
+   * @return This DomElement instance for chaining.
+   */
   posRight(value: Property.Right | undefined) {
     return this.setStyleProp("right", value);
   }
@@ -456,6 +677,15 @@ export class DomElement<
     return this.setStyleProp("appearance", value);
   }
 
+  /**
+   * Sets the CSS `user-select` property to control text selection behavior.
+   * @param value - The user-select value (e.g., "none", "text", "auto", "contain", "all").
+   * @return This DomElement instance for chaining.
+   */
+  userSelect(value: Property.UserSelect | undefined) {
+    return this.setStyleProp("userSelect", value);
+  }
+
   overflowEllipsis() {
     return this.style({
       overflow: "hidden",
@@ -483,26 +713,6 @@ export class DomElement<
 
   focusCss(props: CssProperties) {
     return this.css(":focus", props);
-  }
-
-  protected setCssClassName() {
-    this.dom.className = this._userClassName
-      ? `${this._userClassName} ${this.cssClassName}`
-      : this.cssClassName;
-
-    return this;
-  }
-
-  protected setRuleCss(rule: CSSStyleRule, props: CssProperties) {
-    for (const name in props) {
-      const isVendor = !!VENDOR_CSS_PROPS[name];
-      const _name = camelToKebab(name);
-
-      rule.style.setProperty(
-        isVendor ? `-${_name}` : _name,
-        this.getStyleValue(name, (props as any)[name])
-      );
-    }
   }
 
   css(selector: string, props: CssProperties) {
@@ -547,6 +757,28 @@ export class DomElement<
     );
   }
 
+  protected resolveNode(child: DomElementChild) {
+    return typeof child === "string" || typeof child === "number"
+      ? String(child)
+      : child.dom;
+  }
+
+  protected setStyleProp(
+    name: Autocomplete<keyof CssProperties>,
+    value: string | number | undefined
+  ) {
+    if (value === undefined) {
+      this.dom.style.removeProperty(camelToKebab(name));
+      return this;
+    }
+
+    this.dom.style.setProperty(
+      camelToKebab(name),
+      this.getStyleValue(name, value)
+    );
+    return this;
+  }
+
   protected getStyleValue(
     name: Autocomplete<keyof CssProperties>,
     value: string | number
@@ -558,6 +790,26 @@ export class DomElement<
     }
 
     return value;
+  }
+
+  protected setCssClassName() {
+    this.dom.className = this._userClassName
+      ? `${this._userClassName} ${this.cssClassName}`
+      : this.cssClassName;
+
+    return this;
+  }
+
+  protected setRuleCss(rule: CSSStyleRule, props: CssProperties) {
+    for (const name in props) {
+      const isVendor = !!VENDOR_CSS_PROPS[name];
+      const _name = camelToKebab(name);
+
+      rule.style.setProperty(
+        isVendor ? `-${_name}` : _name,
+        this.getStyleValue(name, (props as any)[name])
+      );
+    }
   }
 }
 
