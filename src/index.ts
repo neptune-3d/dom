@@ -11,6 +11,7 @@ export * from "./InputColor";
 export * from "./InputNumber";
 export * from "./InputRange";
 export * from "./InputText";
+export * from "./MediaRule";
 export * from "./OptionElement";
 export * from "./ProgressElement";
 export * from "./SelectElement";

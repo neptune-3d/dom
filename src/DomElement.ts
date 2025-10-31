@@ -1,28 +1,82 @@
 import type { Property } from "csstype";
-import { UNITLESS_CSS_PROPS, VENDOR_CSS_PROPS } from "./constants";
+import { SVG_TAGS, TAG_ALIAS, type TagAlias } from "./constants";
 import { StyleSheet } from "./StyleSheet";
-import type { Autocomplete, CssProperties, DomElementChild } from "./types";
+import type {
+  Autocomplete,
+  CssProperties,
+  DomElementChild,
+  DomElementEventMap,
+  DomElementTagNameMap,
+} from "./types";
 import { camelToKebab, uniqueId } from "./utils";
 
+/**
+ * A unified wrapper for HTML and SVG elements that provides a fluent, type-safe API
+ * for DOM manipulation, styling, and event handling.
+ *
+ * Supports both `HTMLElementTagNameMap` and `SVGElementTagNameMap` via the generic `Tag`,
+ * and automatically handles namespace creation for SVG elements.
+ *
+ * Provides ergonomic methods for setting styles, attributes, classes, and event listeners,
+ * while abstracting away platform-specific quirks (e.g., `className` vs `setAttribute("class")`).
+ *
+ * @template Tag - The tag name of the element, inferred from `DomElementTagNameMap`.
+ */
 export class DomElement<
-  Tag extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap
+  Tag extends keyof DomElementTagNameMap = keyof DomElementTagNameMap
 > {
-  constructor(tag: Tag, el?: HTMLElementTagNameMap[Tag]) {
-    this._tag = tag;
-    this._dom = el ?? document.createElement(tag);
+  /**
+   * Creates a new DomElement instance for the specified tag.
+   * Automatically detects whether the tag is an SVG element and uses the appropriate namespace.
+   * Optionally wraps an existing DOM element instead of creating a new one.
+   *
+   * @param tag - The tag name of the element (e.g., "div", "circle", "svg").
+   * @param el - An optional existing DOM element to wrap. If omitted, a new element is created.
+   */
+  constructor(tag: Tag, el?: DomElementTagNameMap[Tag]) {
+    const alias = (TAG_ALIAS as any)[tag];
+
+    this._tag = (alias ?? tag) as Tag extends keyof TagAlias
+      ? TagAlias[Tag]
+      : Tag;
+
+    this._isSvg = SVG_TAGS.includes(this._tag);
+
+    this._dom =
+      el ??
+      ((this._isSvg
+        ? document.createElementNS("http://www.w3.org/2000/svg", this._tag)
+        : document.createElement(this._tag)) as DomElementTagNameMap[Tag]);
+
     this._sheet = StyleSheet.getSheet();
   }
 
   protected _tag;
+  protected _isSvg;
   protected _dom;
   protected _sheet;
   protected _cssClassName: string | undefined;
   protected _userClassName: string | undefined;
 
+  /**
+   * Gets the tag name of the element (e.g., "div", "svg", "circle").
+   */
   get tag() {
     return this._tag;
   }
 
+  /**
+   * Indicates whether the element is an SVG element.
+   * Returns `true` for tags like "svg", "circle", "path", etc.
+   */
+  get isSvg() {
+    return this._isSvg;
+  }
+
+  /**
+   * Gets the underlying DOM element instance.
+   * This will be either an `HTMLElement` or `SVGElement` depending on the tag.
+   */
   get dom() {
     return this._dom;
   }
@@ -132,10 +186,18 @@ export class DomElement<
     return this;
   }
 
-  on<T extends keyof HTMLElementEventMap>(
+  /**
+   * Adds an event listener to the element.
+   * Supports both HTML and SVG elements.
+   * @param type - The event type (e.g., "click", "input", "mouseenter").
+   * @param handler - The event handler function.
+   * @param options - Optional event listener options.
+   * @return This DomElement instance for chaining.
+   */
+  on<T extends keyof DomElementEventMap>(
     type: T,
     handler: (
-      ev: HTMLElementEventMap[T] & { currentTarget: HTMLElementTagNameMap[Tag] }
+      ev: DomElementEventMap[T] & { currentTarget: DomElementTagNameMap[Tag] }
     ) => void,
     options?: boolean | AddEventListenerOptions
   ) {
@@ -143,9 +205,16 @@ export class DomElement<
     return this;
   }
 
-  off<T extends keyof HTMLElementEventMap>(
+  /**
+   * Removes an event listener from the element.
+   * Supports both HTML and SVG elements.
+   * @param type - The event type to remove.
+   * @param handler - The original handler function.
+   * @param options - Optional event listener options.
+   */
+  off<T extends keyof DomElementEventMap>(
     type: T,
-    handler: (ev: HTMLElementEventMap[T]) => void,
+    handler: (ev: DomElementEventMap[T]) => void,
     options?: boolean | EventListenerOptions
   ) {
     this._dom.removeEventListener(type, handler as any, options);
@@ -225,7 +294,7 @@ export class DomElement<
 
   style(obj: CssProperties) {
     for (const name in obj) {
-      (this._dom as any).style[name] = this.getStyleValue(
+      (this._dom as any).style[name] = this._sheet.getStyleValue(
         name,
         (obj as any)[name]
       );
@@ -238,12 +307,27 @@ export class DomElement<
     return this;
   }
 
+  /**
+   * Sets the user-defined class name and applies it alongside the internal CSS class.
+   * For SVG elements, uses `setAttribute("class", ...)`.
+   * @param value - The user-defined class name.
+   * @return This DomElement instance for chaining.
+   */
   className(value: string) {
     this._userClassName = value;
 
-    this._dom.className = this._cssClassName
+    const fullClass = this._cssClassName
       ? `${value} ${this.cssClassName}`
       : value;
+
+    if (this.isSvg) {
+      this.dom.setAttribute("class", fullClass);
+    }
+    //
+    else {
+      (this.dom as HTMLElement).className = fullClass;
+    }
+
     return this;
   }
 
@@ -252,8 +336,21 @@ export class DomElement<
     return this;
   }
 
+  /**
+   * Sets the title of the element.
+   * For HTML elements, sets the `title` property.
+   * For SVG elements, sets the `title` attribute.
+   * @param value - The tooltip text to show on hover.
+   * @return This DomElement instance for chaining.
+   */
   title(value: string) {
-    this.dom.title = value;
+    if (this.isSvg) {
+      this.dom.setAttribute("title", value);
+    }
+    //
+    else {
+      (this.dom as HTMLElement).title = value;
+    }
     return this;
   }
 
@@ -720,7 +817,7 @@ export class DomElement<
 
     const rule = this._sheet.getCssRule(`.${this.cssClassName}${selector}`);
 
-    this.setRuleCss(rule, props);
+    this._sheet.setRuleCss(rule, props);
 
     return this;
   }
@@ -732,7 +829,7 @@ export class DomElement<
 
     const rule = mRule.getCssRule(`.${this.cssClassName}${selector}`);
 
-    this.setRuleCss(rule, props);
+    this._sheet.setRuleCss(rule, props);
 
     return this;
   }
@@ -743,7 +840,7 @@ export class DomElement<
 
   minWidthCss(minWidth: number | string, props: CssProperties) {
     return this.mediaCss(
-      `min-width:${this.getStyleValue("width", minWidth)}`,
+      `min-width:${this._sheet.getStyleValue("width", minWidth)}`,
       "",
       props
     );
@@ -751,7 +848,7 @@ export class DomElement<
 
   maxWidthCss(maxWidth: number | string, props: CssProperties) {
     return this.mediaCss(
-      `max-width:${this.getStyleValue("width", maxWidth)}`,
+      `max-width:${this._sheet.getStyleValue("width", maxWidth)}`,
       "",
       props
     );
@@ -774,55 +871,46 @@ export class DomElement<
 
     this.dom.style.setProperty(
       camelToKebab(name),
-      this.getStyleValue(name, value)
+      this._sheet.getStyleValue(name, value)
     );
     return this;
   }
 
-  protected getStyleValue(
-    name: Autocomplete<keyof CssProperties>,
-    value: string | number
-  ): string {
-    if (typeof value === "number") {
-      const isUnitless = !!UNITLESS_CSS_PROPS[name];
-
-      return isUnitless ? String(value) : `${value}px`;
-    }
-
-    return value;
-  }
-
   protected setCssClassName() {
-    this.dom.className = this._userClassName
+    const fullClass = this._userClassName
       ? `${this._userClassName} ${this.cssClassName}`
       : this.cssClassName;
 
+    if (this.isSvg) {
+      this.dom.setAttribute("class", fullClass);
+    }
+    //
+    else {
+      (this.dom as HTMLElement).className = fullClass;
+    }
+
     return this;
   }
-
-  protected setRuleCss(rule: CSSStyleRule, props: CssProperties) {
-    for (const name in props) {
-      const isVendor = !!VENDOR_CSS_PROPS[name];
-      const _name = camelToKebab(name);
-
-      rule.style.setProperty(
-        isVendor ? `-${_name}` : _name,
-        this.getStyleValue(name, (props as any)[name])
-      );
-    }
-  }
 }
-
-export function $<T extends keyof HTMLElementTagNameMap>(tag: T) {
+/**
+ * Creates a new DomElement instance for the given tag name.
+ * @param tag - The HTML tag name (e.g., "div", "button", "input").
+ * @return A DomElement wrapping a newly created element of the specified tag.
+ */
+export function $<T extends keyof DomElementTagNameMap>(tag: T) {
   return new DomElement(tag);
 }
 
-export function $select<T extends keyof HTMLElementTagNameMap>(
-  selector: string
-) {
+/**
+ * Queries the DOM for a matching element and wraps it in a DomElement.
+ * @param selector - A CSS selector string to locate the element.
+ * @return A DomElement wrapping the matched element.
+ * @throws If no element matches the selector, this will throw due to non-null assertion.
+ */
+export function $query<T extends keyof DomElementTagNameMap>(selector: string) {
   const el = document.querySelector(selector)!;
   return new DomElement(
     el.tagName.toLowerCase() as T,
-    el as HTMLElementTagNameMap[T]
+    el as DomElementTagNameMap[T]
   );
 }

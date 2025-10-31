@@ -1,5 +1,19 @@
+import { UNITLESS_CSS_PROPS, VENDOR_CSS_PROPS } from "./constants";
 import { MediaRule } from "./MediaRule";
+import type { Autocomplete, CssProperties } from "./types";
+import { camelToKebab } from "./utils";
 
+/**
+ * Manages a dedicated `<style>` element and provides programmatic access to its CSS rules.
+ * Supports dynamic insertion, retrieval, and deletion of both standard and media-specific rules,
+ * with internal indexing for fast lookup and reuse.
+ *
+ * This class ensures a single shared stylesheet instance via `StyleSheet.getSheet()`,
+ * and maintains selector-to-index and media-to-rule maps on the global `window` object.
+ *
+ * Designed for use with component-level styling systems or DOM abstractions that require
+ * granular control over rule injection without relying on inline styles.
+ */
 export class StyleSheet {
   constructor(el: HTMLStyleElement) {
     this._dom = el;
@@ -17,6 +31,28 @@ export class StyleSheet {
 
   get length() {
     return this.sheet.cssRules.length;
+  }
+
+  /**
+   * Inserts or updates a global CSS rule for a given selector.
+   * @param selector - A global class selector (e.g., ".list-item").
+   * @param props - The CSS properties to apply.
+   */
+  globalCss(selector: string, props: CssProperties) {
+    const rule = this.getCssRule(selector);
+    this.setRuleCss(rule, props);
+  }
+
+  /**
+   * Inserts or updates a global CSS rule inside a media query.
+   * @param mediaText - The media query condition (e.g., "max-width: 600px").
+   * @param selector - The global class selector.
+   * @param props - The CSS properties to apply.
+   */
+  globalMediaCss(mediaText: string, selector: string, props: CssProperties) {
+    const media = this.getMediaRule(mediaText);
+    const rule = media.getCssRule(selector);
+    this.setRuleCss(rule, props);
   }
 
   getCssRule(selector: string) {
@@ -78,6 +114,31 @@ export class StyleSheet {
     else {
       return new StyleSheet(res as HTMLStyleElement);
     }
+  }
+
+  setRuleCss(rule: CSSStyleRule, props: CssProperties) {
+    for (const name in props) {
+      const isVendor = !!VENDOR_CSS_PROPS[name];
+      const _name = camelToKebab(name);
+
+      rule.style.setProperty(
+        isVendor ? `-${_name}` : _name,
+        this.getStyleValue(name, (props as any)[name])
+      );
+    }
+  }
+
+  getStyleValue(
+    name: Autocomplete<keyof CssProperties>,
+    value: string | number
+  ): string {
+    if (typeof value === "number") {
+      const isUnitless = !!UNITLESS_CSS_PROPS[name];
+
+      return isUnitless ? String(value) : `${value}px`;
+    }
+
+    return value;
   }
 
   protected getCssMap() {

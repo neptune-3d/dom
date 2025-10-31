@@ -1,3 +1,5 @@
+import type { DomElementTagNameMap } from "./types";
+
 export const UNITLESS_CSS_PROPS: Record<string, 1> = {
   opacity: 1,
   zIndex: 1,
@@ -22,3 +24,26 @@ export const UNITLESS_CSS_PROPS: Record<string, 1> = {
 export const VENDOR_CSS_PROPS: Record<string, 1> = {
   WebkitAppearance: 1,
 };
+
+export const SVG_TAGS = [
+  "svg",
+  "circle",
+  "rect",
+  "path",
+  "line",
+  "polyline",
+  "polygon",
+  "g",
+  "text",
+  "defs",
+  "use",
+  "symbol",
+  "clipPath",
+  "mask",
+];
+
+export const TAG_ALIAS = {
+  svgA: "a",
+} satisfies Record<string, keyof DomElementTagNameMap>;
+
+export type TagAlias = typeof TAG_ALIAS;

@@ -16,18 +16,18 @@ export class IFrame extends DomElement<"iframe"> {
   }
 
   width(value: number) {
-    this._dom.width = this.getStyleValue("width", value);
+    this._dom.width = this._sheet.getStyleValue("width", value);
     return this;
   }
 
   height(value: number) {
-    this._dom.height = this.getStyleValue("height", value);
+    this._dom.height = this._sheet.getStyleValue("height", value);
     return this;
   }
 
   setSize(width: number, height: number) {
-    this._dom.width = this.getStyleValue("width", width);
-    this._dom.height = this.getStyleValue("height", height);
+    this._dom.width = this._sheet.getStyleValue("width", width);
+    this._dom.height = this._sheet.getStyleValue("height", height);
     return this;
   }
 
