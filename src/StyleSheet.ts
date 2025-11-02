@@ -121,22 +121,6 @@ export class StyleSheet {
     map.delete(mediaText);
   }
 
-  static getSheet() {
-    const res = document.head.querySelector(`#${StyleSheet.STYLE_ID}`);
-
-    if (res == null) {
-      const style = document.createElement("style");
-      style.id = StyleSheet.STYLE_ID;
-      style.setAttribute("type", "text/css");
-      document.head.append(style);
-      return new StyleSheet(style);
-    }
-    //
-    else {
-      return new StyleSheet(res as HTMLStyleElement);
-    }
-  }
-
   setRuleCss(rule: CSSStyleRule, props: CssProperties) {
     for (const name in props) {
       const isVendor = !!VENDOR_CSS_PROPS[name];
@@ -162,27 +146,54 @@ export class StyleSheet {
     return value;
   }
 
-  protected getCssMap() {
-    let map = (window as any).__neptuneCssMap__;
-
+  protected getCssMap(): Map<string, number> {
+    let map = cssMapCache.get(this.sheet);
     if (!map) {
       map = new Map();
-      (window as any).__neptuneCssMap__ = map;
+      cssMapCache.set(this.sheet, map);
     }
-
-    return map as Map<string, number>;
+    return map;
   }
 
-  protected getMediaMap() {
-    let map = (window as any).__neptuneMediaMap__;
-
+  protected getMediaMap(): Map<string, MediaRule> {
+    let map = mediaMapCache.get(this.sheet);
     if (!map) {
       map = new Map();
-      (window as any).__neptuneMediaMap__ = map;
+      mediaMapCache.set(this.sheet, map);
     }
-
-    return map as Map<string, MediaRule>;
+    return map;
   }
 
-  static STYLE_ID = "__neptune-style__";
+  /**
+   * Retrieves or creates a <style> element with the given ID and wraps it in a StyleSheet instance.
+   * If no element with the specified ID exists, a new <style> tag is created, appended to <head>,
+   * and assigned the ID. This allows multiple independently managed stylesheets via custom IDs.
+   *
+   * @param id - Optional ID of the <style> element to target. Defaults to DEFAULT_STYLE_ID.
+   * @return A StyleSheet instance bound to the specified <style> element.
+   */
+  static getSheet(id: string = StyleSheet.DEFAULT_STYLE_ID) {
+    const res = document.head.querySelector(`#${id}`);
+
+    if (res == null) {
+      const style = document.createElement("style");
+      style.id = id;
+      style.setAttribute("type", "text/css");
+      document.head.append(style);
+      return new StyleSheet(style);
+    }
+    //
+    else {
+      return new StyleSheet(res as HTMLStyleElement);
+    }
+  }
+
+  /**
+   * The default ID used for the primary stylesheet managed by the StyleSheet class.
+   * This ensures consistent lookup and avoids collisions with other style elements in the document.
+   */
+  static DEFAULT_STYLE_ID = "__neptune-style__";
 }
+
+const cssMapCache = new WeakMap<CSSStyleSheet, Map<string, number>>();
+const mediaMapCache = new WeakMap<CSSStyleSheet, Map<string, MediaRule>>();
