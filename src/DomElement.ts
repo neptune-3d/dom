@@ -281,23 +281,31 @@ export class DomElement<
 
   /**
    * Sets multiple properties on the element.
-   * @param properties - An object mapping property names to values.
+   * @param props - An object mapping property names to values.
    *                     Properties with undefined values are deleted.
    * @return This DomElement instance for chaining.
    */
-  props(properties: Record<string, any>) {
-    for (const [key, value] of Object.entries(properties)) {
+  props(props: Record<string, any>) {
+    for (const [key, value] of Object.entries(props)) {
       this.prop(key, value);
     }
     return this;
   }
 
-  style(obj: CssProperties) {
-    for (const name in obj) {
-      (this._dom as any).style[name] = this._sheet.getStyleValue(
-        name,
-        (obj as any)[name]
-      );
+  /**
+   * Applies a batch of CSS style properties to the element.
+   * Delegates each property to `setStyleProp`, which handles value normalization and kebab-case conversion.
+   *
+   * - Properties with `undefined` values are removed from the inline style.
+   * - Numeric values are passed through the style sheet for unit resolution.
+   * - Supports chainable usage for fluent DOM composition.
+   *
+   * @param props - A partial map of CSS properties and their values.
+   * @returns This DomElement instance for chaining.
+   */
+  style(props: CssProperties) {
+    for (const name of Object.keys(props)) {
+      this.setStyleProp(name, (props as any)[name]);
     }
     return this;
   }

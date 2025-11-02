@@ -1,7 +1,9 @@
 import type { PropertiesFallback } from "csstype";
 import type { DomElement } from "./DomElement";
 
-export type CssProperties = PropertiesFallback<string | number>;
+export type CssProperties = PropertiesFallback<string | number> & {
+  [key: `--${string}`]: string | number | undefined;
+};
 
 export type { Property as CssProperty } from "csstype";
 
