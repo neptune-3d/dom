@@ -442,50 +442,146 @@ export class DomElement<
     return this.disabled(false);
   }
 
+  /**
+   * Sets or clears the `padding` style of the element.
+   * Accepts any valid CSS padding shorthand (e.g., "10px", "1em 2em").
+   * Passing `undefined` removes the padding style.
+   *
+   * @param value - The padding value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   p(value: Property.Padding | undefined) {
     return this.setStyleProp("padding", value);
   }
 
+  /**
+   * Sets or clears the `padding-top` style of the element.
+   * Accepts any valid CSS value (e.g., "10px", "1em").
+   * Passing `undefined` removes the top padding.
+   *
+   * @param value - The top padding value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   pt(value: Property.PaddingTop | undefined) {
     return this.setStyleProp("paddingTop", value);
   }
 
+  /**
+   * Sets or clears the `padding-right` style of the element.
+   * Accepts any valid CSS value (e.g., "10px", "1em").
+   * Passing `undefined` removes the right padding.
+   *
+   * @param value - The right padding value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   pr(value: Property.PaddingRight | undefined) {
     return this.setStyleProp("paddingRight", value);
   }
 
+  /**
+   * Sets or clears the `padding-bottom` style of the element.
+   * Accepts any valid CSS value (e.g., "10px", "1em").
+   * Passing `undefined` removes the bottom padding.
+   *
+   * @param value - The bottom padding value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   pb(value: Property.PaddingBottom | undefined) {
     return this.setStyleProp("paddingBottom", value);
   }
 
+  /**
+   * Sets or clears the `padding-left` style of the element.
+   * Accepts any valid CSS value (e.g., "10px", "1em").
+   * Passing `undefined` removes the left padding.
+   *
+   * @param value - The left padding value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   pl(value: Property.PaddingLeft | undefined) {
     return this.setStyleProp("paddingLeft", value);
   }
 
+  /**
+   * Sets or clears horizontal padding (`padding-left` and `padding-right`) simultaneously.
+   * Accepts any valid CSS value (e.g., "10px", "1em").
+   * Passing `undefined` removes both left and right padding.
+   *
+   * @param value - The horizontal padding value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   px(value: Property.PaddingLeft | undefined) {
     return this.pl(value).pr(value);
   }
 
+  /**
+   * Sets or clears vertical padding (`padding-top` and `padding-bottom`) simultaneously.
+   * Accepts any valid CSS value (e.g., "10px", "1em").
+   * Passing `undefined` removes both top and bottom padding.
+   *
+   * @param value - The vertical padding value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   py(value: Property.PaddingTop | undefined) {
     return this.pt(value).pb(value);
   }
 
+  /**
+   * Sets or clears the `margin` style of the element.
+   * Accepts any valid CSS margin shorthand (e.g., "10px", "1em 2em").
+   * Passing `undefined` removes the margin style.
+   *
+   * @param value - The margin value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   m(value: Property.Margin | undefined) {
     return this.setStyleProp("margin", value);
   }
 
+  /**
+   * Sets or clears the `margin-top` style of the element.
+   * Accepts any valid CSS value (e.g., "10px", "auto").
+   * Passing `undefined` removes the top margin.
+   *
+   * @param value - The top margin value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   mt(value: Property.MarginTop | undefined) {
     return this.setStyleProp("marginTop", value);
   }
 
+  /**
+   * Sets or clears the `margin-right` style of the element.
+   * Accepts any valid CSS value (e.g., "10px", "auto").
+   * Passing `undefined` removes the right margin.
+   *
+   * @param value - The right margin value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   mr(value: Property.MarginRight | undefined) {
     return this.setStyleProp("marginRight", value);
   }
 
+  /**
+   * Sets or clears the `margin-bottom` style of the element.
+   * Accepts any valid CSS value (e.g., "10px", "auto").
+   * Passing `undefined` removes the bottom margin.
+   *
+   * @param value - The bottom margin value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   mb(value: Property.MarginBottom | undefined) {
     return this.setStyleProp("marginBottom", value);
   }
 
+  /**
+   * Sets or clears the `margin-left` style of the element.
+   * Accepts any valid CSS value (e.g., "10px", "auto").
+   * Passing `undefined` removes the left margin.
+   *
+   * @param value - The left margin value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   ml(value: Property.MarginLeft | undefined) {
     return this.setStyleProp("marginLeft", value);
   }
@@ -611,12 +707,28 @@ export class DomElement<
     return this.setStyleProp("color", value);
   }
 
-  h(value: Property.Height | number | undefined) {
-    return this.setStyleProp("height", value);
-  }
-
+  /**
+   * Sets or clears the `width` style of the element.
+   * Accepts CSS width values (e.g., "100px", "50%") or numeric pixel values.
+   * Passing `undefined` removes the width style.
+   *
+   * @param value - The width value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
   w(value: Property.Width | number | undefined) {
     return this.setStyleProp("width", value);
+  }
+
+  /**
+   * Sets or clears the `height` style of the element.
+   * Accepts CSS height values (e.g., "100px", "auto") or numeric pixel values.
+   * Passing `undefined` removes the height style.
+   *
+   * @param value - The height value to apply, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
+  h(value: Property.Height | number | undefined) {
+    return this.setStyleProp("height", value);
   }
 
   /**
@@ -863,6 +975,19 @@ export class DomElement<
     return this.setStyleProp("verticalAlign", value);
   }
 
+  /**
+   * Applies CSS styles to truncate overflowing text with an ellipsis.
+   * Ensures the text stays on a single line and hides overflow.
+   *
+   * Equivalent to:
+   * ```css
+   * overflow: hidden;
+   * white-space: nowrap;
+   * text-overflow: ellipsis;
+   * ```
+   *
+   * @return This DomElement instance for chaining.
+   */
   overflowEllipsis() {
     return this.style({
       overflow: "hidden",
@@ -876,22 +1001,21 @@ export class DomElement<
     return this;
   }
 
-  rootCss(props: CssProperties) {
-    return this.css("", props);
-  }
-
-  hoverCss(props: CssProperties) {
-    return this.css(":hover", props);
-  }
-
-  activeCss(props: CssProperties) {
-    return this.css(":active", props);
-  }
-
-  focusCss(props: CssProperties) {
-    return this.css(":focus", props);
-  }
-
+  /**
+   * Applies scoped CSS styles to the element using a class-based selector.
+   * Ensures the element has a unique internal class name, then targets it with the given selector.
+   *
+   * For example, calling `css(":hover", { color: "red" })` will generate:
+   * ```css
+   * .<internalClassName>:hover { color: red; }
+   * ```
+   *
+   * This enables dynamic styling of pseudo-classes, child selectors, or media queries without inline styles.
+   *
+   * @param selector - A CSS selector suffix (e.g., ":hover", " > span") scoped to the internal class.
+   * @param props - A map of CSS properties to apply to the generated rule.
+   * @return This DomElement instance for chaining.
+   */
   css(selector: string, props: CssProperties) {
     this.setCssClassName();
 
@@ -902,6 +1026,79 @@ export class DomElement<
     return this;
   }
 
+  /**
+   * Applies scoped CSS styles directly to the root selector of the element.
+   * Equivalent to styling `.className` without any pseudo-classes or combinators.
+   *
+   * @param props - A map of CSS properties to apply to the root selector.
+   * @return This DomElement instance for chaining.
+   */
+  rootCss(props: CssProperties) {
+    return this.css("", props);
+  }
+
+  /**
+   * Applies scoped CSS styles to the `:hover` state of the element.
+   * Useful for styling hover interactions without inline styles.
+   *
+   * @param props - A map of CSS properties to apply when the element is hovered.
+   * @return This DomElement instance for chaining.
+   */
+  hoverCss(props: CssProperties) {
+    return this.css(":hover", props);
+  }
+
+  /**
+   * Applies scoped CSS styles to the `:active` state of the element.
+   * Useful for styling active interactions (e.g., mouse down).
+   *
+   * @param props - A map of CSS properties to apply when the element is active.
+   * @return This DomElement instance for chaining.
+   */
+  activeCss(props: CssProperties) {
+    return this.css(":active", props);
+  }
+
+  /**
+   * Applies scoped CSS styles to the `:focus` state of the element.
+   * Useful for styling keyboard or programmatic focus.
+   *
+   * @param props - A map of CSS properties to apply when the element is focused.
+   * @return This DomElement instance for chaining.
+   */
+  focusCss(props: CssProperties) {
+    return this.css(":focus", props);
+  }
+
+  /**
+   * Applies scoped CSS styles to the `:focus-within` state of the element.
+   * Useful for styling when any child element has focus.
+   *
+   * @param props - A map of CSS properties to apply when the element or its descendants are focused.
+   * @return This DomElement instance for chaining.
+   */
+  focusWithinCss(props: CssProperties) {
+    return this.css(":focus-within", props);
+  }
+
+  /**
+   * Applies scoped CSS styles to the element within a media query block.
+   * Ensures the element has a unique internal class name, then targets it with the given selector inside the specified media query.
+   *
+   * For example, calling `mediaCss("screen and (max-width: 600px)", ":hover", { color: "red" })` will generate:
+   * ```css
+   * \@media screen and (max-width: 600px) {
+   *   .<internalClassName>:hover { color: red; }
+   * }
+   * ```
+   *
+   * This enables responsive styling and conditional behavior based on viewport or device characteristics.
+   *
+   * @param mediaText - The media query string (e.g., "screen and (max-width: 600px)").
+   * @param selector - A CSS selector suffix (e.g., ":hover", " > span") scoped to the internal class.
+   * @param props - A map of CSS properties to apply within the media rule.
+   * @return This DomElement instance for chaining.
+   */
   mediaCss(mediaText: string, selector: string, props: CssProperties) {
     this.setCssClassName();
 
@@ -914,10 +1111,28 @@ export class DomElement<
     return this;
   }
 
+  /**
+   * Applies scoped CSS styles to the root selector of the element within a media query block.
+   * Useful for conditionally styling the element based on viewport or device characteristics.
+   *
+   * @param mediaText - The media query string (e.g., "screen and (max-width: 600px)").
+   * @param props - A map of CSS properties to apply within the media rule.
+   * @return This DomElement instance for chaining.
+   */
   mediaRootCss(mediaText: string, props: CssProperties) {
     return this.mediaCss(mediaText, "", props);
   }
 
+  /**
+   * Applies scoped CSS styles to the root selector of the element when the viewport width
+   * meets or exceeds the specified minimum.
+   *
+   * Automatically converts numeric values to pixel-based CSS width values.
+   *
+   * @param minWidth - The minimum width threshold (e.g., 600 or "40em").
+   * @param props - A map of CSS properties to apply when the condition is met.
+   * @return This DomElement instance for chaining.
+   */
   minWidthCss(minWidth: number | string, props: CssProperties) {
     return this.mediaCss(
       `min-width:${this._sheet.getStyleValue("width", minWidth)}`,
@@ -926,6 +1141,16 @@ export class DomElement<
     );
   }
 
+  /**
+   * Applies scoped CSS styles to the root selector of the element when the viewport width
+   * is less than or equal to the specified maximum.
+   *
+   * Automatically converts numeric values to pixel-based CSS width values.
+   *
+   * @param maxWidth - The maximum width threshold (e.g., 600 or "40em").
+   * @param props - A map of CSS properties to apply when the condition is met.
+   * @return This DomElement instance for chaining.
+   */
   maxWidthCss(maxWidth: number | string, props: CssProperties) {
     return this.mediaCss(
       `max-width:${this._sheet.getStyleValue("width", maxWidth)}`,

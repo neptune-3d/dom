@@ -1,4 +1,5 @@
 import { DomElement } from "./DomElement";
+import type { CssProperties } from "./types";
 
 export class InputRange extends DomElement<"input"> {
   constructor() {
@@ -34,5 +35,9 @@ export class InputRange extends DomElement<"input"> {
   step(value: number) {
     this._dom.step = String(value);
     return this;
+  }
+
+  disabledCss(props: CssProperties) {
+    return this.css(":disabled", props);
   }
 }

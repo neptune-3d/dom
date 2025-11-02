@@ -1,4 +1,5 @@
 import { DomElement } from "./DomElement";
+import type { CssProperties } from "./types";
 
 export class InputCheckbox extends DomElement<"input"> {
   constructor() {
@@ -19,5 +20,9 @@ export class InputCheckbox extends DomElement<"input"> {
 
   isChecked() {
     return this.getProp("checked") as boolean;
+  }
+
+  disabledCss(props: CssProperties) {
+    return this.css(":disabled", props);
   }
 }

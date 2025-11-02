@@ -1,4 +1,5 @@
 import { DomElement } from "./DomElement";
+import type { CssProperties } from "./types";
 
 export class InputText extends DomElement<"input"> {
   constructor() {
@@ -24,5 +25,9 @@ export class InputText extends DomElement<"input"> {
   placeholder(value: string) {
     this.dom.placeholder = value;
     return this;
+  }
+
+  disabledCss(props: CssProperties) {
+    return this.css(":disabled", props);
   }
 }

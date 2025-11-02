@@ -1,4 +1,5 @@
 import { DomElement } from "./DomElement";
+import type { CssProperties } from "./types";
 
 export class InputColor extends DomElement<"input"> {
   constructor() {
@@ -47,5 +48,9 @@ export class InputColor extends DomElement<"input"> {
     this._rgb.b = b / 255;
 
     return this._rgb;
+  }
+
+  disabledCss(props: CssProperties) {
+    return this.css(":disabled", props);
   }
 }
