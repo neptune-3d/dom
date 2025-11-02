@@ -9,7 +9,7 @@ export type { Property as CssProperty } from "csstype";
 
 export type Autocomplete<T extends string> = T | (string & {});
 
-export type DomElementChild = DomElement<any> | string | number;
+export type DomElementChild = DomElement<any> | Node | string | number;
 
 export type DomElementTagNameMap = HTMLElementTagNameMap & SvgElementTagNameMap;
 

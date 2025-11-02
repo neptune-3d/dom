@@ -93,11 +93,30 @@ export class DomElement<
     return this._dom.textContent;
   }
 
-  text(txt: any) {
-    this._dom.textContent = String(txt);
+  /**
+   * Sets or clears the text content of the element.
+   * Converts any value to a string before assignment.
+   * Passing `undefined` or `null` removes the text by setting it to an empty string.
+   *
+   * @param value - The text content to set, or `undefined`/`null` to clear it.
+   * @return This DomElement instance for chaining.
+   */
+  text(value: any) {
+    this._dom.textContent = value == null ? "" : String(value);
     return this;
   }
 
+  /**
+   * Appends one or more child nodes to the element.
+   * Accepts DomElement instances, regular DOM Nodes, strings, or numbers.
+   *
+   * - Strings and numbers are coerced to text nodes.
+   * - DomElement instances are unwrapped to their native DOM nodes.
+   * - DOM Nodes are appended directly.
+   *
+   * @param nodes - One or more child elements or text values to append.
+   * @return This DomElement instance for chaining.
+   */
   add(...nodes: DomElementChild[]) {
     this._dom.append(...nodes.map((n) => this.resolveNode(n)));
     return this;
@@ -162,6 +181,14 @@ export class DomElement<
     return this;
   }
 
+  /**
+   * Removes the element from the DOM tree.
+   * Equivalent to calling `element.remove()` on the native DOM node.
+   *
+   * This does not dispose internal state or event listeners — use `dispose()` if cleanup is needed.
+   *
+   * @return This DomElement instance for chaining.
+   */
   remove() {
     this.dom.remove();
   }
@@ -310,55 +337,91 @@ export class DomElement<
     return this;
   }
 
-  id(value: string) {
-    this._dom.id = value;
+  /**
+   * Sets or removes the `id` of the element.
+   * Passing `undefined` clears the ID by setting it to an empty string.
+   *
+   * @param value - The element's ID, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
+  id(value: string | undefined) {
+    this._dom.id = value ?? "";
     return this;
   }
 
   /**
-   * Sets the user-defined class name and applies it alongside the internal CSS class.
-   * For SVG elements, uses `setAttribute("class", ...)`.
-   * @param value - The user-defined class name.
+   * Sets or removes the user-defined class name and applies it alongside the internal CSS class.
+   * Uses `setAttribute("class", ...)` for both HTML and SVG elements.
+   *
+   * Passing `undefined` removes the user-defined class name entirely.
+   *
+   * @param value - The user-defined class name, or `undefined` to remove it.
    * @return This DomElement instance for chaining.
    */
-  className(value: string) {
-    this._userClassName = value;
+  className(value: string | undefined) {
+    this._userClassName = value ?? "";
 
     const fullClass = this._cssClassName
-      ? `${value} ${this.cssClassName}`
-      : value;
+      ? `${this._userClassName} ${this.cssClassName}`.trim()
+      : this._userClassName;
 
-    if (this.isSvg) {
-      this.dom.setAttribute("class", fullClass);
-    }
-    //
-    else {
-      (this.dom as HTMLElement).className = fullClass;
-    }
+    this.dom.setAttribute("class", fullClass);
 
-    return this;
-  }
-
-  htmlFor(value: string) {
-    if (this._tag === "label") (this._dom as HTMLLabelElement).htmlFor = value;
     return this;
   }
 
   /**
-   * Sets the title of the element.
-   * For HTML elements, sets the `title` property.
-   * For SVG elements, sets the `title` attribute.
-   * @param value - The tooltip text to show on hover.
+   * Sets or removes the `htmlFor` property on a <label> element.
+   * This links the label to a form control by its ID.
+   *
+   * Passing `undefined` removes the association.
+   * Has no effect if the element is not a <label>.
+   *
+   * @param value - The ID of the target form control, or `undefined` to remove it.
    * @return This DomElement instance for chaining.
    */
-  title(value: string) {
-    if (this.isSvg) {
-      this.dom.setAttribute("title", value);
+  htmlFor(value: string | undefined) {
+    if (this.tag === "label") {
+      (this.dom as HTMLLabelElement).htmlFor = value ?? "";
+    }
+    return this;
+  }
+
+  /**
+   * Sets or removes the `title` attribute on the element.
+   * Applies to both HTML and SVG elements. Passing `undefined` removes the attribute.
+   *
+   * @param value - The tooltip text to show on hover, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
+  title(value: string | undefined) {
+    if (value === undefined) {
+      this.dom.removeAttribute("title");
     }
     //
     else {
-      (this.dom as HTMLElement).title = value;
+      this.dom.setAttribute("title", value);
     }
+
+    return this;
+  }
+
+  /**
+   * Sets or removes the `disabled` attribute on the element.
+   * Applicable to form controls like <button>, <input>, <select>, etc.
+   *
+   * @param value - If true, sets the `disabled` attribute; if false, removes it.
+   * @return This DomElement instance for chaining.
+   */
+  disabled(value: boolean) {
+    if (value) {
+      this.dom.setAttribute("disabled", "");
+    }
+    //
+    else {
+      this.dom.removeAttribute("disabled");
+    }
+
     return this;
   }
 
@@ -368,8 +431,7 @@ export class DomElement<
    * @return This DomElement instance for chaining.
    */
   disable() {
-    this.dom.setAttribute("disabled", "");
-    return this;
+    return this.disabled(true);
   }
 
   /**
@@ -377,8 +439,7 @@ export class DomElement<
    * @return This DomElement instance for chaining.
    */
   enable() {
-    this.dom.removeAttribute("disabled");
-    return this;
+    return this.disabled(false);
   }
 
   p(value: Property.Padding | undefined) {
@@ -791,6 +852,17 @@ export class DomElement<
     return this.setStyleProp("userSelect", value);
   }
 
+  /**
+   * Sets the vertical alignment of the element.
+   * Common values include "middle", "top", "bottom", "baseline", or pixel/em units.
+   *
+   * @param value - The CSS vertical-align value (e.g., "middle", "top", "10px").
+   * @return This DomElement instance for chaining.
+   */
+  verticalAlign(value: Property.VerticalAlign | undefined) {
+    return this.setStyleProp("verticalAlign", value);
+  }
+
   overflowEllipsis() {
     return this.style({
       overflow: "hidden",
@@ -862,10 +934,14 @@ export class DomElement<
     );
   }
 
-  protected resolveNode(child: DomElementChild) {
-    return typeof child === "string" || typeof child === "number"
-      ? String(child)
-      : child.dom;
+  protected resolveNode(child: DomElementChild): Node {
+    if (typeof child === "string" || typeof child === "number") {
+      return document.createTextNode(String(child));
+    }
+    if ("dom" in child) {
+      return child.dom;
+    }
+    return child;
   }
 
   protected setStyleProp(
