@@ -22,7 +22,7 @@ const div = $("div")
 
 const body = $body();
 
-body.appendChild(div.dom);
+body.append(div.dom);
 ```
 
 Use SVG elements:
@@ -34,9 +34,9 @@ const circle = $("circle")
   .attr("r", "40")
   .attr("fill", "red");
 
-const svg = $("svg").attr("width", "100").attr("height", "100").append(circle);
+const svg = $("svg").attr("width", "100").attr("height", "100").add(circle);
 
-body.appendChild(svg.dom);
+body.append(svg.dom);
 ```
 
 Define global styles:
