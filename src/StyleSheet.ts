@@ -55,12 +55,23 @@ export class StyleSheet {
     this.setRuleCss(rule, props);
   }
 
+  /**
+   * Retrieves or creates a CSSStyleRule for the given selector.
+   * If the rule doesn't exist, it is inserted at the end of the stylesheet and cached.
+   *
+   * This ensures stable indexing and avoids rule override issues caused by shifting positions.
+   * The returned rule can be used to modify style declarations programmatically.
+   *
+   * @param selector - The CSS selector string (e.g., ".button", "#header", "div > span").
+   * @return The corresponding CSSStyleRule instance.
+   */
   getCssRule(selector: string) {
     const map = this.getCssMap();
     let index = map.get(selector);
 
     if (index == null) {
-      index = this.sheet.insertRule(`${selector}{}`);
+      index = this.sheet.cssRules.length;
+      this.sheet.insertRule(`${selector}{}`, index);
       map.set(selector, index);
     }
 
@@ -77,12 +88,22 @@ export class StyleSheet {
     map.delete(selector);
   }
 
+  /**
+   * Retrieves or creates a CSSMediaRule for the given media query.
+   * If the rule doesn't exist, it is inserted at the end of the stylesheet and cached.
+   *
+   * This ensures consistent indexing and avoids rule override issues caused by shifting positions.
+   *
+   * @param mediaText - The media query string (e.g., "screen and (max-width: 600px)").
+   * @return A MediaRule wrapper containing the index and CSSMediaRule reference.
+   */
   getMediaRule(mediaText: string) {
     const map = this.getMediaMap();
     let m = map.get(mediaText);
 
     if (!m) {
-      const index = this.sheet.insertRule(`@media(${mediaText}){}`);
+      const index = this.sheet.cssRules.length;
+      this.sheet.insertRule(`@media(${mediaText}){}`, index);
       m = new MediaRule(index, this.sheet.cssRules.item(index) as CSSMediaRule);
       map.set(mediaText, m);
     }
