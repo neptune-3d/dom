@@ -10,3 +10,7 @@ export class AnchorElement extends DomElement<"a"> {
     return this;
   }
 }
+
+export function $a() {
+  return new AnchorElement();
+}

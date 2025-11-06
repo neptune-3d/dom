@@ -10,3 +10,7 @@ export class Button extends DomElement<"button"> {
     return this;
   }
 }
+
+export function $btn() {
+  return new Button();
+}
