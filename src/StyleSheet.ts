@@ -1,5 +1,6 @@
 import { CssRule } from "./CssRule";
 import { MediaRule } from "./MediaRule";
+import { getStyleValue } from "./utils";
 
 /**
  * Manages a dedicated `<style>` element and provides programmatic access to its CSS rules.
@@ -82,6 +83,32 @@ export class StyleSheet {
       index,
       this.sheet.cssRules.item(index) as CSSMediaRule
     );
+  }
+
+  /**
+   * Inserts a new `@media (min-width: …)` rule into the stylesheet.
+   * Returns a `MediaRule` wrapper for fluent manipulation of styles targeting wider viewports.
+   *
+   * Equivalent to: `mediaRule("min-width: 768px")`
+   *
+   * @param minWidth - The minimum width value (e.g., `768`, `"50em"`, `"80vw"`).
+   * @return A `MediaRule` instance representing the inserted media rule.
+   */
+  mediaMinWidth(minWidth: number | string) {
+    return this.mediaRule(`min-width: ${getStyleValue("min-width", minWidth)}`);
+  }
+
+  /**
+   * Inserts a new `@media (max-width: …)` rule into the stylesheet.
+   * Returns a `MediaRule` wrapper for fluent manipulation of styles targeting narrower viewports.
+   *
+   * Equivalent to: `mediaRule("max-width: 600px")`
+   *
+   * @param maxWidth - The maximum width value (e.g., `600`, `"40em"`, `"80vw"`).
+   * @return A `MediaRule` instance representing the inserted media rule.
+   */
+  mediaMaxWidth(maxWidth: number | string) {
+    return this.mediaRule(`max-width: ${getStyleValue("max-width", maxWidth)}`);
   }
 
   /**
