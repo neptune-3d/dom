@@ -58,3 +58,7 @@ export class ProgressElement extends DomElement<"progress"> {
     return this;
   }
 }
+
+export function $progress() {
+  return new ProgressElement();
+}

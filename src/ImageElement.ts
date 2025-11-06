@@ -6,23 +6,23 @@ export class ImageElement extends DomElement<"img"> {
   }
 
   src(value: string) {
-    this._dom.src = value;
+    this.dom.src = value;
     return this;
   }
 
   width(value: number) {
-    this._dom.width = value;
+    this.dom.width = value;
     return this;
   }
 
   height(value: number) {
-    this._dom.height = value;
+    this.dom.height = value;
     return this;
   }
 
   setSize(width: number, height: number) {
-    this._dom.width = width;
-    this._dom.height = height;
+    this.dom.width = width;
+    this.dom.height = height;
     return this;
   }
 
@@ -30,4 +30,8 @@ export class ImageElement extends DomElement<"img"> {
     this.dom.alt = value;
     return this;
   }
+}
+
+export function $img() {
+  return new ImageElement();
 }

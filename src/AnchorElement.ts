@@ -6,7 +6,7 @@ export class AnchorElement extends DomElement<"a"> {
   }
 
   href(value: string) {
-    this._dom.href = value;
+    this.dom.href = value;
     return this;
   }
 }

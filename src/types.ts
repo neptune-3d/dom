@@ -1,5 +1,10 @@
 import type { PropertiesFallback } from "csstype";
 import type { DomElement } from "./DomElement";
+import type { InputCheckbox } from "./InputCheckbox";
+import type { InputColor } from "./InputColor";
+import type { InputNumber } from "./InputNumber";
+import type { InputRange } from "./InputRange";
+import type { InputText } from "./InputText";
 
 export type CssProperties = PropertiesFallback<string | number> & {
   [key: `--${string}`]: string | number | undefined;
@@ -80,3 +85,11 @@ type SvgElementTagNameMap = {
 };
 
 export type DomElementEventMap = HTMLElementEventMap & SVGElementEventMap;
+
+export type InputElementMap = {
+  color: InputColor;
+  text: InputText;
+  number: InputNumber;
+  range: InputRange;
+  checkbox: InputCheckbox;
+};

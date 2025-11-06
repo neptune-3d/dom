@@ -14,3 +14,7 @@ export class OptionElement extends DomElement<"option"> {
     return this.dom.value;
   }
 }
+
+export function $option() {
+  return new OptionElement();
+}

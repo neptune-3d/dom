@@ -1,42 +1,23 @@
-import { UNITLESS_CSS_PROPS } from "./constants";
-import type { DomElement } from "./DomElement";
-import type { CssProperties } from "./types";
+import { BaseDom } from "./BaseDom";
 
-export class DomBody {
+/**
+ * Wrapper for document.body with style and DOM composition utilities.
+ * Enables fluent styling and child node management.
+ */
+export class DomBody extends BaseDom<HTMLBodyElement> {
   get dom() {
     return document.body as HTMLBodyElement;
   }
-
-  style(obj: CssProperties) {
-    for (const name in obj) {
-      (this.dom.style as any)[name] = this.getStyleValue(
-        name,
-        (obj as any)[name]
-      );
-    }
-    return this;
-  }
-
-  protected getStyleValue(name: string, value: string | number): string {
-    if (typeof value === "number") {
-      const isUnitless = !!UNITLESS_CSS_PROPS[name];
-
-      return isUnitless ? String(value) : `${value}px`;
-    }
-    return value;
-  }
-
-  add(...nodes: DomElement<any>[]) {
-    this.dom.append(...nodes.map((n) => n.dom));
-    return this;
-  }
-
-  clear() {
-    this.dom.innerHTML = "";
-    return this;
-  }
 }
 
+/**
+ * Creates a new DomBody instance bound to `document.body`.
+ * Provides fluent access to body-level styling, DOM composition, and event utilities.
+ *
+ * Useful for global layout scaffolding, dynamic content injection, or body-wide style control.
+ *
+ * @return A DomBody instance wrapping `document.body`.
+ */
 export function $body() {
   return new DomBody();
 }

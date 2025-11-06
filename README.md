@@ -1,6 +1,6 @@
 # neptune3d/dom
 
-Helper classes and functions for the DOM.
+Helper classes and functions for fluent DOM manipulation, styling, and event handling.
 
 ## 🚀 Getting Started
 
@@ -10,22 +10,22 @@ Install the package:
 npm install neptune3d/dom
 ```
 
-Import and create elements:
+## ✨ Create Elements
 
 ```ts
 import { $, $body } from "neptune3d/dom";
 
 const div = $("div")
   .text("Hello world")
-  .css("", { padding: "1rem", background: "#eee" })
+  .px("1rem")
+  .bgColor("#eee")
+  .title("Click me")
   .on("click", () => console.log("Clicked!"));
 
-const body = $body();
-
-body.append(div.dom);
+$body().add(div);
 ```
 
-Use SVG elements:
+## 🖼 SVG Support
 
 ```ts
 const circle = $("circle")
@@ -36,23 +36,72 @@ const circle = $("circle")
 
 const svg = $("svg").attr("width", "100").attr("height", "100").add(circle);
 
-body.append(svg.dom);
+$body().add(svg);
 ```
 
-Define global styles:
+## 📋 Input Helpers
+
+```ts
+import { $input } from "neptune3d/dom";
+
+const checkbox = $input("checkbox").on("change", (e) => {
+  console.log("Checked:", checkbox.getChecked());
+});
+
+$body().add(checkbox);
+```
+
+## 🎯 Popover API
+
+```ts
+const pop = $("div")
+  .text("Popover content")
+  .popover("manual")
+  .css("", { padding: "1rem", background: "#222", color: "#fff" });
+
+$body().add(pop);
+
+// Show/hide programmatically
+pop.showPopover();
+pop.hidePopover();
+```
+
+## 🎨 Stylesheet Rules
 
 ```ts
 import { StyleSheet } from "neptune3d/dom";
 
-StyleSheet.getSheet().globalCss(".list-item", {
+const sheet = StyleSheet.getSheet();
+
+// Insert a global rule
+const rule = sheet.cssRule(".list-item");
+rule.style({
   padding: "0.5rem",
   borderBottom: "1px solid #ccc",
 });
+
+// Insert a media query block
+const media = sheet.mediaRule("screen and (max-width: 600px)");
+media.cssRule(".list-item").style({
+  background: "#f0f0f0",
+});
+```
+
+## 🌍 Global Event Wrappers
+
+```ts
+import { $window, $document } from "neptune3d/dom";
+
+$window().on("resize", (e) => console.log("Window resized"));
+$document().on("visibilitychange", () => console.log("Visibility changed"));
 ```
 
 ## 📦 Features
 
 - Chainable DOM manipulation
+- Typed input element helpers
+- Popover API support
 - Scoped and global CSS rule injection
-- Media query support
-- Event listener helpers
+- Media query management
+- Window and document event wrappers
+- SVG and HTML element abstraction

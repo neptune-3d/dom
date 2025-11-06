@@ -1,7 +1,5 @@
-import { UNITLESS_CSS_PROPS, VENDOR_CSS_PROPS } from "./constants";
+import { CssRule } from "./CssRule";
 import { MediaRule } from "./MediaRule";
-import type { Autocomplete, CssProperties } from "./types";
-import { camelToKebab } from "./utils";
 
 /**
  * Manages a dedicated `<style>` element and provides programmatic access to its CSS rules.
@@ -21,147 +19,82 @@ export class StyleSheet {
 
   protected _dom;
 
+  /**
+   * Returns the underlying `<style>` DOM element.
+   * This element is used to inject and manage dynamic CSS rules.
+   */
   get dom() {
     return this._dom;
   }
 
+  /**
+   * Returns the associated `CSSStyleSheet` object for this `<style>` element.
+   * Provides access to rule-level operations like `insertRule()` and `deleteRule()`.
+   * Assumes the sheet is available and attached to the document.
+   */
   get sheet() {
     return this.dom.sheet!;
   }
 
+  /**
+   * Returns the number of CSS rules currently defined in the stylesheet.
+   * Useful for indexing, iteration, or conditional rule management.
+   */
   get length() {
     return this.sheet.cssRules.length;
   }
 
   /**
-   * Inserts or updates a global CSS rule for a given selector.
-   * @param selector - A global class selector (e.g., ".list-item").
-   * @param props - The CSS properties to apply.
+   * Inserts a new empty CSS rule into the stylesheet for the given selector.
+   * Returns a `CssRule` wrapper for fluent manipulation of the inserted rule.
+   *
+   * The rule is appended at the end of the current stylesheet (`insertRule()` at index `length`).
+   * This is useful for dynamically constructing scoped styles tied to specific selectors.
+   *
+   * @param selector - The CSS selector to target (e.g., ".btn", "#header", "body > div").
+   * @return A `CssRule` instance representing the inserted rule.
    */
-  globalCss(selector: string, props: CssProperties) {
-    const rule = this.getCssRule(selector);
-    this.setRuleCss(rule, props);
+  cssRule(selector: string) {
+    const index = this.length;
+    this.sheet.insertRule(`${selector}{}`, index);
+    return new CssRule(
+      this,
+      index,
+      this.sheet.cssRules.item(index) as CSSStyleRule
+    );
   }
 
   /**
-   * Inserts or updates a global CSS rule inside a media query.
-   * @param mediaText - The media query condition (e.g., "max-width: 600px").
-   * @param selector - The global class selector.
-   * @param props - The CSS properties to apply.
-   */
-  globalMediaCss(mediaText: string, selector: string, props: CssProperties) {
-    const media = this.getMediaRule(mediaText);
-    const rule = media.getCssRule(selector);
-    this.setRuleCss(rule, props);
-  }
-
-  /**
-   * Retrieves or creates a CSSStyleRule for the given selector.
-   * If the rule doesn't exist, it is inserted at the end of the stylesheet and cached.
+   * Inserts a new empty `@media` rule into the stylesheet using the provided media query string.
+   * Returns a `MediaRule` wrapper for fluent manipulation of the inserted media block.
    *
-   * This ensures stable indexing and avoids rule override issues caused by shifting positions.
-   * The returned rule can be used to modify style declarations programmatically.
-   *
-   * @param selector - The CSS selector string (e.g., ".button", "#header", "div > span").
-   * @return The corresponding CSSStyleRule instance.
-   */
-  getCssRule(selector: string) {
-    const map = this.getCssMap();
-    let index = map.get(selector);
-
-    if (index == null) {
-      index = this.sheet.cssRules.length;
-      this.sheet.insertRule(`${selector}{}`, index);
-      map.set(selector, index);
-    }
-
-    return this.sheet.cssRules.item(index) as CSSStyleRule;
-  }
-
-  deleteCssRule(selector: string) {
-    const map = this.getCssMap();
-    const index = map.get(selector);
-
-    if (index == null) return;
-
-    this.sheet.deleteRule(index);
-    map.delete(selector);
-  }
-
-  /**
-   * Retrieves or creates a CSSMediaRule for the given media query.
-   * If the rule doesn't exist, it is inserted at the end of the stylesheet and cached.
-   *
-   * This ensures consistent indexing and avoids rule override issues caused by shifting positions.
+   * The rule is appended at the end of the current stylesheet (`insertRule()` at index `length`).
+   * Useful for dynamically scoping styles to specific viewport conditions or device capabilities.
    *
    * @param mediaText - The media query string (e.g., "screen and (max-width: 600px)").
-   * @return A MediaRule wrapper containing the index and CSSMediaRule reference.
+   * @return A `MediaRule` instance representing the inserted media rule.
    */
-  getMediaRule(mediaText: string) {
-    const map = this.getMediaMap();
-    let m = map.get(mediaText);
-
-    if (!m) {
-      const index = this.sheet.cssRules.length;
-      this.sheet.insertRule(`@media(${mediaText}){}`, index);
-      m = new MediaRule(index, this.sheet.cssRules.item(index) as CSSMediaRule);
-      map.set(mediaText, m);
-    }
-
-    return m;
+  mediaRule(mediaText: string) {
+    const index = this.length;
+    this.sheet.insertRule(`@media(${mediaText}){}`, index);
+    return new MediaRule(
+      this,
+      index,
+      this.sheet.cssRules.item(index) as CSSMediaRule
+    );
   }
 
-  deleteMediaRule(mediaText: string) {
-    const map = this.getMediaMap();
-    const rule = map.get(mediaText);
-
-    if (rule == null) return;
-
+  /**
+   * Removes a CSS rule from the stylesheet by its index.
+   * Accepts either a `CssRule` or `MediaRule` instance, which internally tracks its position.
+   *
+   * This is useful for dynamically cleaning up injected styles or media blocks.
+   * Note: Rule indices may shift after insertion or deletion — ensure index accuracy before calling.
+   *
+   * @param rule - The rule instance to remove (`CssRule` or `MediaRule`).
+   */
+  removeRule(rule: CssRule | MediaRule) {
     this.sheet.deleteRule(rule.index);
-    map.delete(mediaText);
-  }
-
-  setRuleCss(rule: CSSStyleRule, props: CssProperties) {
-    for (const name in props) {
-      const isVendor = !!VENDOR_CSS_PROPS[name];
-      const _name = camelToKebab(name);
-
-      rule.style.setProperty(
-        isVendor ? `-${_name}` : _name,
-        this.getStyleValue(name, (props as any)[name])
-      );
-    }
-  }
-
-  getStyleValue(
-    name: Autocomplete<keyof CssProperties>,
-    value: string | number
-  ): string {
-    if (typeof value === "number") {
-      const isUnitless = !!UNITLESS_CSS_PROPS[name];
-
-      return isUnitless ? String(value) : `${value}px`;
-    }
-
-    return value;
-  }
-
-  protected getCssMap(): Map<string, number> {
-    let map = cssMapCache.get(this.sheet);
-    if (!map) {
-      map = new Map();
-      cssMapCache.set(this.sheet, map);
-    }
-    return map;
-  }
-
-  protected getMediaMap(): Map<string, MediaRule> {
-    let map = mediaMapCache.get(this.sheet);
-    if (!map) {
-      map = new Map();
-      mediaMapCache.set(this.sheet, map);
-    }
-    return map;
   }
 
   /**
@@ -194,6 +127,3 @@ export class StyleSheet {
    */
   static DEFAULT_STYLE_ID = "__neptune-style__";
 }
-
-const cssMapCache = new WeakMap<CSSStyleSheet, Map<string, number>>();
-const mediaMapCache = new WeakMap<CSSStyleSheet, Map<string, MediaRule>>();

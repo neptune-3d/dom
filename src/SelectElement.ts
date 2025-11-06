@@ -19,3 +19,7 @@ export class SelectElement extends DomElement<"select"> {
     return this.dom.value;
   }
 }
+
+export function $select() {
+  return new SelectElement();
+}
