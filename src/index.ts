@@ -6,6 +6,7 @@ export * from "./Canvas";
 export * from "./constants";
 export * from "./CssRule";
 export * from "./DomBody";
+export * from "./DomDocument";
 export * from "./DomElement";
 export * from "./DomWindow";
 export * from "./IFrame";

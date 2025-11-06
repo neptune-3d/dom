@@ -56,6 +56,61 @@ export class CssRule extends BaseStyle {
   }
 
   /**
+   * Creates a new CssRule for a pseudo-selector extending this rule’s selector.
+   * For example, `.btn:hover`, `.input:focus`, `.card:active`.
+   *
+   * @param pseudo - The pseudo-class to append (e.g., ":hover", ":focus").
+   * @return A new CssRule instance targeting the extended selector.
+   */
+  pseudo(pseudo: `:${string}`): CssRule {
+    return this.sheet.cssRule(`${this.selectorText}${pseudo}`);
+  }
+
+  /**
+   * Creates a `:hover` rule for this selector.
+   * @return A new CssRule instance for the `:hover` state.
+   */
+  hover(): CssRule {
+    return this.pseudo(":hover");
+  }
+
+  /**
+   * Creates a `:focus` rule for this selector.
+   * @return A new CssRule instance for the `:focus` state.
+   */
+  focus(): CssRule {
+    return this.pseudo(":focus");
+  }
+
+  /**
+   * Creates a `:focus-within` rule for this selector.
+   * Useful for styling parent containers when any child element receives focus.
+   *
+   * @return A new CssRule instance for the `:focus-within` state.
+   */
+  focusWithin(): CssRule {
+    return this.pseudo(":focus-within");
+  }
+
+  /**
+   * Creates an `:active` rule for this selector.
+   * @return A new CssRule instance for the `:active` state.
+   */
+  active(): CssRule {
+    return this.pseudo(":active");
+  }
+
+  /**
+   * Creates a `:disabled` rule for this selector.
+   * Useful for styling form controls or buttons in a disabled state.
+   *
+   * @return A new CssRule instance for the `:disabled` state.
+   */
+  disabled(): CssRule {
+    return this.pseudo(":disabled");
+  }
+
+  /**
    * Applies a style property to the underlying CSS rule.
    * Removes the property if `undefined` is passed.
    *

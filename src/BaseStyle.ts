@@ -743,6 +743,18 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets the `opacity` style of the element.
+   * Controls the transparency level, where `1` is fully opaque and `0` is fully transparent.
+   * Accepts fractional values between `0` and `1`, or `undefined` to remove the style.
+   *
+   * @param value - The opacity value (e.g., `0.5`, `1`), or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  opacity(value: Property.Opacity | undefined) {
+    return this.setStyleProp("opacity", value);
+  }
+
+  /**
    * Applies CSS styles to truncate overflowing text with an ellipsis.
    * Ensures the text stays on a single line and hides overflow.
    *
