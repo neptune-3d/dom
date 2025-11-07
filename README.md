@@ -75,8 +75,7 @@ const sheet = StyleSheet.getSheet();
 
 // Insert a global rule
 const rule = sheet.cssRule(".list-item");
-rule.style({
-  padding: "0.5rem",
+rule.p("0.5rem").style({
   borderBottom: "1px solid #ccc",
 });
 
