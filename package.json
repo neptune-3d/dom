@@ -1,6 +1,6 @@
 {
   "name": "@neptune3d/dom",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Helper classes and functions for the DOM.",
   "type": "module",
   "license": "MIT",

@@ -333,6 +333,54 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets or clears the `min-width` style of the element.
+   * Accepts CSS width values (e.g., "100px", "50%") or numeric pixel values.
+   * Passing `undefined` removes the min-width style.
+   *
+   * @param value - The minimum width value to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  minW(value: Property.MinWidth | number | undefined) {
+    return this.setStyleProp("minWidth", value);
+  }
+
+  /**
+   * Sets or clears the `max-width` style of the element.
+   * Accepts CSS width values (e.g., "100px", "100%") or numeric pixel values.
+   * Passing `undefined` removes the max-width style.
+   *
+   * @param value - The maximum width value to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  maxW(value: Property.MaxWidth | number | undefined) {
+    return this.setStyleProp("maxWidth", value);
+  }
+
+  /**
+   * Sets or clears the `min-height` style of the element.
+   * Accepts CSS height values (e.g., "100px", "50vh") or numeric pixel values.
+   * Passing `undefined` removes the min-height style.
+   *
+   * @param value - The minimum height value to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  minH(value: Property.MinHeight | number | undefined) {
+    return this.setStyleProp("minHeight", value);
+  }
+
+  /**
+   * Sets or clears the `max-height` style of the element.
+   * Accepts CSS height values (e.g., "100px", "100%") or numeric pixel values.
+   * Passing `undefined` removes the max-height style.
+   *
+   * @param value - The maximum height value to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  maxH(value: Property.MaxHeight | number | undefined) {
+    return this.setStyleProp("maxHeight", value);
+  }
+
+  /**
    * Sets the full border style.
    * @param value - The CSS border value (e.g., "1px solid #ccc").
    * @return This instance for chaining.
@@ -559,7 +607,7 @@ export abstract class BaseStyle {
    * @param value - The top offset value (e.g., "10px", "50%").
    * @return This instance for chaining.
    */
-  posTop(value: Property.Top | number | undefined) {
+  top(value: Property.Top | number | undefined) {
     return this.setStyleProp("top", value);
   }
 
@@ -568,7 +616,7 @@ export abstract class BaseStyle {
    * @param value - The bottom offset value (e.g., "0", "2rem").
    * @return This instance for chaining.
    */
-  posBottom(value: Property.Bottom | number | undefined) {
+  bottom(value: Property.Bottom | number | undefined) {
     return this.setStyleProp("bottom", value);
   }
 
@@ -577,7 +625,7 @@ export abstract class BaseStyle {
    * @param value - The left offset value (e.g., "5px", "auto").
    * @return This instance for chaining.
    */
-  posLeft(value: Property.Left | number | undefined) {
+  left(value: Property.Left | number | undefined) {
     return this.setStyleProp("left", value);
   }
 
@@ -586,7 +634,7 @@ export abstract class BaseStyle {
    * @param value - The right offset value (e.g., "1em", "0").
    * @return This instance for chaining.
    */
-  posRight(value: Property.Right | number | undefined) {
+  right(value: Property.Right | number | undefined) {
     return this.setStyleProp("right", value);
   }
 
@@ -752,6 +800,216 @@ export abstract class BaseStyle {
    */
   opacity(value: Property.Opacity | undefined) {
     return this.setStyleProp("opacity", value);
+  }
+
+  /**
+   * Sets the `transform` style of the element.
+   * Applies visual transformations such as translation, rotation, scaling, or skewing.
+   * Accepts any valid CSS transform string (e.g., `"translateX(10px)"`, `"scale(1.2)"`), or `undefined` to remove it.
+   *
+   * @param value - The transform string to apply, or `undefined` to remove the style.
+   * @return This instance for chaining.
+   */
+  transform(value: Property.Transform | undefined) {
+    return this.setStyleProp("transform", value);
+  }
+
+  /**
+   * Sets the `transform` style to a `translate(x, y)` value.
+   * Accepts either pixel numbers or full CSS unit strings (e.g., `"10px"`, `"50%"`, `"2em"`).
+   * Automatically appends `"px"` to numeric values.
+   * Overwrites any existing `transform` style — use with care if combining multiple transforms.
+   *
+   * @param x - Horizontal offset as a number (pixels) or CSS string.
+   * @param y - Vertical offset as a number (pixels) or CSS string.
+   * @return This instance for chaining.
+   */
+  translate(x: string | number, y: string | number): this {
+    const xVal = typeof x === "number" ? `${x}px` : x;
+    const yVal = typeof y === "number" ? `${y}px` : y;
+    return this.setStyleProp("transform", `translate(${xVal}, ${yVal})`);
+  }
+
+  /**
+   * Sets the `transform` style to a `translateX(x)` value.
+   * Moves the element horizontally using pixel or CSS units.
+   * Accepts either a number (pixels) or a full CSS unit string (e.g., `"50%"`, `"2em"`).
+   * Overwrites any existing `transform` style — use with care if combining multiple transforms.
+   *
+   * @param x - Horizontal offset as a number or CSS string.
+   * @return This instance for chaining.
+   */
+  translateX(x: string | number): this {
+    const xVal = typeof x === "number" ? `${x}px` : x;
+    return this.setStyleProp("transform", `translateX(${xVal})`);
+  }
+
+  /**
+   * Sets the `transform` style to a `translateY(y)` value.
+   * Moves the element vertically using pixel or CSS units.
+   * Accepts either a number (pixels) or a full CSS unit string (e.g., `"50%"`, `"2em"`).
+   * Overwrites any existing `transform` style — use with care if combining multiple transforms.
+   *
+   * @param y - Vertical offset as a number or CSS string.
+   * @return This instance for chaining.
+   */
+  translateY(y: string | number): this {
+    const yVal = typeof y === "number" ? `${y}px` : y;
+    return this.setStyleProp("transform", `translateY(${yVal})`);
+  }
+
+  /**
+   * Sets the `transform` style to a `scale(x, y)` value.
+   * Scales the element along the X and Y axes.
+   * Accepts either numeric scale factors (e.g., `1.2`) or full CSS unit strings (e.g., `"1.5"`).
+   * Automatically converts numeric values to string format.
+   * Overwrites any existing `transform` style — use with care if combining multiple transforms.
+   *
+   * @param x - Horizontal scale factor as a number or string.
+   * @param y - Vertical scale factor as a number or string.
+   * @return This instance for chaining.
+   */
+  scale(x: string | number, y: string | number): this {
+    const xVal = typeof x === "number" ? x.toString() : x;
+    const yVal = typeof y === "number" ? y.toString() : y;
+    return this.setStyleProp("transform", `scale(${xVal}, ${yVal})`);
+  }
+
+  /**
+   * Sets the `transform` style to a `scaleX(x)` value.
+   * Scales the element horizontally. Accepts numeric scale factors (e.g., `1.2`) or string values (e.g., `"1.5"`).
+   * Automatically converts numeric values to string format.
+   * Overwrites any existing `transform` style — use with care if combining multiple transforms.
+   *
+   * @param x - Horizontal scale factor as a number or string.
+   * @return This instance for chaining.
+   */
+  scaleX(x: string | number): this {
+    const xVal = typeof x === "number" ? x.toString() : x;
+    return this.setStyleProp("transform", `scaleX(${xVal})`);
+  }
+
+  /**
+   * Sets the `transform` style to a `scaleY(y)` value.
+   * Scales the element vertically. Accepts numeric scale factors (e.g., `0.8`) or string values (e.g., `"1.25"`).
+   * Automatically converts numeric values to string format.
+   * Overwrites any existing `transform` style — use with care if combining multiple transforms.
+   *
+   * @param y - Vertical scale factor as a number or string.
+   * @return This instance for chaining.
+   */
+  scaleY(y: string | number): this {
+    const yVal = typeof y === "number" ? y.toString() : y;
+    return this.setStyleProp("transform", `scaleY(${yVal})`);
+  }
+
+  /**
+   * Sets the `transform` style to a `rotate(angle)` value.
+   * Rotates the element clockwise by the specified angle.
+   * Accepts either a number (interpreted as degrees) or a full CSS angle string (e.g., `"45deg"`, `"0.5turn"`).
+   * Automatically appends `"deg"` to numeric values.
+   * Overwrites any existing `transform` style — use with care if combining multiple transforms.
+   *
+   * @param angle - Rotation angle as a number (degrees) or CSS string.
+   * @return This instance for chaining.
+   */
+  rotate(angle: string | number): this {
+    const val = typeof angle === "number" ? `${angle}deg` : angle;
+    return this.setStyleProp("transform", `rotate(${val})`);
+  }
+
+  /**
+   * Sets the `transform` style to a `rotateX(angle)` value.
+   * Rotates the element around the X-axis in 3D space.
+   * Accepts either a number (degrees) or a full CSS angle string (e.g., `"45deg"`, `"1rad"`).
+   * Automatically appends `"deg"` to numeric values.
+   * Overwrites any existing `transform` style — use with care if combining multiple transforms.
+   *
+   * @param angle - Rotation angle as a number or CSS string.
+   * @return This instance for chaining.
+   */
+  rotateX(angle: string | number): this {
+    const val = typeof angle === "number" ? `${angle}deg` : angle;
+    return this.setStyleProp("transform", `rotateX(${val})`);
+  }
+
+  /**
+   * Sets the `transform` style to a `rotateY(angle)` value.
+   * Rotates the element around the Y-axis in 3D space.
+   * Accepts either a number (degrees) or a full CSS angle string (e.g., `"90deg"`, `"0.5turn"`).
+   * Automatically appends `"deg"` to numeric values.
+   * Overwrites any existing `transform` style — use with care if combining multiple transforms.
+   *
+   * @param angle - Rotation angle as a number or CSS string.
+   * @return This instance for chaining.
+   */
+  rotateY(angle: string | number): this {
+    const val = typeof angle === "number" ? `${angle}deg` : angle;
+    return this.setStyleProp("transform", `rotateY(${val})`);
+  }
+
+  /**
+   * Sets the `transform` style to a `rotateZ(angle)` value.
+   * Rotates the element around the Z-axis in 3D space (same as 2D rotation).
+   * Accepts either a number (degrees) or a full CSS angle string (e.g., `"30deg"`, `"1rad"`).
+   * Automatically appends `"deg"` to numeric values.
+   * Overwrites any existing `transform` style — use with care if combining multiple transforms.
+   *
+   * @param angle - Rotation angle as a number or CSS string.
+   * @return This instance for chaining.
+   */
+  rotateZ(angle: string | number): this {
+    const val = typeof angle === "number" ? `${angle}deg` : angle;
+    return this.setStyleProp("transform", `rotateZ(${val})`);
+  }
+
+  /**
+   * Sets the `transform-origin` style of the element.
+   * Defines the pivot point for CSS transforms such as rotation, scaling, or skewing.
+   * Accepts any valid CSS origin string (e.g., `"center"`, `"top left"`, `"50% 50%"`), or `undefined` to remove it.
+   *
+   * @param value - The transform origin to apply, or `undefined` to remove the style.
+   * @return This instance for chaining.
+   */
+  transformOrigin(value: Property.TransformOrigin | undefined) {
+    return this.setStyleProp("transformOrigin", value);
+  }
+
+  /**
+   * Sets the `transition` style of the element.
+   * Defines how style changes are animated over time, including duration, timing function, and delay.
+   * Accepts any valid CSS transition string (e.g., `"opacity 0.3s ease"`, `"all 200ms linear"`), or `undefined` to remove it.
+   *
+   * @param value - The transition string to apply, or `undefined` to remove the style.
+   * @return This instance for chaining.
+   */
+  transition(value: Property.Transition | undefined) {
+    return this.setStyleProp("transition", value);
+  }
+
+  /**
+   * Sets the `will-change` style of the element.
+   * Provides a hint to the browser about which properties are likely to change,
+   * allowing it to optimize rendering and performance ahead of time.
+   * Accepts any valid CSS property name or list (e.g., `"transform"`, `"opacity, left"`), or `undefined` to remove it.
+   *
+   * @param value - The will-change hint to apply, or `undefined` to remove the style.
+   * @return This instance for chaining.
+   */
+  willChange(value: Property.WillChange | undefined) {
+    return this.setStyleProp("willChange", value);
+  }
+
+  /**
+   * Sets the `box-shadow` style of the element.
+   * Applies shadow effects around the element's frame, supporting offsets, blur radius, spread, and color.
+   * Accepts any valid CSS box-shadow string (e.g., `"0 2px 4px rgba(0,0,0,0.1)"`), or `undefined` to remove it.
+   *
+   * @param value - The box-shadow value to apply, or `undefined` to remove the style.
+   * @return This instance for chaining.
+   */
+  boxShadow(value: Property.BoxShadow | undefined) {
+    return this.setStyleProp("boxShadow", value);
   }
 
   /**

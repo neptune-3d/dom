@@ -7,6 +7,8 @@ import type {
 } from "./types";
 import { camelToKebab, getStyleValue } from "./utils";
 
+const _isBaseDom = Symbol("BaseDomIdentity");
+
 /**
  * Base class for DOM-backed elements with style and event utilities.
  * Supports both HTML and SVG elements via generic parameter `E`.
@@ -14,7 +16,49 @@ import { camelToKebab, getStyleValue } from "./utils";
 export abstract class BaseDom<
   E extends HTMLElement | SVGElement
 > extends BaseStyle {
+  protected readonly [_isBaseDom] = true;
+
   abstract dom: E;
+
+  /**
+   * Returns the `clientWidth` of the element.
+   * For HTML elements, this is the inner width excluding borders and scrollbars.
+   * For SVG elements, this may return `0` unless the element has layout box dimensions.
+   */
+  getClientWidth(): number {
+    return (this.dom as any).clientWidth ?? 0;
+  }
+
+  /**
+   * Returns the `clientHeight` of the element.
+   * For HTML elements, this is the inner height excluding borders and scrollbars.
+   * For SVG elements, this may return `0` unless the element has layout box dimensions.
+   */
+  getClientHeight(): number {
+    return (this.dom as any).clientHeight ?? 0;
+  }
+
+  /**
+   * Returns the bounding box of the element using `getBoundingClientRect()`.
+   * Works reliably for both HTML and SVG elements.
+   *
+   * @return A DOMRect object with `width`, `height`, `top`, `left`, etc.
+   */
+  getRect(): DOMRect {
+    return this.dom.getBoundingClientRect();
+  }
+
+  /**
+   * Returns the computed styles of this element.
+   * Useful for reading resolved values of inherited, cascaded, or shorthand CSS properties.
+   *
+   * Wraps `window.getComputedStyle()` and returns a `CSSStyleDeclaration` for inspection.
+   *
+   * @return The computed style object for this element.
+   */
+  getComputedStyle(): CSSStyleDeclaration {
+    return window.getComputedStyle(this.dom);
+  }
 
   /**
    * Sets or removes the user-defined class name and applies it alongside the internal CSS class.
@@ -34,6 +78,20 @@ export abstract class BaseDom<
       this.dom.setAttribute("class", value);
     }
 
+    return this;
+  }
+
+  /**
+   * Toggles a CSS class on the element.
+   * Adds the class if it’s not present, removes it if it is.
+   * Uses `classList.toggle()` for safe DOM-backed mutation.
+   *
+   * @param className - The class name to toggle.
+   * @param force - Optional boolean to force add (`true`) or remove (`false`) the class.
+   * @return This instance for chaining.
+   */
+  toggleClass(className: string, force?: boolean): this {
+    this.dom.classList.toggle(className, force);
     return this;
   }
 
@@ -162,6 +220,20 @@ export abstract class BaseDom<
     return this;
   }
 
+  /**
+   * Checks whether this element contains the given target node.
+   * Accepts either a raw DOM node or another `BaseDom` instance.
+   *
+   * Useful for containment checks, event delegation, or visibility logic.
+   *
+   * @param target - A DOM node or `BaseDom` instance to test.
+   * @return `true` if this element contains the target, otherwise `false`.
+   */
+  contains(target: Node | BaseDom<any>): boolean {
+    const node = target instanceof BaseDom ? target.dom : target;
+    return this.dom.contains(node);
+  }
+
   ref(refFn: (el: this) => void) {
     refFn(this);
     return this;
@@ -171,10 +243,10 @@ export abstract class BaseDom<
     if (typeof child === "string" || typeof child === "number") {
       return document.createTextNode(String(child));
     }
-    if ("dom" in child) {
+    if (BaseDom.isBaseDom(child)) {
       return child.dom;
     }
-    return child;
+    return child as Node;
   }
 
   protected setStyleProp(
@@ -189,5 +261,19 @@ export abstract class BaseDom<
     this.dom.style.setProperty(camelToKebab(name), getStyleValue(name, value));
 
     return this;
+  }
+
+  /**
+   * Checks whether a value is a `BaseDom` instance.
+   * Uses a symbol-based identity marker and avoids the `in` operator.
+   *
+   * @param value - The value to check.
+   * @return `true` if the value is a `BaseDom` instance, otherwise `false`.
+   */
+  static isBaseDom(value: unknown): value is BaseDom<HTMLElement | SVGElement> {
+    if (typeof value !== "object" || value === null) return false;
+
+    const symbols = Object.getOwnPropertySymbols(value);
+    return symbols.includes(_isBaseDom);
   }
 }

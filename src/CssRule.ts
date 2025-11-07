@@ -56,14 +56,15 @@ export class CssRule extends BaseStyle {
   }
 
   /**
-   * Creates a new CssRule for a pseudo-selector extending this rule’s selector.
-   * For example, `.btn:hover`, `.input:focus`, `.card:active`.
+   * Creates a new `CssRule` by extending this rule’s selector.
+   * Appends the given selector fragment to the current selector.
+   * Useful for pseudo-classes (e.g., `:hover`), combinators (e.g., ` > span`), or attribute filters (e.g., `[data-active]`).
    *
-   * @param pseudo - The pseudo-class to append (e.g., ":hover", ":focus").
-   * @return A new CssRule instance targeting the extended selector.
+   * @param extension - The selector fragment to append (e.g., `:hover`, ` > span`, `[data-active]`).
+   * @return A new `CssRule` instance targeting the extended selector.
    */
-  pseudo(pseudo: `:${string}`): CssRule {
-    return this.sheet.cssRule(`${this.selectorText}${pseudo}`);
+  extend(extension: string): CssRule {
+    return this.sheet.cssRule(`${this.selectorText}${extension}`);
   }
 
   /**
@@ -71,7 +72,7 @@ export class CssRule extends BaseStyle {
    * @return A new CssRule instance for the `:hover` state.
    */
   hover(): CssRule {
-    return this.pseudo(":hover");
+    return this.extend(":hover");
   }
 
   /**
@@ -79,7 +80,7 @@ export class CssRule extends BaseStyle {
    * @return A new CssRule instance for the `:focus` state.
    */
   focus(): CssRule {
-    return this.pseudo(":focus");
+    return this.extend(":focus");
   }
 
   /**
@@ -89,7 +90,7 @@ export class CssRule extends BaseStyle {
    * @return A new CssRule instance for the `:focus-within` state.
    */
   focusWithin(): CssRule {
-    return this.pseudo(":focus-within");
+    return this.extend(":focus-within");
   }
 
   /**
@@ -97,7 +98,7 @@ export class CssRule extends BaseStyle {
    * @return A new CssRule instance for the `:active` state.
    */
   active(): CssRule {
-    return this.pseudo(":active");
+    return this.extend(":active");
   }
 
   /**
@@ -107,7 +108,7 @@ export class CssRule extends BaseStyle {
    * @return A new CssRule instance for the `:disabled` state.
    */
   disabled(): CssRule {
-    return this.pseudo(":disabled");
+    return this.extend(":disabled");
   }
 
   /**
