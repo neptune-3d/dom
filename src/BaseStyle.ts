@@ -1232,6 +1232,56 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets the `outline` shorthand property of the element.
+   * Controls the outline's width, style, and color in a single call.
+   * Unlike borders, outlines do not affect layout and can extend beyond element bounds.
+   * Passing `undefined` removes the outline.
+   *
+   * @param value - A valid CSS outline shorthand (e.g. "2px dashed red"), or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  outline(value: Property.Outline | undefined): this {
+    return this.setStyleProp("outline", value);
+  }
+
+  /**
+   * Sets the `outline-width` of the element.
+   * Controls the thickness of the outline. Accepts any valid CSS length or a number (interpreted as pixels).
+   * Passing `undefined` removes the outline width.
+   *
+   * @param value - The outline width to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  outlineWidth(value: Property.OutlineWidth | number | undefined): this {
+    const val = typeof value === "number" ? `${value}px` : value;
+    return this.setStyleProp("outlineWidth", val);
+  }
+
+  /**
+   * Sets the `outline-style` of the element.
+   * Controls the visual style of the outline (e.g., solid, dashed, dotted).
+   * Passing `undefined` removes the outline style.
+   *
+   * @param value - The outline style to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  outlineStyle(value: Property.OutlineStyle | undefined): this {
+    return this.setStyleProp("outlineStyle", value);
+  }
+
+  /**
+   * Sets the `outline-color` of the element.
+   * Controls the color of the outline. Accepts named colors, hex codes, RGB/RGBA values, or CSS variables.
+   * Passing `undefined` removes the outline color.
+   *
+   * @param value - The outline color to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  outlineColor(value: Property.OutlineColor | undefined): this {
+    return this.setStyleProp("outlineColor", value);
+  }
+
+  /**
    * Applies CSS styles to truncate overflowing text with an ellipsis.
    * Ensures the text stays on a single line and hides overflow.
    *
