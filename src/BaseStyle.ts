@@ -1,5 +1,9 @@
 import type { Property } from "csstype";
-import type { Autocomplete, CssProperties } from "./types";
+import type {
+  Autocomplete,
+  CssProperties,
+  LinearGradientDirection,
+} from "./types";
 
 export abstract class BaseStyle {
   protected abstract setStyleProp(
@@ -1309,7 +1313,7 @@ export abstract class BaseStyle {
    * @param stops - An array of color stops (e.g., `"#0ea5e9"`, `"#3b82f6 50%"`, `"rgba(0,0,0,0.2)"`).
    * @return This instance for chaining.
    */
-  linearGradient(direction: string, ...stops: string[]): this {
+  linearGradient(direction: LinearGradientDirection, ...stops: string[]): this {
     const gradient = `linear-gradient(${direction}, ${stops.join(", ")})`;
     return this.setStyleProp("background", gradient);
   }

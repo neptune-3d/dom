@@ -70,6 +70,32 @@ export class InputRange extends DomElement<"input"> {
   }
 
   /**
+   * Returns the current value of the range input as a normalized ratio between 0 and 1.
+   * Computed as `(value - min) / (max - min)`, clamped to the [0, 1] interval.
+   * Useful for proportional layout logic, animations, or progress indicators.
+   *
+   * @return The current value as a ratio between 0 and 1.
+   */
+  getRatio(): number {
+    const min = this.getMin();
+    const max = this.getMax();
+    const value = this.getValue();
+    const span = max - min;
+    return span > 0 ? Math.max(0, Math.min(1, (value - min) / span)) : 0;
+  }
+
+  /**
+   * Returns the current value of the range input as a percentage between 0 and 100.
+   * Computed as `(value - min) / (max - min) * 100`, clamped to the [0, 100] interval.
+   * Useful for progress bars, labels, or visual feedback.
+   *
+   * @return The current value as a percentage.
+   */
+  getPercent(): number {
+    return this.getRatio() * 100;
+  }
+
+  /**
    * Sets the `name` attribute of the range input.
    * Useful for form serialization, accessibility, and identifying the input in event handlers or submissions.
    *
@@ -145,5 +171,51 @@ export class InputRange extends DomElement<"input"> {
    */
   bounds(min: number, max: number, step: number): this {
     return this.min(min).max(max).step(step);
+  }
+
+  /**
+   * Sets the range input value using a normalized ratio between 0 and 1.
+   * Computes the actual value as `min + ratio * (max - min)` and clamps it to bounds.
+   * Useful for programmatic control based on proportional layout or animation logic.
+   *
+   * @param ratio - A normalized value between 0 and 1.
+   * @return This instance for chaining.
+   */
+  ratio(ratio: number): this {
+    const min = this.getMin();
+    const max = this.getMax();
+    const span = max - min;
+    const clamped = Math.max(0, Math.min(1, ratio));
+    return this.value(min + clamped * span);
+  }
+
+  /**
+   * Sets the range input value using a percentage between 0 and 100.
+   * Computes the actual value as `min + (percent / 100) * (max - min)` and clamps it to bounds.
+   * Useful for visual controls, progress bars, or external percentage inputs.
+   *
+   * @param percent - A value between 0 and 100.
+   * @return This instance for chaining.
+   */
+  percent(percent: number): this {
+    return this.ratio(percent / 100);
+  }
+
+  /**
+   * Updates the background of the range input to visually reflect the current value.
+   * Applies a horizontal linear gradient with two color stops: one for the filled portion,
+   * and one for the unfilled remainder. Uses `getPercent()` to compute the fill percentage.
+   *
+   * @param fillColor - The color used for the filled portion of the track.
+   * @param emptyColor - The color used for the unfilled portion of the track.
+   * @return This instance for chaining.
+   */
+  trackFillColors(fillColor: string, emptyColor: string): this {
+    const pct = this.getPercent();
+    return this.linearGradient(
+      "to right",
+      `${fillColor} ${pct}%`,
+      `${emptyColor} ${pct}%`
+    );
   }
 }

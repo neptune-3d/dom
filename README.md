@@ -68,7 +68,7 @@ popup.showPopover();
 popup.hidePopover();
 ```
 
-## 🎨 Stylesheet Rules
+## 🎨 CSS Stylesheet
 
 ```ts
 import { StyleSheet } from "neptune3d/dom";

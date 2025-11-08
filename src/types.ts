@@ -93,3 +93,25 @@ export type InputElementMap = {
   range: InputRange;
   checkbox: InputCheckbox;
 };
+
+/**
+ * Represents valid CSS `linear-gradient` direction values.
+ * Includes keyword-based directions (e.g., "to right") and angle-based values (e.g., "45deg").
+ */
+export type LinearGradientDirection =
+  | "to top"
+  | "to top right"
+  | "to right top"
+  | "to right"
+  | "to bottom right"
+  | "to right bottom"
+  | "to bottom"
+  | "to bottom left"
+  | "to left bottom"
+  | "to left"
+  | "to top left"
+  | "to left top"
+  | `${number}deg`
+  | `${number}grad`
+  | `${number}rad`
+  | `${number}turn`;
