@@ -15,7 +15,7 @@ export abstract class BaseStyle {
    * @param value - The padding value to apply, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  p(value: Property.Padding | undefined) {
+  p(value: Property.Padding | number | undefined) {
     return this.setStyleProp("padding", value);
   }
 
@@ -111,7 +111,7 @@ export abstract class BaseStyle {
    * @param value - The top margin value to apply, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  mt(value: Property.MarginTop | undefined) {
+  mt(value: Property.MarginTop | number | undefined) {
     return this.setStyleProp("marginTop", value);
   }
 
@@ -123,7 +123,7 @@ export abstract class BaseStyle {
    * @param value - The right margin value to apply, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  mr(value: Property.MarginRight | undefined) {
+  mr(value: Property.MarginRight | number | undefined) {
     return this.setStyleProp("marginRight", value);
   }
 
@@ -135,7 +135,7 @@ export abstract class BaseStyle {
    * @param value - The bottom margin value to apply, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  mb(value: Property.MarginBottom | undefined) {
+  mb(value: Property.MarginBottom | number | undefined) {
     return this.setStyleProp("marginBottom", value);
   }
 
@@ -147,7 +147,7 @@ export abstract class BaseStyle {
    * @param value - The left margin value to apply, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  ml(value: Property.MarginLeft | undefined) {
+  ml(value: Property.MarginLeft | number | undefined) {
     return this.setStyleProp("marginLeft", value);
   }
 
@@ -156,7 +156,7 @@ export abstract class BaseStyle {
    * @param value - The CSS border-radius value (e.g., "8px", "50%").
    * @return This instance for chaining.
    */
-  radius(value: Property.BorderRadius | undefined) {
+  radius(value: Property.BorderRadius | number | undefined) {
     return this.setStyleProp("borderRadius", value);
   }
 
@@ -165,7 +165,7 @@ export abstract class BaseStyle {
    * @param value - The CSS border-top-left-radius value.
    * @return This instance for chaining.
    */
-  radiusTopLeft(value: Property.BorderTopLeftRadius | undefined) {
+  radiusTopLeft(value: Property.BorderTopLeftRadius | number | undefined) {
     return this.setStyleProp("borderTopLeftRadius", value);
   }
 
@@ -174,7 +174,7 @@ export abstract class BaseStyle {
    * @param value - The CSS border-top-right-radius value.
    * @return This instance for chaining.
    */
-  radiusTopRight(value: Property.BorderTopRightRadius | undefined) {
+  radiusTopRight(value: Property.BorderTopRightRadius | number | undefined) {
     return this.setStyleProp("borderTopRightRadius", value);
   }
 
@@ -183,7 +183,9 @@ export abstract class BaseStyle {
    * @param value - The CSS border-bottom-left-radius value.
    * @return This instance for chaining.
    */
-  radiusBottomLeft(value: Property.BorderBottomLeftRadius | undefined) {
+  radiusBottomLeft(
+    value: Property.BorderBottomLeftRadius | number | undefined
+  ) {
     return this.setStyleProp("borderBottomLeftRadius", value);
   }
 
@@ -192,7 +194,9 @@ export abstract class BaseStyle {
    * @param value - The CSS border-bottom-right-radius value.
    * @return This instance for chaining.
    */
-  radiusBottomRight(value: Property.BorderBottomRightRadius | undefined) {
+  radiusBottomRight(
+    value: Property.BorderBottomRightRadius | number | undefined
+  ) {
     return this.setStyleProp("borderBottomRightRadius", value);
   }
 
@@ -201,7 +205,7 @@ export abstract class BaseStyle {
    * @param value - The CSS border-radius value to apply to top-left and top-right corners.
    * @return This instance for chaining.
    */
-  radiusTop(value: Property.BorderTopLeftRadius | undefined) {
+  radiusTop(value: Property.BorderTopLeftRadius | number | undefined) {
     return this.radiusTopLeft(value).radiusTopRight(value);
   }
 
@@ -210,7 +214,7 @@ export abstract class BaseStyle {
    * @param value - The CSS border-radius value to apply to bottom-left and bottom-right corners.
    * @return This instance for chaining.
    */
-  radiusBottom(value: Property.BorderBottomLeftRadius | undefined) {
+  radiusBottom(value: Property.BorderBottomLeftRadius | number | undefined) {
     return this.radiusBottomLeft(value).radiusBottomRight(value);
   }
 
@@ -219,7 +223,7 @@ export abstract class BaseStyle {
    * @param value - The CSS border-radius value to apply to top-left and bottom-left corners.
    * @return This instance for chaining.
    */
-  radiusLeft(value: Property.BorderTopLeftRadius | undefined) {
+  radiusLeft(value: Property.BorderTopLeftRadius | number | undefined) {
     return this.radiusTopLeft(value).radiusBottomLeft(value);
   }
 
@@ -228,7 +232,7 @@ export abstract class BaseStyle {
    * @param value - The CSS border-radius value to apply to top-right and bottom-right corners.
    * @return This instance for chaining.
    */
-  radiusRight(value: Property.BorderTopRightRadius | undefined) {
+  radiusRight(value: Property.BorderTopRightRadius | number | undefined) {
     return this.radiusTopRight(value).radiusBottomRight(value);
   }
 
@@ -238,7 +242,7 @@ export abstract class BaseStyle {
    * @param value - The CSS border-radius value to apply horizontally.
    * @return This instance for chaining.
    */
-  radiusX(value: Property.BorderRadius | undefined) {
+  radiusX(value: Property.BorderRadius | number | undefined) {
     return this.radiusLeft(value).radiusRight(value);
   }
 
@@ -248,7 +252,7 @@ export abstract class BaseStyle {
    * @param value - The CSS border-radius value to apply vertically.
    * @return This instance for chaining.
    */
-  radiusY(value: Property.BorderRadius | undefined) {
+  radiusY(value: Property.BorderRadius | number | undefined) {
     return this.radiusTop(value).radiusBottom(value);
   }
 
@@ -390,12 +394,88 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets the `border-width` of the element.
+   * Controls the thickness of the border. Accepts any valid CSS length (e.g., "1px", "0.2em") or a number (interpreted as pixels).
+   * Passing `undefined` removes the border width.
+   *
+   * @param value - The border width to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  bWidth(value: Property.BorderWidth | number | undefined): this {
+    const val = typeof value === "number" ? `${value}px` : value;
+    return this.setStyleProp("borderWidth", val);
+  }
+
+  /**
+   * Sets the `border-style` of the element.
+   * Controls the visual style of the border (e.g., solid, dashed, dotted, double).
+   * Accepts any valid CSS border-style value, or `undefined` to remove the style.
+   *
+   * @param value - The border style to apply (e.g., "solid", "dashed", "none"), or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  bStyle(value: Property.BorderStyle | undefined): this {
+    return this.setStyleProp("borderStyle", value);
+  }
+
+  /**
+   * Sets the `border-color` of the element.
+   * Controls the color of the element’s border.
+   * Accepts named colors, hex codes, RGB/RGBA values, or CSS variables.
+   * Passing `undefined` removes the border color.
+   *
+   * @param value - The border color to apply (e.g., "#000", "rgba(0,0,0,0.2)", "var(--border-color)"), or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  bColor(value: Property.BorderColor | undefined): this {
+    return this.setStyleProp("borderColor", value);
+  }
+
+  /**
    * Sets the top border style.
    * @param value - The CSS border-top value.
    * @return This instance for chaining.
    */
   bt(value: Property.BorderTop | undefined) {
     return this.setStyleProp("borderTop", value);
+  }
+
+  /**
+   * Sets the `border-top-width` of the element.
+   * Controls the thickness of the top border. Accepts any valid CSS length or a number (interpreted as pixels).
+   * Passing `undefined` removes the top border width.
+   *
+   * @param value - The top border width to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  btWidth(value: Property.BorderTopWidth | number | undefined): this {
+    const val = typeof value === "number" ? `${value}px` : value;
+    return this.setStyleProp("borderTopWidth", val);
+  }
+
+  /**
+   * Sets the `border-top-style` of the element.
+   * Controls the visual style of the top border (e.g., solid, dashed, dotted).
+   * Passing `undefined` removes the top border style.
+   *
+   * @param value - The top border style to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  btStyle(value: Property.BorderTopStyle | undefined): this {
+    return this.setStyleProp("borderTopStyle", value);
+  }
+
+  /**
+   * Sets the `border-top-color` of the element.
+   * Controls the color of the top border.
+   * Accepts named colors, hex codes, RGB/RGBA values, or CSS variables.
+   * Passing `undefined` removes the top border color.
+   *
+   * @param value - The top border color to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  btColor(value: Property.BorderTopColor | undefined): this {
+    return this.setStyleProp("borderTopColor", value);
   }
 
   /**
@@ -408,6 +488,44 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets the `border-right-width` of the element.
+   * Controls the thickness of the right border. Accepts any valid CSS length or a number (interpreted as pixels).
+   * Passing `undefined` removes the right border width.
+   *
+   * @param value - The right border width to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  brWidth(value: Property.BorderRightWidth | number | undefined): this {
+    const val = typeof value === "number" ? `${value}px` : value;
+    return this.setStyleProp("borderRightWidth", val);
+  }
+
+  /**
+   * Sets the `border-right-style` of the element.
+   * Controls the visual style of the right border (e.g., solid, dashed, dotted).
+   * Passing `undefined` removes the right border style.
+   *
+   * @param value - The right border style to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  brStyle(value: Property.BorderRightStyle | undefined): this {
+    return this.setStyleProp("borderRightStyle", value);
+  }
+
+  /**
+   * Sets the `border-right-color` of the element.
+   * Controls the color of the right border.
+   * Accepts named colors, hex codes, RGB/RGBA values, or CSS variables.
+   * Passing `undefined` removes the right border color.
+   *
+   * @param value - The right border color to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  brColor(value: Property.BorderRightColor | undefined): this {
+    return this.setStyleProp("borderRightColor", value);
+  }
+
+  /**
    * Sets the bottom border style.
    * @param value - The CSS border-bottom value.
    * @return This instance for chaining.
@@ -417,12 +535,88 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets the `border-bottom-width` of the element.
+   * Controls the thickness of the bottom border. Accepts any valid CSS length or a number (interpreted as pixels).
+   * Passing `undefined` removes the bottom border width.
+   *
+   * @param value - The bottom border width to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  bbWidth(value: Property.BorderBottomWidth | number | undefined): this {
+    const val = typeof value === "number" ? `${value}px` : value;
+    return this.setStyleProp("borderBottomWidth", val);
+  }
+
+  /**
+   * Sets the `border-bottom-style` of the element.
+   * Controls the visual style of the bottom border (e.g., solid, dashed, dotted).
+   * Passing `undefined` removes the bottom border style.
+   *
+   * @param value - The bottom border style to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  bbStyle(value: Property.BorderBottomStyle | undefined): this {
+    return this.setStyleProp("borderBottomStyle", value);
+  }
+
+  /**
+   * Sets the `border-bottom-color` of the element.
+   * Controls the color of the bottom border.
+   * Accepts named colors, hex codes, RGB/RGBA values, or CSS variables.
+   * Passing `undefined` removes the bottom border color.
+   *
+   * @param value - The bottom border color to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  bbColor(value: Property.BorderBottomColor | undefined): this {
+    return this.setStyleProp("borderBottomColor", value);
+  }
+
+  /**
    * Sets the left border style.
    * @param value - The CSS border-left value.
    * @return This instance for chaining.
    */
   bl(value: Property.BorderLeft | undefined) {
     return this.setStyleProp("borderLeft", value);
+  }
+
+  /**
+   * Sets the `border-left-width` of the element.
+   * Controls the thickness of the left border. Accepts any valid CSS length or a number (interpreted as pixels).
+   * Passing `undefined` removes the left border width.
+   *
+   * @param value - The left border width to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  blWidth(value: Property.BorderLeftWidth | number | undefined): this {
+    const val = typeof value === "number" ? `${value}px` : value;
+    return this.setStyleProp("borderLeftWidth", val);
+  }
+
+  /**
+   * Sets the `border-left-style` of the element.
+   * Controls the visual style of the left border (e.g., solid, dashed, dotted).
+   * Passing `undefined` removes the left border style.
+   *
+   * @param value - The left border style to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  blStyle(value: Property.BorderLeftStyle | undefined): this {
+    return this.setStyleProp("borderLeftStyle", value);
+  }
+
+  /**
+   * Sets the `border-left-color` of the element.
+   * Controls the color of the left border.
+   * Accepts named colors, hex codes, RGB/RGBA values, or CSS variables.
+   * Passing `undefined` removes the left border color.
+   *
+   * @param value - The left border color to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  blColor(value: Property.BorderLeftColor | undefined): this {
+    return this.setStyleProp("borderLeftColor", value);
   }
 
   /**
@@ -1013,6 +1207,31 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets the `box-sizing` style of the element.
+   * Controls how the element’s total width and height are calculated — either including or excluding padding and border.
+   * Accepts any valid CSS box-sizing value (e.g., `"border-box"`, `"content-box"`), or `undefined` to remove it.
+   *
+   * @param value - The box-sizing value to apply, or `undefined` to remove the style.
+   * @return This instance for chaining.
+   */
+  boxSizing(value: Property.BoxSizing | undefined): this {
+    return this.setStyleProp("boxSizing", value);
+  }
+
+  /**
+   * Sets the `background` shorthand style of the element.
+   * Accepts any valid CSS background value, including colors, gradients, images, positions, and repeat modes.
+   * Useful for applying complex background styles in a single declaration.
+   * Passing `undefined` removes the background style.
+   *
+   * @param value - The background value to apply (e.g., "#fff", "linear-gradient(...)", "url(...)", "center/cover"), or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  background(value: Property.Background | undefined): this {
+    return this.setStyleProp("background", value);
+  }
+
+  /**
    * Applies CSS styles to truncate overflowing text with an ellipsis.
    * Ensures the text stays on a single line and hides overflow.
    *
@@ -1029,6 +1248,20 @@ export abstract class BaseStyle {
     return this.overflow("hidden")
       .whiteSpace("nowrap")
       .textOverflow("ellipsis");
+  }
+
+  /**
+   * Sets the `background` style to a linear gradient.
+   * Accepts a direction and one or more color stops to construct a valid CSS `linear-gradient(...)` string.
+   * Automatically joins color stops and applies the full gradient string to `background`.
+   *
+   * @param direction - The gradient direction (e.g., `"to right"`, `"45deg"`).
+   * @param stops - An array of color stops (e.g., `"#0ea5e9"`, `"#3b82f6 50%"`, `"rgba(0,0,0,0.2)"`).
+   * @return This instance for chaining.
+   */
+  linearGradient(direction: string, ...stops: string[]): this {
+    const gradient = `linear-gradient(${direction}, ${stops.join(", ")})`;
+    return this.setStyleProp("background", gradient);
   }
 
   /**

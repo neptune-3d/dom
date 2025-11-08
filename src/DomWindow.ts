@@ -24,6 +24,7 @@ export class DomWindow {
    * @param type - The event type to remove.
    * @param handler - The original handler function.
    * @param options - Optional event listener options.
+   * @return This DomElement instance for chaining.
    */
   off<T extends keyof WindowEventMap>(
     type: T,
@@ -31,6 +32,7 @@ export class DomWindow {
     options?: boolean | EventListenerOptions
   ) {
     window.removeEventListener(type, handler as any, options);
+    return this;
   }
 
   /**

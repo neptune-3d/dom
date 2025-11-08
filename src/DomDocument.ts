@@ -24,6 +24,7 @@ export class DomDocument {
    * @param type - The event type to remove.
    * @param handler - The original handler function.
    * @param options - Optional event listener options.
+   * @return This instance for chaining.
    */
   off<T extends keyof DocumentEventMap>(
     type: T,
@@ -31,6 +32,7 @@ export class DomDocument {
     options?: boolean | EventListenerOptions
   ) {
     document.removeEventListener(type, handler as any, options);
+    return this;
   }
 
   /**

@@ -81,9 +81,12 @@ rule.p("0.5rem").style({
 
 // Insert a media query block
 const media = sheet.mediaRule("screen and (max-width: 600px)");
-media.cssRule(".list-item").style({
-  background: "#f0f0f0",
-});
+media
+  .cssRule(".list-item")
+  .style({
+    background: "#f0f0f0",
+  })
+  .fontSize(24);
 ```
 
 ## 🌍 Global Event Wrappers

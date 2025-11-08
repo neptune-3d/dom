@@ -116,6 +116,7 @@ export abstract class BaseDom<
    * @param type - The event type to remove.
    * @param handler - The original handler function.
    * @param options - Optional event listener options.
+   * @return This DomElement instance for chaining.
    */
   off<T extends keyof DomElementEventMap>(
     type: T,
@@ -123,6 +124,7 @@ export abstract class BaseDom<
     options?: boolean | EventListenerOptions
   ) {
     this.dom.removeEventListener(type, handler as any, options);
+    return this;
   }
 
   /**
