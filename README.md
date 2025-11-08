@@ -54,16 +54,16 @@ $body().add(checkbox);
 ## 🎯 Popover API
 
 ```ts
-const pop = $("div")
+const popup = $("div")
   .text("Popover content")
   .popover("manual")
   .css("", { padding: "1rem", background: "#222", color: "#fff" });
 
-$body().add(pop);
+$body().add(popup);
 
 // Show/hide programmatically
-pop.showPopover();
-pop.hidePopover();
+popup.showPopover();
+popup.hidePopover();
 ```
 
 ## 🎨 Stylesheet Rules
@@ -73,20 +73,24 @@ import { StyleSheet } from "neptune3d/dom";
 
 const sheet = StyleSheet.getSheet();
 
-// Insert a global rule
+// insert a css rule
 const rule = sheet.cssRule(".list-item");
-rule.p("0.5rem").style({
-  borderBottom: "1px solid #ccc",
-});
+rule.p("0.5rem").bb("1px solid #ccc");
 
-// Insert a media query block
+// insert a media rule
 const media = sheet.mediaRule("screen and (max-width: 600px)");
-media
-  .cssRule(".list-item")
-  .style({
-    background: "#f0f0f0",
-  })
-  .fontSize(24);
+
+// insert a css rule into the media rule
+media.cssRule(".list-item").textAlign("center").fontSize(24);
+
+// extend a css rule
+rule.extend("> div.child").opacity(0.6);
+
+// predefined extensions for common pseudo selectors / elements
+
+rule.hover().bgColor("red");
+
+rule.focus().outline("1px dashed blue");
 ```
 
 ## 🌍 Global Event Wrappers
