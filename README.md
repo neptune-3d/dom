@@ -2,6 +2,8 @@
 
 Helper classes and functions for fluent DOM manipulation, styling, and event handling.
 
+[![NPM Version](https://img.shields.io/npm/v/%40neptune3d%2Fdom)](https://www.npmjs.com/package/@neptune3d/dom)
+
 ## 🚀 Getting Started
 
 Install the package:
