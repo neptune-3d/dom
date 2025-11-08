@@ -59,7 +59,7 @@ $body().add(checkbox);
 const popup = $("div")
   .text("Popover content")
   .popover("manual")
-  .css("", { padding: "1rem", background: "#222", color: "#fff" });
+  .style({ padding: "1rem", background: "#222", color: "#fff" });
 
 $body().add(popup);
 
