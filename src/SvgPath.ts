@@ -24,3 +24,12 @@ export class SvgPath extends BaseSvgElement<"path"> {
     return this.attr("d", value);
   }
 }
+
+/**
+ * Creates a new SvgPath element.
+ *
+ * @return A new SvgPath instance.
+ */
+export function $path(): SvgPath {
+  return new SvgPath();
+}
