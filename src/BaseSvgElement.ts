@@ -25,6 +25,17 @@ export class BaseSvgElement<
   }
 
   /**
+   * Sets the `fill-rule` property.
+   * Determines how the interior of a shape is determined when paths intersect.
+   *
+   * @param rule - One of "nonzero" or "evenodd".
+   * @return This instance for chaining.
+   */
+  fillRule(rule: "nonzero" | "evenodd"): this {
+    return this.attr("fill-rule", rule);
+  }
+
+  /**
    * Sets the `stroke` color.
    * @param color - Stroke color (e.g. "black", "#000", "none").
    * @return This instance for chaining.
@@ -40,6 +51,39 @@ export class BaseSvgElement<
    */
   svgStrokeWidth(width: number | string): this {
     return this.attr("stroke-width", width.toString());
+  }
+
+  /**
+   * Sets the `stroke-linejoin` style.
+   * Controls how two connected segments in a stroke join.
+   *
+   * @param value - One of "miter", "round", or "bevel".
+   * @return This instance for chaining.
+   */
+  strokeLinejoin(value: "miter" | "round" | "bevel"): this {
+    return this.attr("stroke-linejoin", value);
+  }
+
+  /**
+   * Sets the `stroke-linecap` style.
+   * Controls how the end of an open stroke is rendered.
+   *
+   * @param value - One of "butt", "round", or "square".
+   * @return This instance for chaining.
+   */
+  strokeLinecap(value: "butt" | "round" | "square"): this {
+    return this.attr("stroke-linecap", value);
+  }
+
+  /**
+   * Sets the `stroke-miterlimit` value.
+   * Controls the maximum allowed ratio of miter length to stroke width for miter joins.
+   *
+   * @param value - Miter limit (typically ≥ 1).
+   * @return This instance for chaining.
+   */
+  strokeMiterlimit(value: number): this {
+    return this.attr("stroke-miterlimit", value.toString());
   }
 
   /**
