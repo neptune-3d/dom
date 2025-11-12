@@ -1,6 +1,7 @@
 export * from "./AnchorElement";
 export * from "./BaseDom";
 export * from "./BaseStyle";
+export * from "./BaseSvgElement";
 export * from "./Button";
 export * from "./Canvas";
 export * from "./constants";
@@ -24,6 +25,7 @@ export * from "./PathData";
 export * from "./ProgressElement";
 export * from "./SelectElement";
 export * from "./StyleSheet";
+export * from "./SvgPath";
 export * from "./TextArea";
 export * from "./types";
 export * from "./utils";

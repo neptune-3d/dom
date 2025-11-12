@@ -18,7 +18,7 @@ export type DomElementChild = DomElement<any> | Node | string | number;
 
 export type DomElementTagNameMap = HTMLElementTagNameMap & SvgElementTagNameMap;
 
-type SvgElementTagNameMap = {
+export type SvgElementTagNameMap = {
   svgA: SVGAElement;
   animate: SVGAnimateElement;
   animateMotion: SVGAnimateMotionElement;
