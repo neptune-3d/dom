@@ -1,7 +1,10 @@
 {
   "name": "@neptune3d/dom",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Helper classes and functions for the DOM.",
+  "keywords": [
+    "dom"
+  ],
   "type": "module",
   "license": "MIT",
   "homepage": "https://github.com/neptune-3d/dom#readme",
