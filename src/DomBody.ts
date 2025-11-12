@@ -1,12 +1,25 @@
 import { BaseDom } from "./BaseDom";
 
 /**
- * Wrapper for document.body with style and DOM composition utilities.
- * Enables fluent styling and child node management.
+ * Wrapper for a `<body>` element with style and DOM composition utilities.
+ * Accepts any `HTMLBodyElement`, including from iframes or synthetic documents.
  */
 export class DomBody extends BaseDom<HTMLBodyElement> {
-  get dom() {
-    return document.body as HTMLBodyElement;
+  constructor(body: HTMLBodyElement) {
+    super();
+    this._body = body;
+  }
+
+  protected _body: HTMLBodyElement;
+
+  /**
+   * Returns the underlying `<body>` element wrapped by this `DomBody` instance.
+   * Enables direct DOM access for interoperability with native APIs or manual manipulation.
+   *
+   * @return The wrapped `HTMLBodyElement`.
+   */
+  get dom(): HTMLBodyElement {
+    return this._body;
   }
 }
 
@@ -18,6 +31,6 @@ export class DomBody extends BaseDom<HTMLBodyElement> {
  *
  * @return A DomBody instance wrapping `document.body`.
  */
-export function $body() {
-  return new DomBody();
+export function $body(body?: HTMLBodyElement): DomBody {
+  return new DomBody(body ?? (document.body as HTMLBodyElement));
 }

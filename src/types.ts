@@ -115,3 +115,48 @@ export type LinearGradientDirection =
   | `${number}grad`
   | `${number}rad`
   | `${number}turn`;
+
+/**
+ * Declarative type for building a Content Security Policy.
+ * Each directive maps to a space-separated string of sources or values.
+ */
+export interface ContentSecurityPolicy {
+  "default-src"?: string;
+  "script-src"?: string;
+  "style-src"?: string;
+  "img-src"?: string;
+  "font-src"?: string;
+  "connect-src"?: string;
+  "media-src"?: string;
+  "object-src"?: string;
+  "frame-src"?: string;
+  "child-src"?: string;
+  "worker-src"?: string;
+  "manifest-src"?: string;
+  "prefetch-src"?: string;
+  "form-action"?: string;
+  "base-uri"?: string;
+  "frame-ancestors"?: string;
+  "navigate-to"?: string;
+  "require-trusted-types-for"?: string;
+  "trusted-types"?: string;
+  sandbox?: string;
+  "upgrade-insecure-requests"?: string;
+  "block-all-mixed-content"?: string;
+  "report-uri"?: string;
+  "report-to"?: string;
+}
+
+export type IFrameSandboxFlag =
+  | "allow-forms"
+  | "allow-modals"
+  | "allow-orientation-lock"
+  | "allow-pointer-lock"
+  | "allow-popups"
+  | "allow-popups-to-escape-sandbox"
+  | "allow-presentation"
+  | "allow-same-origin"
+  | "allow-scripts"
+  | "allow-storage-access-by-user-activation"
+  | "allow-top-navigation"
+  | "allow-top-navigation-by-user-activation";

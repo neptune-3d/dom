@@ -1286,6 +1286,69 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets the `outline-offset` style of the element.
+   * Controls the space between the outline and the element's edge.
+   * Accepts length units (e.g. px, em, rem) or CSS variables.
+   * Passing `undefined` removes the outline-offset style.
+   *
+   * @param value - The offset distance to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  outlineOffset(value: Property.OutlineOffset | undefined): this {
+    return this.setStyleProp("outlineOffset", value);
+  }
+
+  /**
+   * Sets the `line-height` of the element.
+   * Controls vertical spacing between lines of text. Accepts unitless numbers, length units, percentages, or CSS variables.
+   * Passing `undefined` removes the line-height style.
+   *
+   * @param value - The line-height to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  lineHeight(value: Property.LineHeight | undefined): this {
+    return this.setStyleProp("lineHeight", value);
+  }
+
+  /**
+   * Sets the `word-wrap` style of the element.
+   * Controls how long words or URLs break and wrap within the container.
+   * Accepts values like `"normal"`, `"break-word"`, or CSS variables.
+   * Passing `undefined` removes the word-wrap style.
+   *
+   * @param value - The word-wrap value to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  wordWrap(value: Property.WordWrap | undefined): this {
+    return this.setStyleProp("wordWrap", value);
+  }
+
+  /**
+   * Sets the `tab-size` style of the element.
+   * Controls the visual width of tab characters in spaces. Accepts unitless numbers or CSS variables.
+   * Passing `undefined` removes the tab-size style.
+   *
+   * @param value - The tab size to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  tabSize(value: Property.TabSize | undefined): this {
+    return this.setStyleProp("tabSize", value);
+  }
+
+  /**
+   * Sets the `resize` style of the element.
+   * Controls whether and how the element is resizable by the user.
+   * Accepts values like `"none"`, `"both"`, `"horizontal"`, `"vertical"`, or CSS variables.
+   * Passing `undefined` removes the resize style.
+   *
+   * @param value - The resize behavior to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  resize(value: Property.Resize | undefined): this {
+    return this.setStyleProp("resize", value);
+  }
+
+  /**
    * Applies CSS styles to truncate overflowing text with an ellipsis.
    * Ensures the text stays on a single line and hides overflow.
    *

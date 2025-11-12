@@ -135,7 +135,7 @@ export class StyleSheet {
   static getSheet(id: string = StyleSheet.DEFAULT_STYLE_ID) {
     const res = document.head.querySelector(`#${id}`);
 
-    if (res == null) {
+    if (!res) {
       const style = document.createElement("style");
       style.id = id;
       style.setAttribute("type", "text/css");

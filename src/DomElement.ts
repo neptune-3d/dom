@@ -71,26 +71,6 @@ export class DomElement<
   }
 
   /**
-   * Gets the textContent property of the DOM element.
-   */
-  getText() {
-    return this._dom.textContent;
-  }
-
-  /**
-   * Sets or clears the text content of the element.
-   * Converts any value to a string before assignment.
-   * Passing `undefined` or `null` removes the text by setting it to an empty string.
-   *
-   * @param value - The text content to set, or `undefined`/`null` to clear it.
-   * @return This DomElement instance for chaining.
-   */
-  text(value: any) {
-    this._dom.textContent = value == null ? "" : String(value);
-    return this;
-  }
-
-  /**
    * Removes the element from the DOM tree.
    * Equivalent to calling `element.remove()` on the native DOM node.
    *
@@ -100,90 +80,6 @@ export class DomElement<
    */
   remove() {
     this.dom.remove();
-  }
-
-  /**
-   * Retrieves the value of a single attribute.
-   * @param name - The attribute name to read (e.g. "aria-label", "role").
-   * @return The attribute value as a string, or null if not present.
-   */
-  getAttr(name: string): string | null {
-    return this.dom.getAttribute(name);
-  }
-
-  /**
-   * Sets a single attribute on the element.
-   * @param name - The attribute name (e.g. "aria-label", "role", "disabled").
-   * @param value - The attribute value. If undefined, the attribute is removed.
-   * @return This DomElement instance for chaining.
-   */
-  attr(name: string, value: string | number | boolean | undefined) {
-    if (value === undefined) {
-      this.dom.removeAttribute(name);
-    }
-    //
-    else {
-      this.dom.setAttribute(name, String(value));
-    }
-    return this;
-  }
-
-  /**
-   * Sets multiple attributes on the element.
-   * @param attributes - An object mapping attribute names to values.
-   *                     Attributes with undefined values are removed.
-   * @return This DomElement instance for chaining.
-   */
-  attrs(attributes: Record<string, string | number | boolean | undefined>) {
-    for (const [key, value] of Object.entries(attributes)) {
-      this.attr(key, value);
-    }
-    return this;
-  }
-
-  /**
-   * Retrieves the value of a single property.
-   * @param name - The property name to read (e.g. "value", "checked", "disabled").
-   * @return The property value, or undefined if not present.
-   */
-  getProp(name: string): any {
-    return (this.dom as any)[name];
-  }
-
-  /**
-   * Sets a single property on the element.
-   * @param name - The property name (e.g. "checked", "value", "disabled").
-   * @param value - The property value. If undefined, the property is deleted.
-   * @return This DomElement instance for chaining.
-   */
-  prop(name: string, value: any) {
-    (this.dom as any)[name] = value;
-    return this;
-  }
-
-  /**
-   * Sets multiple properties on the element.
-   * @param props - An object mapping property names to values.
-   *                     Properties with undefined values are deleted.
-   * @return This DomElement instance for chaining.
-   */
-  props(props: Record<string, any>) {
-    for (const [key, value] of Object.entries(props)) {
-      this.prop(key, value);
-    }
-    return this;
-  }
-
-  /**
-   * Sets or removes the `id` of the element.
-   * Passing `undefined` clears the ID by setting it to an empty string.
-   *
-   * @param value - The element's ID, or `undefined` to remove it.
-   * @return This DomElement instance for chaining.
-   */
-  id(value: string | undefined) {
-    this._dom.id = value ?? "";
-    return this;
   }
 
   /**
@@ -210,35 +106,20 @@ export class DomElement<
    * @param value - The tooltip text to show on hover, or `undefined` to remove it.
    * @return This DomElement instance for chaining.
    */
-  title(value: string | undefined) {
-    if (value === undefined) {
-      this.dom.removeAttribute("title");
-    }
-    //
-    else {
-      this.dom.setAttribute("title", value);
-    }
-
-    return this;
+  title(value: string | undefined): this {
+    return this.attr("title", value);
   }
 
   /**
    * Sets or removes the `disabled` attribute on the element.
-   * Applicable to form controls like <button>, <input>, <select>, etc.
+   * Applicable to form controls like `<button>`, `<input>`, `<select>`, etc.
+   * Passing `true` sets the attribute; `false` removes it.
    *
-   * @param value - If true, sets the `disabled` attribute; if false, removes it.
+   * @param value - Whether the element should be disabled.
    * @return This DomElement instance for chaining.
    */
-  disabled(value: boolean) {
-    if (value) {
-      this.dom.setAttribute("disabled", "");
-    }
-    //
-    else {
-      this.dom.removeAttribute("disabled");
-    }
-
-    return this;
+  disabled(value: boolean): this {
+    return this.attr("disabled", value);
   }
 
   /**
@@ -260,27 +141,51 @@ export class DomElement<
 
   /**
    * Sets or removes the `popover` attribute on the element.
-   * Applies to HTML elements that support the popover API (e.g., `<div popover>`).
+   * Applies to HTML elements that support the Popover API (e.g., `<div popover>`).
    * Passing `undefined` removes the attribute.
    *
-   * Common values include:
+   * Supported values:
    * - `"auto"` → Automatically shows/hides based on user interaction.
    * - `"manual"` → Requires explicit show/hide via JavaScript.
+   * - `"hint"` → Lightweight tooltip-style popover (shown on hover/focus).
    *
-   * @param value - The popover mode (`"auto"` or `"manual"`), or `undefined` to remove it.
+   * @param value - The popover mode (`"auto"`, `"manual"`, or `"hint"`), or `undefined` to remove it.
    * @return This DomElement instance for chaining.
    */
-  popover(value: "auto" | "manual" | undefined) {
-    if (value === undefined) {
-      this.dom.removeAttribute("popover");
-    }
-    //
-    else {
-      this.dom.setAttribute("popover", value);
-    }
-
-    return this;
+  popover(value: "auto" | "manual" | "hint" | undefined): this {
+    return this.attr("popover", value);
   }
+
+  /**
+   * Sets or removes the `popovertarget` attribute on the element.
+   * This links the element to a popover by ID, allowing it to trigger or control that popover.
+   * Passing `undefined` removes the attribute.
+   *
+   * @param value - The ID of the target popover element, or `undefined` to remove the attribute.
+   * @return This DomElement instance for chaining.
+   */
+  popoverTarget(value: string | undefined): this {
+    return this.attr("popovertarget", value);
+  }
+
+  /**
+   * Sets or removes the `popovertargetaction` attribute on the element.
+   * This defines the action to perform on the target popover when the element is activated.
+   * Pass `undefined` to remove the attribute.
+   *
+   * Valid values:
+   * - `"show"` → Opens the target popover.
+   * - `"hide"` → Closes the target popover.
+   * - `"toggle"` → Toggles the target popover.
+   *
+   * @param value - The action to apply, or `undefined` to remove the attribute.
+   * @return This DomElement instance for chaining.
+   */
+  popoverTargetAction(value: "show" | "hide" | "toggle" | undefined): this {
+    return this.attr("popovertargetaction", value);
+  }
+
+  // hint
 
   /**
    * Shows the popover on this element.
@@ -314,15 +219,22 @@ export function $<T extends keyof DomElementTagNameMap>(tag: T) {
 }
 
 /**
- * Queries the DOM for a matching element and wraps it in a DomElement.
+ * Queries the DOM for a matching element and wraps it in a `DomElement`.
+ * Returns `null` if no element matches the selector.
+ *
+ * This enables fluent manipulation using your custom DOM API.
+ *
  * @param selector - A CSS selector string to locate the element.
- * @return A DomElement wrapping the matched element.
- * @throws If no element matches the selector, this will throw due to non-null assertion.
+ * @return A `DomElement` wrapping the matched element, or `null` if not found.
  */
-export function $query<T extends keyof DomElementTagNameMap>(selector: string) {
-  const el = document.querySelector(selector)!;
-  return new DomElement(
-    el.tagName.toLowerCase() as T,
-    el as DomElementTagNameMap[T]
-  );
+export function $query<T extends keyof DomElementTagNameMap>(
+  selector: string
+): DomElement<T> | null {
+  const el = document.querySelector(selector);
+  return el
+    ? new DomElement<T>(
+        el.tagName.toLowerCase() as T,
+        el as DomElementTagNameMap[T]
+      )
+    : null;
 }

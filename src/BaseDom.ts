@@ -1,9 +1,11 @@
 import { BaseStyle } from "./BaseStyle";
+import { DomElement } from "./DomElement";
 import type {
   Autocomplete,
   CssProperties,
   DomElementChild,
   DomElementEventMap,
+  DomElementTagNameMap,
 } from "./types";
 import { camelToKebab, getStyleValue } from "./utils";
 
@@ -58,6 +60,202 @@ export abstract class BaseDom<
    */
   getComputedStyle(): CSSStyleDeclaration {
     return window.getComputedStyle(this.dom);
+  }
+
+  /**
+   * Returns the child element at the specified index.
+   * Uses `children`, which excludes text, comment, and other non-element nodes.
+   * Returns `null` if the index is out of bounds.
+   *
+   * @param index - The zero-based index of the child element.
+   * @return The child `Element` at the given index, or `null` if not found.
+   */
+  getChildAt(index: number): Element | null {
+    return this.dom.children.item(index);
+  }
+
+  /**
+   * Returns the child node at the specified index.
+   * Uses `childNodes`, which includes elements, text nodes, comments, and other node types.
+   * Returns `null` if the index is out of bounds.
+   *
+   * @param index - The zero-based index of the child node.
+   * @return The child `Node` at the given index, or `null` if not found.
+   */
+  getNodeAt(index: number): Node | null {
+    return this.dom.childNodes.item(index);
+  }
+
+  /**
+   * Returns a static array of all child elements.
+   * Excludes text nodes, comments, and other non-element nodes.
+   * Useful for DOM traversal, filtering, or batch operations.
+   *
+   * @return An array of child `Element` nodes.
+   */
+  getChildren(): Element[] {
+    return Array.from(this.dom.children);
+  }
+
+  /**
+   * Returns a static array of all child nodes.
+   * Includes elements, text nodes, comments, and other node types.
+   * Useful for low-level DOM inspection or mixed-content manipulation.
+   *
+   * @return An array of child `Node` instances.
+   */
+  getNodes(): Node[] {
+    return Array.from(this.dom.childNodes);
+  }
+
+  /**
+   * Gets the textContent property of the DOM element.
+   */
+  getText() {
+    return this.dom.textContent;
+  }
+
+  /**
+   * Retrieves the value of a single attribute.
+   * @param name - The attribute name to read (e.g. "aria-label", "role").
+   * @return The attribute value as a string, or null if not present.
+   */
+  getAttr(name: string): string | null {
+    return this.dom.getAttribute(name);
+  }
+
+  /**
+   * Retrieves the value of a single property.
+   * @param name - The property name to read (e.g. "value", "checked", "disabled").
+   * @return The property value, or undefined if not present.
+   */
+  getProp(name: string): any {
+    return (this.dom as any)[name];
+  }
+
+  /**
+   * Checks whether the element has the specified CSS class.
+   * Useful for conditional logic, toggling, or state inspection.
+   *
+   * @param name - The class name to check.
+   * @return `true` if the class is present, otherwise `false`.
+   */
+  hasClass(name: string): boolean {
+    return this.dom.classList.contains(name);
+  }
+
+  /**
+   * Sets the `textContent` of the element using any value.
+   * If the value is `null` or `undefined`, clears the content.
+   * Otherwise, converts the value to a string and assigns it.
+   * Useful for rendering dynamic values safely, including numbers, booleans, or objects.
+   *
+   * @param value - The value to assign as plain text, or `null`/`undefined` to clear.
+   * @return This instance for chaining.
+   */
+  text(value: any): this {
+    this.dom.textContent = value != null ? String(value) : "";
+    return this;
+  }
+
+  /**
+   * Sets the `innerHTML` of the element.
+   * Replaces all existing child nodes with the provided HTML string.
+   * Useful for injecting markup, templated content, or resetting the DOM structure.
+   *
+   * @param content - The HTML string to assign as the element's inner content.
+   * @return This instance for chaining.
+   */
+  html(content: string): this {
+    this.dom.innerHTML = content;
+    return this;
+  }
+
+  /**
+   * Sets or removes the `id` of the element.
+   * Passing `undefined` clears the ID by setting it to an empty string.
+   *
+   * @param value - The element's ID, or `undefined` to remove it.
+   * @return This DomElement instance for chaining.
+   */
+  id(value: string | undefined) {
+    this.dom.id = value ?? "";
+    return this;
+  }
+
+  /**
+   * Sets a single attribute on the element.
+   * For boolean attributes (e.g. "disabled", "checked"), presence alone determines truthiness.
+   * If `value` is `true`, the attribute is added with no value.
+   * If `value` is `false` or `undefined`, the attribute is removed.
+   *
+   * @param name - The attribute name (e.g. "aria-label", "role", "disabled").
+   * @param value - The attribute value. If `undefined` or `false`, the attribute is removed.
+   * @return This DomElement instance for chaining.
+   */
+  attr(name: string, value: string | number | boolean | undefined): this {
+    if (value === undefined || value === false) {
+      this.dom.removeAttribute(name);
+    } else if (value === true) {
+      this.dom.setAttribute(name, "");
+    } else {
+      this.dom.setAttribute(name, String(value));
+    }
+    return this;
+  }
+
+  /**
+   * Sets multiple attributes on the element.
+   * Delegates to `.attr()` for each key-value pair to ensure consistent handling.
+   *
+   * @param map - A record of attribute names and values.
+   * @return This instance for chaining.
+   */
+  attrs(map: Record<string, string | number | boolean | undefined>): this {
+    for (const [name, value] of Object.entries(map)) {
+      this.attr(name, value);
+    }
+    return this;
+  }
+
+  /**
+   * Toggles the presence of a boolean attribute on the element.
+   * Uses the native `toggleAttribute` method for clarity and correctness.
+   * If `force` is `true`, ensures the attribute is present.
+   * If `force` is `false`, ensures the attribute is removed.
+   * If `force` is omitted, toggles the current state.
+   *
+   * @param name - The attribute name (e.g. "disabled", "checked", "readonly").
+   * @param force - Optional boolean to force add (`true`) or remove (`false`) the attribute.
+   * @return This instance for chaining.
+   */
+  toggleAttr(name: string, force?: boolean): this {
+    this.dom.toggleAttribute(name, force);
+    return this;
+  }
+
+  /**
+   * Sets a single property on the element.
+   * @param name - The property name (e.g. "checked", "value", "disabled").
+   * @param value - The property value. If undefined, the property is deleted.
+   * @return This DomElement instance for chaining.
+   */
+  prop(name: string, value: any) {
+    (this.dom as any)[name] = value;
+    return this;
+  }
+
+  /**
+   * Sets multiple properties on the element.
+   * @param props - An object mapping property names to values.
+   *                     Properties with undefined values are deleted.
+   * @return This DomElement instance for chaining.
+   */
+  props(props: Record<string, any>) {
+    for (const [key, value] of Object.entries(props)) {
+      this.prop(key, value);
+    }
+    return this;
   }
 
   /**
@@ -203,14 +401,25 @@ export abstract class BaseDom<
   }
 
   /**
+   * Removes all child nodes from the element by doing `dom.textContent = ""`.
+   *
+   * @return This instance for chaining.
+   */
+  clear(): this {
+    this.dom.textContent = "";
+    return this;
+  }
+
+  /**
    * Removes child elements within the specified index range.
-   * If no range is provided, removes all children.
+   * Behaves like `Array.prototype.slice(from, to)` — `from` is inclusive, `to` is exclusive.
+   * If `from` is omitted, defaults to 0. If `to` is omitted, removes to the end.
    *
    * @param from - The starting index (inclusive). Defaults to 0.
-   * @param to - The ending index (exclusive). Defaults to all children.
-   * @returns This DomElement instance.
+   * @param to - The ending index (exclusive). Defaults to all remaining children.
+   * @return This instance for chaining.
    */
-  clear(from?: number, to?: number) {
+  clearRange(from?: number, to?: number): this {
     const children = Array.from(this.dom.children);
     const start = Math.max(0, from ?? 0);
     const end = Math.min(children.length, to ?? children.length);
@@ -234,6 +443,27 @@ export abstract class BaseDom<
   contains(target: Node | BaseDom<any>): boolean {
     const node = target instanceof BaseDom ? target.dom : target;
     return this.dom.contains(node);
+  }
+
+  /**
+   * Queries this element's subtree for a single matching descendant and wraps it in a `DomElement`.
+   * Returns `null` if no match is found.
+   *
+   * This enables fluent DOM composition and manipulation within scoped components.
+   *
+   * @param selector - A valid CSS selector string.
+   * @return A `DomElement` wrapper for the matched element, or `null` if not found.
+   */
+  query<T extends keyof DomElementTagNameMap>(
+    selector: string
+  ): DomElement<T> | null {
+    const el = this.dom.querySelector(selector);
+    return el
+      ? new DomElement<T>(
+          el.tagName.toLowerCase() as T,
+          el as DomElementTagNameMap[T]
+        )
+      : null;
   }
 
   ref(refFn: (el: this) => void) {
