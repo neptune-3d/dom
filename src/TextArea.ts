@@ -114,3 +114,12 @@ export class TextArea extends DomElement<"textarea"> {
     return this;
   }
 }
+
+/**
+ * Creates a new TextArea element.
+ *
+ * @return A new TextArea instance.
+ */
+export function $textarea(): TextArea {
+  return new TextArea();
+}
