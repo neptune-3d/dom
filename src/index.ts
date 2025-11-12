@@ -24,5 +24,6 @@ export * from "./PathData";
 export * from "./ProgressElement";
 export * from "./SelectElement";
 export * from "./StyleSheet";
+export * from "./TextArea";
 export * from "./types";
 export * from "./utils";
