@@ -160,3 +160,5 @@ export type IFrameSandboxFlag =
   | "allow-storage-access-by-user-activation"
   | "allow-top-navigation"
   | "allow-top-navigation-by-user-activation";
+
+export type TextAreaWrapMode = "soft" | "hard" | "off";
