@@ -1,5 +1,5 @@
 import { BaseSvgElement } from "./BaseSvgElement";
-import type { SvgPathData } from "./PathData";
+import type { SvgPathData } from "./SvgPathData";
 
 /**
  * Wrapper for the `<path>` SVG element, extending `BaseSvgElement<"path">` with path-specific functionality.
