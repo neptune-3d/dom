@@ -690,6 +690,19 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets the `border-collapse` style of the element.
+   * Controls whether table borders are collapsed or separated.
+   * Accepts values like `"collapse"`, `"separate"`, or CSS variables.
+   * Passing `undefined` removes the border-collapse style.
+   *
+   * @param value - The border-collapse behavior to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  bCollapse(value: Property.BorderCollapse | undefined): this {
+    return this.setStyleProp("borderCollapse", value);
+  }
+
+  /**
    * Sets the `overflow` style of the element.
    * Controls how content that exceeds the element's bounds is handled on both axes.
    * Common values include "visible", "hidden", "scroll", and "auto".
@@ -1349,16 +1362,42 @@ export abstract class BaseStyle {
   }
 
   /**
-   * Sets the `border-collapse` style of the element.
-   * Controls whether table borders are collapsed or separated.
-   * Accepts values like `"collapse"`, `"separate"`, or CSS variables.
-   * Passing `undefined` removes the border-collapse style.
+   * Sets the CSS `fill` style of the element.
+   * Controls the paint used to fill the interior of SVG shapes or text.
+   * Accepts values like color strings (`"red"`, `"#000"`, `"currentColor"`), gradients, or CSS variables.
+   * Passing `undefined` removes the fill style.
    *
-   * @param value - The border-collapse behavior to apply, or `undefined` to remove it.
+   * @param value - The fill style to apply, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  borderCollapse(value: Property.BorderCollapse | undefined): this {
-    return this.setStyleProp("borderCollapse", value);
+  fill(value: Property.Fill | undefined): this {
+    return this.setStyleProp("fill", value);
+  }
+
+  /**
+   * Sets the CSS `stroke` style of the element.
+   * Controls the color used to outline SVG shapes or text.
+   * Accepts values like color strings (`"black"`, `"none"`, `"currentColor"`), gradients, or CSS variables.
+   * Passing `undefined` removes the stroke style.
+   *
+   * @param value - The stroke style to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  stroke(value: Property.Stroke | undefined): this {
+    return this.setStyleProp("stroke", value);
+  }
+
+  /**
+   * Sets the CSS `stroke-width` style of the element.
+   * Controls the thickness of the stroke used to outline SVG shapes or text.
+   * Accepts values like `"1px"`, `"0.5em"`, numeric values, or CSS variables.
+   * Passing `undefined` removes the stroke-width style.
+   *
+   * @param value - The stroke-width style to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  strokeWidth(value: Property.StrokeWidth | number | undefined): this {
+    return this.setStyleProp("strokeWidth", value);
   }
 
   /**
