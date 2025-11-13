@@ -16,12 +16,16 @@ export class BaseSvgElement<
   T extends keyof SvgElementTagNameMap
 > extends DomElement<T> {
   /**
-   * Sets the `fill` color.
-   * @param color - Fill color (e.g. "red", "#ff0000", "none").
+   * Sets the `fill` attribute on the SVG element.
+   * Controls the paint used to fill the interior of shapes.
+   * Accepts values like color strings (`"red"`, `"#000"`, `"currentColor"`), gradients, or CSS variables.
+   * Passing `undefined` removes the attribute.
+   *
+   * @param value - The fill value to apply as an SVG attribute, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  svgFill(color: string): this {
-    return this.attr("fill", color);
+  fill(value: string | undefined): this {
+    return this.attr("fill", value);
   }
 
   /**
@@ -36,21 +40,43 @@ export class BaseSvgElement<
   }
 
   /**
-   * Sets the `stroke` color.
-   * @param color - Stroke color (e.g. "black", "#000", "none").
+   * Sets the `fill-opacity` attribute on the SVG element.
+   * Controls the transparency of the fill independently from the overall element opacity.
+   * Accepts values from `0` (fully transparent) to `1` (fully opaque), or CSS variables.
+   * Useful for layering visual effects or emphasizing fill contrast without affecting stroke or children.
+   * Passing `undefined` removes the attribute.
+   *
+   * @param value - The fill opacity value to apply as an SVG attribute, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  svgStroke(color: string): this {
-    return this.attr("stroke", color);
+  fillOpacity(value: string | number | undefined): this {
+    return this.attr("fill-opacity", value);
   }
 
   /**
-   * Sets the `stroke-width` value.
-   * @param width - Stroke width in pixels or units.
+   * Sets the `stroke` attribute on the SVG element.
+   * Controls the color used to outline shapes.
+   * Accepts values like color strings (`"black"`, `"none"`, `"currentColor"`), gradients, or CSS variables.
+   * Passing `undefined` removes the attribute.
+   *
+   * @param value - The stroke value to apply as an SVG attribute, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  svgStrokeWidth(width: number | string): this {
-    return this.attr("stroke-width", width.toString());
+  stroke(value: string | undefined): this {
+    return this.attr("stroke", value);
+  }
+
+  /**
+   * Sets the `stroke-width` attribute on the SVG element.
+   * Controls the thickness of the stroke used to outline shapes.
+   * Accepts values like `"1"`, `"0.5"`, `"2px"`, or CSS variables.
+   * Passing `undefined` removes the attribute.
+   *
+   * @param value - The stroke-width value to apply as an SVG attribute, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  strokeWidth(value: string | number | undefined): this {
+    return this.attr("stroke-width", value);
   }
 
   /**
@@ -87,22 +113,68 @@ export class BaseSvgElement<
   }
 
   /**
-   * Sets the `opacity` value.
-   * @param value - Opacity from 0 to 1.
+   * Sets the `stroke-opacity` attribute on the SVG element.
+   * Controls the transparency of the stroke independently from the overall element opacity.
+   * Accepts values from `0` (fully transparent) to `1` (fully opaque), or CSS variables.
+   * Passing `undefined` removes the attribute.
+   *
+   * @param value - The stroke opacity value to apply as an SVG attribute, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  svgOpacity(value: number): this {
-    return this.attr("opacity", value.toString());
+  strokeOpacity(value: string | number | undefined): this {
+    return this.attr("stroke-opacity", value);
   }
 
   /**
-   * Sets the `transform` attribute with a raw SVG transform string.
-   * Accepts any valid transform function: translate, rotate, scale, skewX, skewY, matrix.
+   * Sets the `stroke-dasharray` attribute on the SVG element.
+   * Defines the pattern of dashes and gaps used to render the stroke.
+   * Accepts a space- or comma-separated list of lengths (e.g. `"5 2"` or `"5,2"`), numeric values, or CSS variables.
+   * Passing `undefined` removes the attribute.
    *
-   * @param value - SVG transform string (e.g. "translate(10, 20) rotate(45)").
+   * @param value - The dash pattern to apply as an SVG attribute, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  svgTransform(value: string): this {
+  strokeDasharray(value: string | number | undefined): this {
+    return this.attr("stroke-dasharray", value);
+  }
+
+  /**
+   * Sets the `stroke-dashoffset` attribute on the SVG element.
+   * Specifies how far into the dash pattern the stroke should start.
+   * Useful for animating dashed strokes or offsetting patterns.
+   * Accepts numeric values, length strings (e.g. `"4px"`), or CSS variables.
+   * Passing `undefined` removes the attribute.
+   *
+   * @param value - The dash offset to apply as an SVG attribute, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  strokeDashoffset(value: string | number | undefined): this {
+    return this.attr("stroke-dashoffset", value);
+  }
+
+  /**
+   * Sets the `opacity` attribute on the SVG element.
+   * Controls the overall transparency of the element.
+   * Accepts values from `0` (fully transparent) to `1` (fully opaque), or CSS variables.
+   * Passing `undefined` removes the attribute.
+   *
+   * @param value - The opacity value to apply as an SVG attribute, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  opacity(value: string | number | undefined): this {
+    return this.attr("opacity", value);
+  }
+
+  /**
+   * Sets the `transform` attribute on the SVG element.
+   * Controls geometric transformations like translation, rotation, scaling, and skewing.
+   * Accepts values like `"translate(10, 20)"`, `"rotate(45)"`, `"scale(2)"`, or composed transforms.
+   * Passing `undefined` removes the attribute.
+   *
+   * @param value - The transform string to apply as an SVG attribute, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  transform(value: string | undefined): this {
     return this.attr("transform", value);
   }
 
@@ -114,7 +186,7 @@ export class BaseSvgElement<
    * @param y - Vertical translation in user units.
    * @return This instance for chaining.
    */
-  svgTranslate(x: number, y: number): this {
+  translate(x: number, y: number): this {
     return this.attr("transform", `translate(${x} ${y})`);
   }
 
@@ -125,7 +197,7 @@ export class BaseSvgElement<
    * @param x - Horizontal translation in user units.
    * @return This instance for chaining.
    */
-  svgTranslateX(x: number): this {
+  translateX(x: number): this {
     return this.attr("transform", `translate(${x} 0)`);
   }
 
@@ -136,7 +208,7 @@ export class BaseSvgElement<
    * @param y - Vertical translation in user units.
    * @return This instance for chaining.
    */
-  svgTranslateY(y: number): this {
+  translateY(y: number): this {
     return this.attr("transform", `translate(0 ${y})`);
   }
 
@@ -149,7 +221,7 @@ export class BaseSvgElement<
    * @param cy - Optional y coordinate of the rotation center.
    * @return This instance for chaining.
    */
-  svgRotate(angle: number, cx?: number, cy?: number): this {
+  rotate(angle: number, cx?: number, cy?: number): this {
     const value =
       cx !== undefined && cy !== undefined
         ? `rotate(${angle} ${cx} ${cy})`
@@ -164,7 +236,7 @@ export class BaseSvgElement<
    * @param s - Uniform scale factor for both x and y axes.
    * @return This instance for chaining.
    */
-  svgScale(s: number): this {
+  scale(s: number): this {
     return this.attr("transform", `scale(${s})`);
   }
 
@@ -175,7 +247,7 @@ export class BaseSvgElement<
    * @param sx - Horizontal scale factor.
    * @return This instance for chaining.
    */
-  svgScaleX(sx: number): this {
+  scaleX(sx: number): this {
     return this.attr("transform", `scale(${sx} 1)`);
   }
 
@@ -186,7 +258,45 @@ export class BaseSvgElement<
    * @param sy - Vertical scale factor.
    * @return This instance for chaining.
    */
-  svgScaleY(sy: number): this {
+  scaleY(sy: number): this {
     return this.attr("transform", `scale(1 ${sy})`);
+  }
+
+  /**
+   * Applies a horizontal skew transform to the SVG element.
+   * Sets the `transform` attribute to `skewX(angle)`, replacing any existing transform.
+   * Skewing distorts the element along the X-axis by the specified angle.
+   *
+   * @param angle - Skew angle in degrees. Positive values skew right, negative values skew left.
+   * @return This instance for chaining.
+   */
+  skewX(angle: number): this {
+    return this.attr("transform", `skewX(${angle})`);
+  }
+
+  /**
+   * Applies a vertical skew transform to the SVG element.
+   * Sets the `transform` attribute to `skewY(angle)`, replacing any existing transform.
+   * Skewing distorts the element along the Y-axis by the specified angle.
+   *
+   * @param angle - Skew angle in degrees. Positive values skew downward, negative values skew upward.
+   * @return This instance for chaining.
+   */
+  skewY(angle: number): this {
+    return this.attr("transform", `skewY(${angle})`);
+  }
+
+  /**
+   * Sets the `vector-effect` attribute on the SVG element.
+   * Controls how stroke rendering behaves under geometric transformations.
+   * Commonly used to preserve stroke width when scaling with `transform`.
+   *
+   * @param value - One of:
+   *   - `"none"`: Stroke scales with the element.
+   *   - `"non-scaling-stroke"`: Stroke width remains constant regardless of scale.
+   * @return This instance for chaining.
+   */
+  vectorEffect(value: "none" | "non-scaling-stroke"): this {
+    return this.attr("vector-effect", value);
   }
 }
