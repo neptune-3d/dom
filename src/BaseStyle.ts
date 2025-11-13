@@ -1294,7 +1294,7 @@ export abstract class BaseStyle {
    * @param value - The offset distance to apply, or `undefined` to remove it.
    * @return This instance for chaining.
    */
-  outlineOffset(value: Property.OutlineOffset | undefined): this {
+  outlineOffset(value: Property.OutlineOffset | number | undefined): this {
     return this.setStyleProp("outlineOffset", value);
   }
 
@@ -1346,6 +1346,19 @@ export abstract class BaseStyle {
    */
   resize(value: Property.Resize | undefined): this {
     return this.setStyleProp("resize", value);
+  }
+
+  /**
+   * Sets the `border-collapse` style of the element.
+   * Controls whether table borders are collapsed or separated.
+   * Accepts values like `"collapse"`, `"separate"`, or CSS variables.
+   * Passing `undefined` removes the border-collapse style.
+   *
+   * @param value - The border-collapse behavior to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  borderCollapse(value: Property.BorderCollapse | undefined): this {
+    return this.setStyleProp("borderCollapse", value);
   }
 
   /**

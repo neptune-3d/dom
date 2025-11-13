@@ -280,6 +280,18 @@ export abstract class BaseDom<
   }
 
   /**
+   * Sets the `tabindex` attribute on the element.
+   * Controls whether the element can receive keyboard focus and its order in the tab sequence.
+   * Pass `undefined` to remove the attribute.
+   *
+   * @param value - The tabindex value to apply, or `undefined` to remove it.
+   * @return This instance for chaining.
+   */
+  tabIndex(value: number | undefined): this {
+    return this.attr("tabindex", value);
+  }
+
+  /**
    * Toggles a CSS class on the element.
    * Adds the class if it’s not present, removes it if it is.
    * Uses `classList.toggle()` for safe DOM-backed mutation.

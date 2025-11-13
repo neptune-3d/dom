@@ -140,6 +140,41 @@ export class DomElement<
   }
 
   /**
+   * Focuses this DOM element, if it supports focus.
+   * For non-focusable elements (like SVG or body), ensure `tabindex` is set if needed.
+   *
+   * @return This instance for chaining.
+   */
+  focus(): this {
+    this.dom.focus();
+    return this;
+  }
+
+  /**
+   * Removes focus from this DOM element, if it supports blur.
+   * For non-focusable elements, this is a no-op.
+   *
+   * @return This instance for chaining.
+   */
+  blur(): this {
+    this.dom.blur();
+    return this;
+  }
+
+  /**
+   * Programmatically clicks this DOM element, if it supports click.
+   * Useful for triggering buttons, links, or custom handlers.
+   *
+   * @return This instance for chaining.
+   */
+  click(): this {
+    if (!this.isSvg) {
+      (this.dom as HTMLElement).click();
+    }
+    return this;
+  }
+
+  /**
    * Sets or removes the `popover` attribute on the element.
    * Applies to HTML elements that support the Popover API (e.g., `<div popover>`).
    * Passing `undefined` removes the attribute.
@@ -185,16 +220,18 @@ export class DomElement<
     return this.attr("popovertargetaction", value);
   }
 
-  // hint
-
   /**
    * Shows the popover on this element.
    * Requires the element to have a `popover="manual"` attribute and be in the DOM.
    *
+   * Optionally accepts a `source` HTMLElement that acts as the invoker,
+   * improving accessibility and enabling anchor positioning.
+   *
+   * @param source - An optional HTMLElement to act as the popover's invoker.
    * @return This DomElement instance for chaining.
    */
-  showPopover() {
-    (this.dom as any).showPopover();
+  showPopover(source?: HTMLElement): this {
+    (this.dom as any).showPopover({ source });
     return this;
   }
 
@@ -206,6 +243,19 @@ export class DomElement<
    */
   hidePopover() {
     (this.dom as any).hidePopover();
+    return this;
+  }
+
+  /**
+   * Toggles the popover visibility on this element.
+   * Requires the element to have a `popover="manual"` attribute and be in the DOM.
+   *
+   * @param force - If true, forces the popover to show; if false, forces it to hide; if undefined, toggles.
+   * @param source - An optional HTMLElement that acts as the invoker, improving accessibility and anchor positioning.
+   * @return This DomElement instance for chaining.
+   */
+  togglePopover(force?: boolean, source?: HTMLElement): this {
+    (this.dom as any).togglePopover({ force, source });
     return this;
   }
 }

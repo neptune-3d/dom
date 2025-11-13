@@ -9,237 +9,158 @@
  *     .close()
  *     .toString(); // "M10 10 L100 100 Z"
  */
-export class PathData {
+export class SvgPathData {
   protected _segments: string[] = [];
 
   /**
-   * Moves the current drawing position to the absolute coordinate (x, y).
+   * Moves the current drawing position to the coordinate (x, y).
    * Starts a new subpath without drawing a line.
    *
-   * Equivalent to the SVG `M` command.
+   * Equivalent to the SVG `M` or `m` command.
    *
-   * @param x - Absolute x coordinate.
-   * @param y - Absolute y coordinate.
+   * @param x - X coordinate of the new position.
+   * @param y - Y coordinate of the new position.
+   * @param relative - If true, uses relative coordinates (`m`); otherwise absolute (`M`)
    * @return This instance for chaining.
    */
-  moveTo(x: number, y: number): this {
-    this._segments.push(`M${x} ${y}`);
+  m(x: number, y: number, relative: boolean = false): this {
+    const cmd = relative ? "m" : "M";
+    this._segments.push(`${cmd}${x} ${y}`);
     return this;
   }
 
   /**
-   * Moves the current drawing position by a relative offset (dx, dy).
-   * Starts a new subpath without drawing a line.
-   *
-   * Equivalent to the SVG `m` command.
-   *
-   * @param dx - Relative x offset from the current position.
-   * @param dy - Relative y offset from the current position.
-   * @return This instance for chaining.
-   */
-  moveToRel(dx: number, dy: number): this {
-    this._segments.push(`m${dx} ${dy}`);
-    return this;
-  }
-
-  /**
-   * Draws a straight line from the current position to the absolute coordinate (x, y).
+   * Draws a straight line from the current position to (x, y).
    * Adds a visible segment to the path.
    *
-   * Equivalent to the SVG `L` command.
+   * Equivalent to the SVG `L` or `l` command.
    *
-   * @param x - Absolute x coordinate of the line endpoint.
-   * @param y - Absolute y coordinate of the line endpoint.
+   * @param x - X coordinate of the line endpoint.
+   * @param y - Y coordinate of the line endpoint.
+   * @param relative - If true, uses relative coordinates (`l`); otherwise absolute (`L`)
    * @return This instance for chaining.
    */
-  lineTo(x: number, y: number): this {
-    this._segments.push(`L${x} ${y}`);
+  l(x: number, y: number, relative: boolean = false): this {
+    const cmd = relative ? "l" : "L";
+    this._segments.push(`${cmd}${x} ${y}`);
     return this;
   }
 
   /**
-   * Draws a straight line from the current position by a relative offset (dx, dy).
-   * Adds a visible segment to the path.
+   * Draws a horizontal line to the given x coordinate,
+   * keeping the current y position unchanged.
    *
-   * Equivalent to the SVG `l` command.
+   * Equivalent to the SVG `H` or `h` command.
    *
-   * @param dx - Relative x offset from the current position.
-   * @param dy - Relative y offset from the current position.
+   * @param x - X coordinate of the line endpoint.
+   * @param relative - If true, uses relative coordinates (`h`); otherwise absolute (`H`)
    * @return This instance for chaining.
    */
-  lineToRel(dx: number, dy: number): this {
-    this._segments.push(`l${dx} ${dy}`);
+  h(x: number, relative: boolean = false): this {
+    const cmd = relative ? "h" : "H";
+    this._segments.push(`${cmd}${x}`);
     return this;
   }
 
   /**
-   * Draws a horizontal line from the current position to the absolute x coordinate.
-   * Keeps the current y position unchanged.
+   * Draws a vertical line to the given y coordinate,
+   * keeping the current x position unchanged.
    *
-   * Equivalent to the SVG `H` command.
+   * Equivalent to the SVG `V` or `v` command.
    *
-   * @param x - Absolute x coordinate of the line endpoint.
+   * @param y - Y coordinate of the line endpoint.
+   * @param relative - If true, uses relative coordinates (`v`); otherwise absolute (`V`)
    * @return This instance for chaining.
    */
-  horizontal(x: number): this {
-    this._segments.push(`H${x}`);
+  v(y: number, relative: boolean = false): this {
+    const cmd = relative ? "v" : "V";
+    this._segments.push(`${cmd}${y}`);
     return this;
   }
 
   /**
-   * Draws a horizontal line from the current position by a relative x offset.
-   * Keeps the current y position unchanged.
-   *
-   * Equivalent to the SVG `h` command.
-   *
-   * @param dx - Relative x offset from the current position.
-   * @return This instance for chaining.
-   */
-  horizontalRel(dx: number): this {
-    this._segments.push(`h${dx}`);
-    return this;
-  }
-
-  /**
-   * Draws a vertical line from the current position to the absolute y coordinate.
-   * Keeps the current x position unchanged.
-   *
-   * Equivalent to the SVG `V` command.
-   *
-   * @param y - Absolute y coordinate of the line endpoint.
-   * @return This instance for chaining.
-   */
-  vertical(y: number): this {
-    this._segments.push(`V${y}`);
-    return this;
-  }
-
-  /**
-   * Draws a vertical line from the current position by a relative y offset.
-   * Keeps the current x position unchanged.
-   *
-   * Equivalent to the SVG `v` command.
-   *
-   * @param dy - Relative y offset from the current position.
-   * @return This instance for chaining.
-   */
-  verticalRel(dy: number): this {
-    this._segments.push(`v${dy}`);
-    return this;
-  }
-
-  /**
-   * Draws a cubic Bézier curve from the current position to the absolute coordinate (x, y),
+   * Draws a cubic Bézier curve from the current position to (x, y),
    * using two control points to shape the curve.
    *
-   * Equivalent to the SVG `C` command.
+   * Equivalent to the SVG `C` or `c` command.
    *
-   * @param cx1 - Absolute x coordinate of the first control point.
-   * @param cy1 - Absolute y coordinate of the first control point.
-   * @param cx2 - Absolute x coordinate of the second control point.
-   * @param cy2 - Absolute y coordinate of the second control point.
-   * @param x - Absolute x coordinate of the curve endpoint.
-   * @param y - Absolute y coordinate of the curve endpoint.
+   * @param cx1 - X coordinate of the first control point.
+   * @param cy1 - Y coordinate of the first control point.
+   * @param cx2 - X coordinate of the second control point.
+   * @param cy2 - Y coordinate of the second control point.
+   * @param x - Destination x coordinate.
+   * @param y - Destination y coordinate.
+   * @param relative - If true, uses relative coordinates (`c`); otherwise absolute (`C`)
    * @return This instance for chaining.
    */
-  curveTo(
+  c(
     cx1: number,
     cy1: number,
     cx2: number,
     cy2: number,
     x: number,
-    y: number
+    y: number,
+    relative: boolean = false
   ): this {
-    this._segments.push(`C${cx1} ${cy1}, ${cx2} ${cy2}, ${x} ${y}`);
+    const cmd = relative ? "c" : "C";
+    this._segments.push(`${cmd}${cx1} ${cy1}, ${cx2} ${cy2}, ${x} ${y}`);
     return this;
   }
 
   /**
-   * Draws a cubic Bézier curve from the current position by a relative offset (dx, dy),
-   * using two relative control points to shape the curve.
-   *
-   * Equivalent to the SVG `c` command.
-   *
-   * @param dc1x - Relative x offset of the first control point.
-   * @param dc1y - Relative y offset of the first control point.
-   * @param dc2x - Relative x offset of the second control point.
-   * @param dc2y - Relative y offset of the second control point.
-   * @param dx - Relative x offset of the curve endpoint.
-   * @param dy - Relative y offset of the curve endpoint.
-   * @return This instance for chaining.
-   */
-  curveToRel(
-    dc1x: number,
-    dc1y: number,
-    dc2x: number,
-    dc2y: number,
-    dx: number,
-    dy: number
-  ): this {
-    this._segments.push(`c${dc1x} ${dc1y}, ${dc2x} ${dc2y}, ${dx} ${dy}`);
-    return this;
-  }
-
-  /**
-   * Draws a quadratic Bézier curve from the current position to the absolute coordinate (x, y),
+   * Draws a quadratic Bézier curve from the current position to (x, y),
    * using a single control point to shape the curve.
    *
-   * Equivalent to the SVG `Q` command.
+   * Equivalent to the SVG `Q` or `q` command.
    *
-   * @param cx - Absolute x coordinate of the control point.
-   * @param cy - Absolute y coordinate of the control point.
-   * @param x - Absolute x coordinate of the curve endpoint.
-   * @param y - Absolute y coordinate of the curve endpoint.
+   * @param cx - X coordinate of the control point.
+   * @param cy - Y coordinate of the control point.
+   * @param x - Destination x coordinate.
+   * @param y - Destination y coordinate.
+   * @param relative - If true, uses relative coordinates (`q`); otherwise absolute (`Q`)
    * @return This instance for chaining.
    */
-  quadraticTo(cx: number, cy: number, x: number, y: number): this {
-    this._segments.push(`Q${cx} ${cy}, ${x} ${y}`);
+  q(
+    cx: number,
+    cy: number,
+    x: number,
+    y: number,
+    relative: boolean = false
+  ): this {
+    const cmd = relative ? "q" : "Q";
+    this._segments.push(`${cmd}${cx} ${cy}, ${x} ${y}`);
     return this;
   }
 
   /**
-   * Draws a quadratic Bézier curve from the current position by a relative offset (dx, dy),
-   * using a single relative control point to shape the curve.
-   *
-   * Equivalent to the SVG `q` command.
-   *
-   * @param dcx - Relative x offset of the control point.
-   * @param dcy - Relative y offset of the control point.
-   * @param dx - Relative x offset of the curve endpoint.
-   * @param dy - Relative y offset of the curve endpoint.
-   * @return This instance for chaining.
-   */
-  quadraticToRel(dcx: number, dcy: number, dx: number, dy: number): this {
-    this._segments.push(`q${dcx} ${dcy}, ${dx} ${dy}`);
-    return this;
-  }
-
-  /**
-   * Draws an elliptical arc from the current position to the absolute coordinate (x, y),
+   * Draws an elliptical arc from the current position to the coordinate (x, y),
    * using the specified radii, rotation, and arc/sweep flags.
    *
-   * Equivalent to the SVG `A` command.
+   * Equivalent to the SVG `A` or `a` command.
    *
    * @param rx - Horizontal radius of the ellipse.
    * @param ry - Vertical radius of the ellipse.
-   * @param xAxisRotation - Rotation (in degrees) of the ellipse's x-axis relative to the coordinate system.
-   * @param largeArc - If true, draws the larger of the two possible arcs (sweep angle ≥ 180°).
-   * @param sweep - If true, draws the arc in a "positive-angle" (clockwise) direction.
-   * @param x - Absolute x coordinate of the arc endpoint.
-   * @param y - Absolute y coordinate of the arc endpoint.
+   * @param xAxisRotation - Rotation (in degrees) of the ellipse's x-axis.
+   * @param largeArc - If true, draws the larger arc (≥ 180°).
+   * @param sweep - If true, draws clockwise.
+   * @param x - Destination x coordinate.
+   * @param y - Destination y coordinate.
+   * @param relative - If true, uses relative coordinates (`a`); otherwise absolute (`A`)
    * @return This instance for chaining.
    */
-  arcTo(
+  a(
     rx: number,
     ry: number,
     xAxisRotation: number,
     largeArc: boolean,
     sweep: boolean,
     x: number,
-    y: number
+    y: number,
+    relative: boolean = false
   ): this {
+    const cmd = relative ? "a" : "A";
     this._segments.push(
-      `A${rx} ${ry} ${xAxisRotation} ${largeArc ? 1 : 0} ${
+      `${cmd}${rx} ${ry} ${xAxisRotation} ${largeArc ? 1 : 0} ${
         sweep ? 1 : 0
       } ${x} ${y}`
     );
@@ -247,34 +168,44 @@ export class PathData {
   }
 
   /**
-   * Draws an elliptical arc from the current position by a relative offset (dx, dy),
-   * using the specified radii, rotation, and arc/sweep flags.
+   * Draws a smooth quadratic Bézier curve to (x, y),
+   * reflecting the previous control point.
    *
-   * Equivalent to the SVG `a` command.
+   * Equivalent to the SVG `T` or `t` command.
    *
-   * @param rx - Horizontal radius of the ellipse.
-   * @param ry - Vertical radius of the ellipse.
-   * @param xAxisRotation - Rotation (in degrees) of the ellipse's x-axis relative to the coordinate system.
-   * @param largeArc - If true, draws the larger of the two possible arcs (sweep angle ≥ 180°).
-   * @param sweep - If true, draws the arc in a "positive-angle" (clockwise) direction.
-   * @param dx - Relative x offset of the arc endpoint.
-   * @param dy - Relative y offset of the arc endpoint.
+   * @param x - Destination x
+   * @param y - Destination y
+   * @param relative - If true, uses relative coordinates (`t`); otherwise absolute (`T`)
    * @return This instance for chaining.
    */
-  arcToRel(
-    rx: number,
-    ry: number,
-    xAxisRotation: number,
-    largeArc: boolean,
-    sweep: boolean,
-    dx: number,
-    dy: number
+  t(x: number, y: number, relative: boolean = false): this {
+    const cmd = relative ? "t" : "T";
+    this._segments.push(`${cmd}${x} ${y}`);
+    return this;
+  }
+
+  /**
+   * Draws a smooth cubic Bézier curve from the current position to (x, y),
+   * using one control point. The first control point is inferred from the previous segment.
+   *
+   * Equivalent to the SVG `S` or `s` command.
+   *
+   * @param cx2 - X coordinate of the second control point.
+   * @param cy2 - Y coordinate of the second control point.
+   * @param x - Destination x coordinate.
+   * @param y - Destination y coordinate.
+   * @param relative - If true, uses relative coordinates (`s`); otherwise absolute (`S`)
+   * @return This instance for chaining.
+   */
+  s(
+    cx2: number,
+    cy2: number,
+    x: number,
+    y: number,
+    relative: boolean = false
   ): this {
-    this._segments.push(
-      `a${rx} ${ry} ${xAxisRotation} ${largeArc ? 1 : 0} ${
-        sweep ? 1 : 0
-      } ${dx} ${dy}`
-    );
+    const cmd = relative ? "s" : "S";
+    this._segments.push(`${cmd}${cx2} ${cy2}, ${x} ${y}`);
     return this;
   }
 
@@ -299,32 +230,29 @@ export class PathData {
    * @param y - Top-left y coordinate.
    * @param width - Width of the rectangle.
    * @param height - Height of the rectangle.
+   * @param relative - If true, uses relative coordinates (`m`, `h`, `v`); otherwise absolute (`M`, `H`, `V`)
    * @return This instance for chaining.
    */
-  rect(x: number, y: number, width: number, height: number): this {
-    return this.moveTo(x, y)
-      .horizontal(x + width)
-      .vertical(y + height)
-      .horizontal(x)
-      .close();
-  }
-
-  /**
-   * Adds a rectangular path using relative coordinates from the current position.
-   * Uses `moveToRel`, `horizontalRel`, `verticalRel`, and `close` for fluent composition.
-   *
-   * @param dx - Relative x offset from the current position.
-   * @param dy - Relative y offset from the current position.
-   * @param width - Width of the rectangle.
-   * @param height - Height of the rectangle.
-   * @return This instance for chaining.
-   */
-  rectRel(dx: number, dy: number, width: number, height: number): this {
-    return this.moveToRel(dx, dy)
-      .horizontalRel(width)
-      .verticalRel(height)
-      .horizontalRel(-width)
-      .close();
+  rect(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    relative: boolean = false
+  ): this {
+    if (relative) {
+      return this.m(x, y, true)
+        .h(width, true)
+        .v(height, true)
+        .h(-width, true)
+        .close();
+    } else {
+      return this.m(x, y)
+        .h(x + width)
+        .v(y + height)
+        .h(x)
+        .close();
+    }
   }
 
   /**
@@ -348,15 +276,15 @@ export class PathData {
     const right = x + width;
     const bottom = y + height;
 
-    return this.moveTo(x + r, y)
-      .horizontal(right - r)
-      .arcTo(r, r, 0, false, true, right, y + r)
-      .vertical(bottom - r)
-      .arcTo(r, r, 0, false, true, right - r, bottom)
-      .horizontal(x + r)
-      .arcTo(r, r, 0, false, true, x, bottom - r)
-      .vertical(y + r)
-      .arcTo(r, r, 0, false, true, x + r, y)
+    return this.m(x + r, y)
+      .h(right - r)
+      .a(r, r, 0, false, true, right, y + r)
+      .v(bottom - r)
+      .a(r, r, 0, false, true, right - r, bottom)
+      .h(x + r)
+      .a(r, r, 0, false, true, x, bottom - r)
+      .v(y + r)
+      .a(r, r, 0, false, true, x + r, y)
       .close();
   }
 
@@ -369,31 +297,22 @@ export class PathData {
    * @param cx - Center x coordinate.
    * @param cy - Center y coordinate.
    * @param r - Radius of the circle.
+   * @param relative - If true, uses relative coordinates (`m`, `a`); otherwise absolute (`M`, `A`)
    * @return This instance for chaining.
    */
-  circle(cx: number, cy: number, r: number): this {
+  circle(cx: number, cy: number, r: number, relative: boolean = false): this {
     const startX = cx + r;
     const startY = cy;
-    return this.moveTo(startX, startY)
-      .arcTo(r, r, 0, true, false, cx - r, cy)
-      .arcTo(r, r, 0, true, false, startX, startY);
-  }
 
-  /**
-   * Adds a circular path using relative coordinates from the current position.
-   * Uses `moveToRel` and two `arcToRel` commands to complete the full circle.
-   *
-   * Starts at (r, 0) relative to the current position.
-   *
-   * @param dx - Relative x offset to the circle center.
-   * @param dy - Relative y offset to the circle center.
-   * @param r - Radius of the circle.
-   * @return This instance for chaining.
-   */
-  circleRel(dx: number, dy: number, r: number): this {
-    return this.moveToRel(dx + r, dy)
-      .arcToRel(r, r, 0, true, false, -2 * r, 0)
-      .arcToRel(r, r, 0, true, false, 2 * r, 0);
+    if (relative) {
+      return this.m(startX, startY, true)
+        .a(r, r, 0, true, false, -2 * r, 0, true)
+        .a(r, r, 0, true, false, 2 * r, 0, true);
+    } else {
+      return this.m(startX, startY)
+        .a(r, r, 0, true, false, cx - r, cy)
+        .a(r, r, 0, true, false, startX, startY);
+    }
   }
 
   /**
@@ -406,14 +325,28 @@ export class PathData {
    * @param cy - Center y coordinate.
    * @param rx - Horizontal radius.
    * @param ry - Vertical radius.
+   * @param relative - If true, uses relative coordinates (`m`, `a`); otherwise absolute (`M`, `A`)
    * @return This instance for chaining.
    */
-  ellipse(cx: number, cy: number, rx: number, ry: number): this {
+  ellipse(
+    cx: number,
+    cy: number,
+    rx: number,
+    ry: number,
+    relative: boolean = false
+  ): this {
     const startX = cx + rx;
     const startY = cy;
-    return this.moveTo(startX, startY)
-      .arcTo(rx, ry, 0, true, false, cx - rx, cy)
-      .arcTo(rx, ry, 0, true, false, startX, startY);
+
+    if (relative) {
+      return this.m(startX, startY, true)
+        .a(rx, ry, 0, true, false, -2 * rx, 0, true)
+        .a(rx, ry, 0, true, false, 2 * rx, 0, true);
+    } else {
+      return this.m(startX, startY)
+        .a(rx, ry, 0, true, false, cx - rx, cy)
+        .a(rx, ry, 0, true, false, startX, startY);
+    }
   }
 
   /**
@@ -425,6 +358,7 @@ export class PathData {
    * @param points - Number of star points (minimum 2).
    * @param radius - Outer radius of the star.
    * @param insetRatio - Ratio of inner radius to outer radius (default: 0.5).
+   * @param relative - If true, uses relative coordinates (`m`, `l`); otherwise absolute (`M`, `L`)
    * @return This instance for chaining.
    */
   star(
@@ -432,7 +366,8 @@ export class PathData {
     cy: number,
     points: number,
     radius: number,
-    insetRatio = 0.5
+    insetRatio = 0.5,
+    relative: boolean = false
   ): this {
     if (points < 2) return this;
 
@@ -445,7 +380,13 @@ export class PathData {
       const x = cx + r * Math.cos(angle);
       const y = cy + r * Math.sin(angle);
 
-      i === 0 ? this.moveTo(x, y) : this.lineTo(x, y);
+      if (relative) {
+        const dx = r * Math.cos(angle);
+        const dy = r * Math.sin(angle);
+        i === 0 ? this.m(dx, dy, true) : this.l(dx, dy, true);
+      } else {
+        i === 0 ? this.m(x, y) : this.l(x, y);
+      }
     }
 
     return this.close();
@@ -456,17 +397,18 @@ export class PathData {
    * Uses `moveTo` and `lineTo` to connect each vertex, then closes the shape.
    *
    * @param points - Array of [x, y] coordinate pairs.
+   * @param relative - If true, uses relative coordinates (`m`, `l`); otherwise absolute (`M`, `L`)
    * @return This instance for chaining.
    */
-  polygon(points: [number, number][]): this {
+  polygon(points: [number, number][], relative: boolean = false): this {
     if (points.length < 2) return this;
 
     const [firstX, firstY] = points[0];
-    this.moveTo(firstX, firstY);
+    this.m(firstX, firstY, relative);
 
-    for (let i = 1; i < points.length; i++) {
+    for (let i = 1, len = points.length; i < len; i++) {
       const [x, y] = points[i];
-      this.lineTo(x, y);
+      this.l(x, y, relative);
     }
 
     return this.close();
@@ -477,17 +419,18 @@ export class PathData {
    * Uses `moveTo` and `lineTo` to connect each vertex without closing the shape.
    *
    * @param points - Array of [x, y] coordinate pairs.
+   * @param relative - If true, uses relative coordinates (`m`, `l`); otherwise absolute (`M`, `L`)
    * @return This instance for chaining.
    */
-  polyline(points: [number, number][]): this {
+  polyline(points: [number, number][], relative: boolean = false): this {
     if (points.length < 2) return this;
 
     const [firstX, firstY] = points[0];
-    this.moveTo(firstX, firstY);
+    this.m(firstX, firstY, relative);
 
-    for (let i = 1; i < points.length; i++) {
+    for (let i = 1, len = points.length; i < len; i++) {
       const [x, y] = points[i];
-      this.lineTo(x, y);
+      this.l(x, y, relative);
     }
 
     return this;
@@ -499,13 +442,19 @@ export class PathData {
    *
    * @param points - Array of [x, y] coordinate pairs (minimum 2).
    * @param tension - Controls curve tightness (default: 0.5). Lower = looser, higher = tighter.
+   * @param relative - If true, uses relative coordinates (`m`, `c`); otherwise absolute (`M`, `C`)
    * @return This instance for chaining.
    */
-  spline(points: [number, number][], tension = 0.5): this {
+  spline(
+    points: [number, number][],
+    tension = 0.5,
+    relative: boolean = false
+  ): this {
     const n = points.length;
     if (n < 2) return this;
 
-    this.moveTo(points[0][0], points[0][1]);
+    let [startX, startY] = points[0];
+    this.m(startX, startY, relative);
 
     for (let i = 0; i < n - 1; i++) {
       const [p0x, p0y] = points[i - 1] ?? points[i];
@@ -518,7 +467,19 @@ export class PathData {
       const d2x = ((p3x - p1x) * tension) / 6;
       const d2y = ((p3y - p1y) * tension) / 6;
 
-      this.curveTo(p1x + d1x, p1y + d1y, p2x - d2x, p2y - d2y, p2x, p2y);
+      if (relative) {
+        const dx1 = p1x + d1x - startX;
+        const dy1 = p1y + d1y - startY;
+        const dx2 = p2x - d2x - startX;
+        const dy2 = p2y - d2y - startY;
+        const dx = p2x - startX;
+        const dy = p2y - startY;
+        this.c(dx1, dy1, dx2, dy2, dx, dy, true);
+      } else {
+        this.c(p1x + d1x, p1y + d1y, p2x - d2x, p2y - d2y, p2x, p2y);
+      }
+
+      [startX, startY] = [p2x, p2y];
     }
 
     return this;
@@ -530,40 +491,22 @@ export class PathData {
    *
    * @param points - Array of [x, y] coordinate pairs.
    * @param close - Whether to close the path (default: false).
+   * @param relative - If true, uses relative coordinates (`m`, `l`); otherwise absolute (`M`, `L`)
    * @return This instance for chaining.
    */
-  pathFrom(points: [number, number][], close = false): this {
+  pathFrom(
+    points: [number, number][],
+    close = false,
+    relative: boolean = false
+  ): this {
     if (points.length < 2) return this;
 
     const [firstX, firstY] = points[0];
-    this.moveTo(firstX, firstY);
+    this.m(firstX, firstY, relative);
 
-    for (let i = 1; i < points.length; i++) {
+    for (let i = 1, len = points.length; i < len; i++) {
       const [x, y] = points[i];
-      this.lineTo(x, y);
-    }
-
-    if (close) this.close();
-    return this;
-  }
-
-  /**
-   * Adds a path using relative point offsets from the current position.
-   * Uses `moveToRel` and `lineToRel` to connect each vertex, optionally closing the shape.
-   *
-   * @param deltas - Array of [dx, dy] relative coordinate pairs.
-   * @param close - Whether to close the path (default: false).
-   * @return This instance for chaining.
-   */
-  pathFromRel(deltas: [number, number][], close = false): this {
-    if (deltas.length < 2) return this;
-
-    const [firstDx, firstDy] = deltas[0];
-    this.moveToRel(firstDx, firstDy);
-
-    for (let i = 1; i < deltas.length; i++) {
-      const [dx, dy] = deltas[i];
-      this.lineToRel(dx, dy);
+      this.l(x, y, relative);
     }
 
     if (close) this.close();
@@ -579,19 +522,33 @@ export class PathData {
    *
    * @param points - Array of [x, y] coordinate pairs: [start, c1, c2, end, c1, c2, end, ...].
    *                 Must contain 1 + 3×N points (N ≥ 1).
+   * @param relative - If true, uses relative coordinates (`m`, `c`); otherwise absolute (`M`, `C`)
    * @return This instance for chaining.
    */
-  polyBezier(points: [number, number][]): this {
+  polyBezier(points: [number, number][], relative: boolean = false): this {
     if (points.length < 4 || (points.length - 1) % 3 !== 0) return this;
 
-    const [startX, startY] = points[0];
-    this.moveTo(startX, startY);
+    let [startX, startY] = points[0];
+    this.m(startX, startY, relative);
 
     for (let i = 1; i < points.length; i += 3) {
       const [cx1, cy1] = points[i];
       const [cx2, cy2] = points[i + 1];
       const [x, y] = points[i + 2];
-      this.curveTo(cx1, cy1, cx2, cy2, x, y);
+
+      if (relative) {
+        const dx1 = cx1 - startX;
+        const dy1 = cy1 - startY;
+        const dx2 = cx2 - startX;
+        const dy2 = cy2 - startY;
+        const dx = x - startX;
+        const dy = y - startY;
+        this.c(dx1, dy1, dx2, dy2, dx, dy, true);
+      } else {
+        this.c(cx1, cy1, cx2, cy2, x, y);
+      }
+
+      [startX, startY] = [x, y];
     }
 
     return this;
@@ -606,18 +563,30 @@ export class PathData {
    *
    * @param points - Array of [x, y] coordinate pairs: [start, c1, end, c1, end, ...].
    *                 Must contain 1 + 2×N points (N ≥ 1).
+   * @param relative - If true, uses relative coordinates (`m`, `q`); otherwise absolute (`M`, `Q`)
    * @return This instance for chaining.
    */
-  polyQuadratic(points: [number, number][]): this {
+  polyQuadratic(points: [number, number][], relative: boolean = false): this {
     if (points.length < 3 || (points.length - 1) % 2 !== 0) return this;
 
-    const [startX, startY] = points[0];
-    this.moveTo(startX, startY);
+    let [startX, startY] = points[0];
+    this.m(startX, startY, relative);
 
     for (let i = 1; i < points.length; i += 2) {
       const [cx, cy] = points[i];
       const [x, y] = points[i + 1];
-      this.quadraticTo(cx, cy, x, y);
+
+      if (relative) {
+        const dx1 = cx - startX;
+        const dy1 = cy - startY;
+        const dx2 = x - startX;
+        const dy2 = y - startY;
+        this.q(dx1, dy1, dx2, dy2, true);
+      } else {
+        this.q(cx, cy, x, y);
+      }
+
+      [startX, startY] = [x, y];
     }
 
     return this;
@@ -633,15 +602,16 @@ export class PathData {
    *
    * @param segments - Array of arc segments: [start, arc1, arc2, ...].
    *                   Must contain 1 + N×7 points (N ≥ 1).
+   * @param relative - If true, uses relative coordinates (`m`, `a`); otherwise absolute (`M`, `A`)
    * @return This instance for chaining.
    */
-  polyArc(segments: (number | boolean)[][]): this {
+  polyArc(segments: (number | boolean)[][], relative: boolean = false): this {
     if (segments.length < 2) return this;
 
-    const [startX, startY] = segments[0] as [number, number];
-    this.moveTo(startX, startY);
+    let [startX, startY] = segments[0] as [number, number];
+    this.m(startX, startY, relative);
 
-    for (let i = 1; i < segments.length; i++) {
+    for (let i = 1, len = segments.length; i < len; i++) {
       const [rx, ry, xAxisRotation, largeArc, sweep, x, y] = segments[i] as [
         number,
         number,
@@ -651,7 +621,16 @@ export class PathData {
         number,
         number
       ];
-      this.arcTo(rx, ry, xAxisRotation, largeArc, sweep, x, y);
+
+      if (relative) {
+        const dx = x - startX;
+        const dy = y - startY;
+        this.a(rx, ry, xAxisRotation, largeArc, sweep, dx, dy, true);
+      } else {
+        this.a(rx, ry, xAxisRotation, largeArc, sweep, x, y);
+      }
+
+      [startX, startY] = [x, y];
     }
 
     return this;
@@ -660,4 +639,8 @@ export class PathData {
   toString(): string {
     return this._segments.join(" ");
   }
+}
+
+export function $d() {
+  return new SvgPathData();
 }
