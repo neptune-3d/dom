@@ -9,7 +9,7 @@ Helper classes and functions for fluent DOM manipulation, styling, and event han
 Install the package:
 
 ```bash
-npm install neptune3d/dom
+npm install @neptune3d/dom
 ```
 
 ## ✨ Create Elements
