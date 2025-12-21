@@ -283,6 +283,22 @@ export abstract class BaseDom<
   }
 
   /**
+   * Sets or clears the `aria-labelledby` attribute on the element.
+   *
+   * - Used to indicate the element(s) that label this element.
+   * - Accepts one or more element IDs (space-separated).
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The ID or space-separated list of IDs of labeling elements,
+   *                or `undefined` to remove the attribute.
+   * @returns This instance for chaining.
+   */
+  ariaLabelledBy(value: string | undefined): this {
+    return this.attr("aria-labelledby", value);
+  }
+
+  /**
    * Sets or clears the `aria-hidden` attribute on the element.
    *
    * - Used to indicate whether the element should be exposed to assistive technologies.
@@ -424,14 +440,14 @@ export abstract class BaseDom<
    * Sets or clears the `aria-valuemin` attribute on the element.
    *
    * - Used to define the minimum allowed value for a range widget (slider, spinbutton, progressbar).
-   * - Passing a number sets `aria-valuemin` to that value.
+   * - Passing a number or string sets `aria-valuemin` to that value.
    * - Passing `undefined` removes the attribute.
    * - Chainable for fluent DOM composition.
    *
    * @param value - The minimum value to apply, or `undefined` to remove it.
    * @returns This instance for chaining.
    */
-  ariaValueMin(value: number | undefined): this {
+  ariaValueMin(value: string | number | undefined): this {
     return this.attr("aria-valuemin", value);
   }
 
@@ -439,14 +455,14 @@ export abstract class BaseDom<
    * Sets or clears the `aria-valuemax` attribute on the element.
    *
    * - Used to define the maximum allowed value for a range widget (slider, spinbutton, progressbar).
-   * - Passing a number sets `aria-valuemax` to that value.
+   * - Passing a number or string sets `aria-valuemax` to that value.
    * - Passing `undefined` removes the attribute.
    * - Chainable for fluent DOM composition.
    *
    * @param value - The maximum value to apply, or `undefined` to remove it.
    * @returns This instance for chaining.
    */
-  ariaValueMax(value: number | undefined): this {
+  ariaValueMax(value: string | number | undefined): this {
     return this.attr("aria-valuemax", value);
   }
 
@@ -454,14 +470,14 @@ export abstract class BaseDom<
    * Sets or clears the `aria-valuenow` attribute on the element.
    *
    * - Used to define the current value of a range widget (slider, spinbutton, progressbar).
-   * - Passing a number sets `aria-valuenow` to that value.
+   * - Passing a number or string sets `aria-valuenow` to that value.
    * - Passing `undefined` removes the attribute.
    * - Chainable for fluent DOM composition.
    *
    * @param value - The current value to apply, or `undefined` to remove it.
    * @returns This instance for chaining.
    */
-  ariaValueNow(value: number | undefined): this {
+  ariaValueNow(value: string | number | undefined): this {
     return this.attr("aria-valuenow", value);
   }
 
@@ -478,6 +494,36 @@ export abstract class BaseDom<
    */
   ariaValueText(value: string | undefined): this {
     return this.attr("aria-valuetext", value);
+  }
+
+  /**
+   * Sets or clears the `aria-activedescendant` attribute on the element.
+   *
+   * - Used to indicate the currently active child element within a composite widget.
+   * - Accepts the `id` of the active descendant element.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The ID of the active descendant element, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaActiveDescendant(value: string | undefined): this {
+    return this.attr("aria-activedescendant", value);
+  }
+
+  /**
+   * Sets or clears the `aria-orientation` attribute on the element.
+   *
+   * - Used to indicate the orientation of a widget (e.g., slider, scrollbar, tablist).
+   * - Valid values: `"horizontal"`, `"vertical"`.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The orientation to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaOrientation(value: "horizontal" | "vertical" | undefined): this {
+    return this.attr("aria-orientation", value);
   }
 
   /**

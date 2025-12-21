@@ -1414,7 +1414,7 @@ export abstract class BaseStyle {
    * @param value - The content value to apply, or `undefined` to remove it.
    * @returns This instance for chaining.
    */
-  content(value: Property.Content | string | undefined): this {
+  content(value: Property.Content | undefined): this {
     return this.setStyleProp("content", value);
   }
 
@@ -1431,7 +1431,7 @@ export abstract class BaseStyle {
    * @param value - The pointer-events value to apply, or `undefined` to remove it.
    * @returns This instance for chaining.
    */
-  pointerEvents(value: Property.PointerEvents | string | undefined): this {
+  pointerEvents(value: Property.PointerEvents | undefined): this {
     return this.setStyleProp("pointerEvents", value);
   }
 
@@ -1448,7 +1448,7 @@ export abstract class BaseStyle {
    * @param value - The filter value to apply, or `undefined` to remove it.
    * @returns This instance for chaining.
    */
-  filter(value: Property.Filter | string | undefined): this {
+  filter(value: Property.Filter | undefined): this {
     return this.setStyleProp("filter", value);
   }
 
@@ -1523,7 +1523,7 @@ export abstract class BaseStyle {
    * @param value - The app-region value to apply, or `undefined` to remove it.
    * @returns This instance for chaining.
    */
-  appRegion(value: "drag" | "no-drag" | string | undefined): this {
+  appRegion(value: Autocomplete<"drag" | "no-drag"> | undefined): this {
     return this.setStyleProp("appRegion", value);
   }
 
