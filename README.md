@@ -53,21 +53,6 @@ const checkbox = $input("checkbox").on("change", (e) => {
 $body().add(checkbox);
 ```
 
-## 🎯 Popover API
-
-```ts
-const popup = $("div")
-  .text("Popover content")
-  .popover("manual")
-  .style({ padding: "1rem", background: "#222", color: "#fff" });
-
-$body().add(popup);
-
-// Show/hide programmatically
-popup.showPopover();
-popup.hidePopover();
-```
-
 ## 🎨 CSS Stylesheet
 
 ```ts
@@ -104,12 +89,24 @@ $window().on("resize", (e) => console.log("Window resized"));
 $document().on("visibilitychange", () => console.log("Visibility changed"));
 ```
 
+## 🎯 Popover API
+
+```ts
+const popup = $("div")
+  .text("Popover content")
+  .popover("manual")
+  .style({ padding: "1rem", background: "#222", color: "#fff" });
+
+$body().add(popup);
+
+// Show/hide programmatically
+popup.showPopover();
+popup.hidePopover();
+```
+
 ## 📦 Features
 
 - Chainable DOM manipulation
 - Typed input element helpers
-- Popover API support
-- Scoped and global CSS rule injection
-- Media query management
-- Window and document event wrappers
-- SVG and HTML element abstraction
+- Stylesheet API support
+- Window, document, body and head wrappers

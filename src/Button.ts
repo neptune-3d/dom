@@ -9,6 +9,17 @@ export class Button extends DomElement<"button"> {
     this.dom.type = value;
     return this;
   }
+
+  /**
+   * Checks whether the button is disabled.
+   *
+   * Always safe because this class wraps a `<button>` element.
+   *
+   * @returns `true` if the button is disabled, otherwise `false`.
+   */
+  isDisabled(): boolean {
+    return this.dom.disabled;
+  }
 }
 
 export function $btn() {

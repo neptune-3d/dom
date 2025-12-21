@@ -162,3 +162,106 @@ export type IFrameSandboxFlag =
   | "allow-top-navigation-by-user-activation";
 
 export type TextAreaWrapMode = "soft" | "hard" | "off";
+
+/**
+ * All known WAI-ARIA role strings as defined by the ARIA specification.
+ * Source: WAI-ARIA Roles (MDN, W3C).
+ */
+export type AriaRole =
+  | "alert"
+  | "alertdialog"
+  | "application"
+  | "article"
+  | "banner"
+  | "blockquote"
+  | "button"
+  | "cell"
+  | "checkbox"
+  | "code"
+  | "columnheader"
+  | "combobox"
+  | "complementary"
+  | "contentinfo"
+  | "definition"
+  | "deletion"
+  | "dialog"
+  | "document"
+  | "emphasis"
+  | "feed"
+  | "figure"
+  | "form"
+  | "grid"
+  | "gridcell"
+  | "group"
+  | "heading"
+  | "img"
+  | "insertion"
+  | "link"
+  | "list"
+  | "listbox"
+  | "listitem"
+  | "log"
+  | "main"
+  | "marquee"
+  | "math"
+  | "menu"
+  | "menubar"
+  | "menuitem"
+  | "menuitemcheckbox"
+  | "menuitemradio"
+  | "meter"
+  | "navigation"
+  | "none"
+  | "note"
+  | "option"
+  | "paragraph"
+  | "presentation"
+  | "progressbar"
+  | "radio"
+  | "radiogroup"
+  | "region"
+  | "row"
+  | "rowgroup"
+  | "rowheader"
+  | "scrollbar"
+  | "search"
+  | "searchbox"
+  | "separator"
+  | "slider"
+  | "spinbutton"
+  | "status"
+  | "strong"
+  | "subscript"
+  | "superscript"
+  | "switch"
+  | "tab"
+  | "table"
+  | "tablist"
+  | "tabpanel"
+  | "term"
+  | "textbox"
+  | "time"
+  | "toolbar"
+  | "tooltip"
+  | "tree"
+  | "treegrid"
+  | "treeitem";
+
+/**
+ * All known values for the `aria-haspopup` attribute.
+ * Source: WAI-ARIA specification (current).
+ */
+export type AriaHasPopup =
+  | "false"
+  | "true"
+  | "menu"
+  | "listbox"
+  | "tree"
+  | "grid"
+  | "dialog";
+
+/**
+ * All known values for the `aria-live` attribute.
+ * Source: WAI-ARIA specification (current).
+ */
+export type AriaLive = "off" | "polite" | "assertive";

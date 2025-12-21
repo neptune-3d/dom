@@ -1,6 +1,9 @@
 import { BaseStyle } from "./BaseStyle";
 import { DomElement } from "./DomElement";
 import type {
+  AriaHasPopup,
+  AriaLive,
+  AriaRole,
   Autocomplete,
   CssProperties,
   DomElementChild,
@@ -145,6 +148,19 @@ export abstract class BaseDom<
   }
 
   /**
+   * Returns true if this element is currently focused.
+   * Works for documents, shadow roots, and gracefully
+   * handles elements not connected to the DOM.
+   */
+  isFocused(): boolean {
+    const root = this.dom.getRootNode();
+    if (!root || !("activeElement" in root)) {
+      return false;
+    }
+    return root.activeElement === this.dom;
+  }
+
+  /**
    * Sets the `textContent` of the element using any value.
    * If the value is `null` or `undefined`, clears the content.
    * Otherwise, converts the value to a string and assigns it.
@@ -196,9 +212,13 @@ export abstract class BaseDom<
   attr(name: string, value: string | number | boolean | undefined): this {
     if (value === undefined || value === false) {
       this.dom.removeAttribute(name);
-    } else if (value === true) {
+    }
+    //
+    else if (value === true) {
       this.dom.setAttribute(name, "");
-    } else {
+    }
+    //
+    else {
       this.dom.setAttribute(name, String(value));
     }
     return this;
@@ -232,6 +252,247 @@ export abstract class BaseDom<
   toggleAttr(name: string, force?: boolean): this {
     this.dom.toggleAttribute(name, force);
     return this;
+  }
+
+  /**
+   * Sets or clears the `role` attribute on the element.
+   *
+   * - Common values: `"button"`, `"dialog"`, `"navigation"`, `"presentation"`, etc.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The role value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  role(value: Autocomplete<AriaRole> | undefined): this {
+    return this.attr("role", value);
+  }
+
+  /**
+   * Sets or clears the `aria-label` attribute on the element.
+   *
+   * - Used to provide an accessible name for elements.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The aria-label value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaLabel(value: string | undefined): this {
+    return this.attr("aria-label", value);
+  }
+
+  /**
+   * Sets or clears the `aria-hidden` attribute on the element.
+   *
+   * - Used to indicate whether the element should be exposed to assistive technologies.
+   * - Passing `true` sets `aria-hidden="true"`.
+   * - Passing `false` sets `aria-hidden="false"`.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - `true` to hide from assistive tech, `false` to expose, or `undefined` to remove.
+   * @returns This instance for chaining.
+   */
+  ariaHidden(value: boolean | undefined): this {
+    return this.booleanishAttr("aria-hidden", value);
+  }
+
+  /**
+   * Sets or clears the `aria-selected` attribute on the element.
+   *
+   * - Used to indicate the current selection state of an item in a list, tablist, tree, etc.
+   * - Passing `true` sets `aria-selected="true"`.
+   * - Passing `false` sets `aria-selected="false"`.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - `true` to mark as selected, `false` to mark as not selected, or `undefined` to remove.
+   * @returns This instance for chaining.
+   */
+  ariaSelected(value: boolean | undefined): this {
+    return this.booleanishAttr("aria-selected", value);
+  }
+
+  /**
+   * Sets or clears the `aria-multiselectable` attribute on the element.
+   *
+   * - Used to indicate whether multiple items can be selected in a listbox, tree, or grid.
+   * - Passing `true` sets `aria-multiselectable="true"`.
+   * - Passing `false` sets `aria-multiselectable="false"`.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - `true` to allow multiple selection, `false` to restrict to single selection, or `undefined` to remove.
+   * @returns This instance for chaining.
+   */
+  ariaMultiselectable(value: boolean | undefined): this {
+    return this.booleanishAttr("aria-multiselectable", value);
+  }
+
+  /**
+   * Sets or clears the `aria-setsize` attribute on the element.
+   *
+   * - Used to define the number of items in a set (e.g. list, tree, grid).
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The set size value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaSetSize(value: number | undefined): this {
+    return this.attr("aria-setsize", value);
+  }
+
+  /**
+   * Sets or clears the `aria-posinset` attribute on the element.
+   *
+   * - Used to define the position of an item within a set (e.g. list, tree, grid).
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The position value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaPosInSet(value: number | undefined): this {
+    return this.attr("aria-posinset", value);
+  }
+
+  /**
+   * Sets or clears the `aria-expanded` attribute on the element.
+   *
+   * - Used to indicate whether a collapsible element (like a disclosure widget) is expanded or collapsed.
+   * - Passing `true` sets `aria-expanded="true"`.
+   * - Passing `false` sets `aria-expanded="false"`.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - `true` to mark as expanded, `false` to mark as collapsed, or `undefined` to remove.
+   * @returns This instance for chaining.
+   */
+  ariaExpanded(value: boolean | undefined): this {
+    return this.booleanishAttr("aria-expanded", value);
+  }
+
+  /**
+   * Sets or clears the `aria-controls` attribute on the element.
+   *
+   * - Used to indicate the element(s) whose contents or presence are controlled by this element.
+   * - Accepts one or more element IDs (space-separated).
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The ID or space-separated list of IDs of controlled elements,
+   *                or `undefined` to remove the attribute.
+   * @returns This instance for chaining.
+   */
+  ariaControls(value: string | undefined): this {
+    return this.attr("aria-controls", value);
+  }
+
+  /**
+   * Sets or clears the `aria-live` attribute on the element.
+   *
+   * - Used to indicate how updates to the element should be announced by assistive technologies.
+   * - Known values: `"off"`, `"polite"`, `"assertive"`.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The aria-live value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaLive(value: Autocomplete<AriaLive> | undefined): this {
+    return this.attr("aria-live", value);
+  }
+
+  /**
+   * Sets or clears the `aria-haspopup` attribute on the element.
+   *
+   * - Indicates the availability and type of interactive popup element.
+   * - Known values: `"false"`, `"true"`, `"menu"`, `"listbox"`, `"tree"`, `"grid"`, `"dialog"`.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The aria-haspopup value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaHasPopup(value: Autocomplete<AriaHasPopup> | undefined): this {
+    return this.attr("aria-haspopup", value);
+  }
+
+  /**
+   * Sets or clears the `aria-valuemin` attribute on the element.
+   *
+   * - Used to define the minimum allowed value for a range widget (slider, spinbutton, progressbar).
+   * - Passing a number sets `aria-valuemin` to that value.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The minimum value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaValueMin(value: number | undefined): this {
+    return this.attr("aria-valuemin", value);
+  }
+
+  /**
+   * Sets or clears the `aria-valuemax` attribute on the element.
+   *
+   * - Used to define the maximum allowed value for a range widget (slider, spinbutton, progressbar).
+   * - Passing a number sets `aria-valuemax` to that value.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The maximum value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaValueMax(value: number | undefined): this {
+    return this.attr("aria-valuemax", value);
+  }
+
+  /**
+   * Sets or clears the `aria-valuenow` attribute on the element.
+   *
+   * - Used to define the current value of a range widget (slider, spinbutton, progressbar).
+   * - Passing a number sets `aria-valuenow` to that value.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The current value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaValueNow(value: number | undefined): this {
+    return this.attr("aria-valuenow", value);
+  }
+
+  /**
+   * Sets or clears the `aria-valuetext` attribute on the element.
+   *
+   * - Used to provide a human-readable text alternative for the current value of a range widget.
+   * - Passing a string sets `aria-valuetext` to that value.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The text value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  ariaValueText(value: string | undefined): this {
+    return this.attr("aria-valuetext", value);
+  }
+
+  /**
+   * Sets or clears the `draggable` attribute on the element.
+   *
+   * - Used to indicate whether the element is draggable.
+   * - Valid values: `"true"`, `"false"`, `"auto"`.
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The draggable value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  draggable(value: "true" | "false" | "auto" | undefined): this {
+    return this.attr("draggable", value);
   }
 
   /**
@@ -505,6 +766,13 @@ export abstract class BaseDom<
     this.dom.style.setProperty(camelToKebab(name), getStyleValue(name, value));
 
     return this;
+  }
+
+  protected booleanishAttr(name: string, value: boolean | undefined): this {
+    return this.attr(
+      name,
+      value === undefined ? undefined : value ? "true" : "false"
+    );
   }
 
   /**

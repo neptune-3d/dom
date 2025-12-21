@@ -23,3 +23,7 @@ export function getStyleValue(
 
   return value;
 }
+
+export function getPxStyleValue(value: string | number): string {
+  return typeof value === "number" ? `${value}px` : value;
+}

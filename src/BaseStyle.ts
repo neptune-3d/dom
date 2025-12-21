@@ -4,6 +4,7 @@ import type {
   CssProperties,
   LinearGradientDirection,
 } from "./types";
+import { getPxStyleValue } from "./utils";
 
 export abstract class BaseStyle {
   protected abstract setStyleProp(
@@ -1401,6 +1402,57 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets or clears the `content` CSS property.
+   *
+   * The `content` property is primarily used with pseudo-elements
+   * (`::before`, `::after`) to insert generated content.
+   *
+   * - Accepts any valid CSS content value (e.g., `"\"Hello\""`, `none`, `attr(title)`).
+   * - Passing `undefined` removes the property.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The content value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  content(value: Property.Content | string | undefined): this {
+    return this.setStyleProp("content", value);
+  }
+
+  /**
+   * Sets or clears the `pointer-events` CSS property.
+   *
+   * The `pointer-events` property controls whether an element can be the target
+   * of mouse, touch, or pointer interactions.
+   *
+   * - Accepts any valid CSS pointer-events value (e.g., `"auto"`, `"none"`, `"visiblePainted"`).
+   * - Passing `undefined` removes the property.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The pointer-events value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  pointerEvents(value: Property.PointerEvents | string | undefined): this {
+    return this.setStyleProp("pointerEvents", value);
+  }
+
+  /**
+   * Sets or clears the `filter` CSS property.
+   *
+   * The `filter` property applies graphical effects such as blur,
+   * brightness, contrast, or drop-shadow to an element.
+   *
+   * - Accepts any valid CSS filter value (e.g., `"blur(5px)"`, `"brightness(0.8)"`, `"none"`).
+   * - Passing `undefined` removes the property.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The filter value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  filter(value: Property.Filter | string | undefined): this {
+    return this.setStyleProp("filter", value);
+  }
+
+  /**
    * Applies CSS styles to truncate overflowing text with an ellipsis.
    * Ensures the text stays on a single line and hides overflow.
    *
@@ -1434,6 +1486,48 @@ export abstract class BaseStyle {
   }
 
   /**
+   * Sets the `filter` style to a drop-shadow effect.
+   * Constructs a valid CSS `drop-shadow(...)` string and applies it via the `filter` method.
+   *
+   * - Numeric values for `offsetX`, `offsetY`, and `blurRadius` are automatically suffixed with `"px"`.
+   * - String values are used as-is, allowing units like `"em"`, `"rem"`, `"%"`, etc.
+   *
+   * @param offsetX - Horizontal offset of the shadow (e.g., `5` → `"5px"`, or `"0.5em"`).
+   * @param offsetY - Vertical offset of the shadow (e.g., `5` → `"5px"`, or `"0.5em"`).
+   * @param blurRadius - Blur radius of the shadow (e.g., `10` → `"10px"`, or `"1rem"`).
+   * @param color - Shadow color (e.g., `"rgba(0,0,0,0.5)"`).
+   * @returns This instance for chaining.
+   */
+  dropShadow(
+    offsetX: string | number,
+    offsetY: string | number,
+    blurRadius: string | number,
+    color: string
+  ): this {
+    const shadow = `drop-shadow(${getPxStyleValue(offsetX)} ${getPxStyleValue(
+      offsetY
+    )} ${getPxStyleValue(blurRadius)} ${color})`;
+    return this.filter(shadow);
+  }
+
+  /**
+   * Sets or clears the `app-region` CSS property.
+   *
+   * Used in Electron to define draggable and non‑draggable regions
+   * of a frameless window.
+   *
+   * - Common values: `"drag"`, `"no-drag"`.
+   * - Passing `undefined` removes the property.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The app-region value to apply, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  appRegion(value: "drag" | "no-drag" | string | undefined): this {
+    return this.setStyleProp("appRegion", value);
+  }
+
+  /**
    * Applies a batch of CSS style properties to the element.
    * Delegates each property to `setStyleProp`, which handles value normalization and kebab-case conversion.
    *
@@ -1449,5 +1543,44 @@ export abstract class BaseStyle {
       this.setStyleProp(name, (props as any)[name]);
     }
     return this;
+  }
+
+  /**
+   * Sets or clears a single CSS style property when the key is a known property.
+   *
+   * This overload provides type‑safe autocompletion for standard CSS properties.
+   *
+   * @typeParam K - A key of `CssProperties`.
+   * @param name - The CSS property name (camelCase or kebab-case).
+   * @param value - The property value, or `undefined` to remove it.
+   *                Numeric values are allowed for unit resolution.
+   * @returns This instance for chaining.
+   */
+  styleProp<K extends keyof CssProperties>(
+    name: Autocomplete<K>,
+    value: CssProperties[K] | number | undefined
+  ): this;
+
+  /**
+   * Sets or clears a single CSS style property when the key is arbitrary.
+   *
+   * This overload allows free‑form property names such as CSS variables (`--my-var`)
+   * or vendor‑prefixed properties (`-webkit-line-clamp`).
+   *
+   * @param name - The CSS property name as a string.
+   * @param value - The property value, or `undefined` to remove it.
+   * @returns This instance for chaining.
+   */
+  styleProp(name: string, value: string | number | undefined): this;
+
+  /**
+   * Internal implementation that delegates to `setStyleProp`.
+   *
+   * @param name - The CSS property name.
+   * @param value - The property value.
+   * @returns This instance for chaining.
+   */
+  styleProp(name: any, value: any): this {
+    return this.setStyleProp(name, value);
   }
 }
