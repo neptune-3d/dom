@@ -1,4 +1,4 @@
-# neptune3d/dom
+# @neptune3d/dom
 
 Helper classes and functions for fluent DOM manipulation, styling, and event handling.
 
@@ -15,7 +15,7 @@ npm install @neptune3d/dom
 ## ✨ Create Elements
 
 ```ts
-import { $, $body } from "neptune3d/dom";
+import { $, $body } from "@neptune3d/dom";
 
 const div = $("div")
   .text("Hello world")
@@ -44,7 +44,7 @@ $body().add(svg);
 ## 📋 Input Helpers
 
 ```ts
-import { $input } from "neptune3d/dom";
+import { $input } from "@neptune3d/dom";
 
 const checkbox = $input("checkbox").on("change", (e) => {
   console.log("Checked:", checkbox.getChecked());
@@ -56,7 +56,7 @@ $body().add(checkbox);
 ## 🎨 CSS Stylesheet
 
 ```ts
-import { StyleSheet } from "neptune3d/dom";
+import { StyleSheet } from "@neptune3d/dom";
 
 const sheet = StyleSheet.getSheet();
 
@@ -83,7 +83,7 @@ rule.focus().outline("1px dashed blue");
 ## 🌍 Global Event Wrappers
 
 ```ts
-import { $window, $document } from "neptune3d/dom";
+import { $window, $document } from "@neptune3d/dom";
 
 $window().on("resize", (e) => console.log("Window resized"));
 $document().on("visibilitychange", () => console.log("Visibility changed"));
