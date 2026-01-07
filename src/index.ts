@@ -23,6 +23,7 @@ export * from "./MediaRule";
 export * from "./OptionElement";
 export * from "./ProgressElement";
 export * from "./SelectElement";
+export * from "./StyleElement";
 export * from "./StyleSheet";
 export * from "./SvgCircle";
 export * from "./SvgElement";

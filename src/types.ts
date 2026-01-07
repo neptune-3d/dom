@@ -29,6 +29,7 @@ export type DomElementTagNameMap = HTMLElementTagNameMap & SvgElementTagNameMap;
 
 export type SvgElementTagNameMap = {
   svgA: SVGAElement;
+  svgStyle: SVGStyleElement;
   animate: SVGAnimateElement;
   animateMotion: SVGAnimateMotionElement;
   animateTransform: SVGAnimateTransformElement;
@@ -81,7 +82,6 @@ export type SvgElementTagNameMap = {
   script: SVGScriptElement;
   set: SVGSetElement;
   stop: SVGStopElement;
-  style: SVGStyleElement;
   svg: SVGSVGElement;
   switch: SVGSwitchElement;
   symbol: SVGSymbolElement;

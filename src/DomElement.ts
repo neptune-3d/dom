@@ -114,23 +114,6 @@ export class DomElement<
   }
 
   /**
-   * Sets the `disabled` attribute to disable the element.
-   * Applicable to form controls like <button>, <input>, <select>, etc.
-   * @return This DomElement instance for chaining.
-   */
-  disable() {
-    return this.disabled(true);
-  }
-
-  /**
-   * Removes the `disabled` attribute to enable the element.
-   * @return This DomElement instance for chaining.
-   */
-  enable() {
-    return this.disabled(false);
-  }
-
-  /**
    * Focuses this DOM element, if it supports focus.
    * For non-focusable elements (like SVG or body), ensure `tabindex` is set if needed.
    *

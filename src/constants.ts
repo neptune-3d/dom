@@ -26,8 +26,9 @@ export const VENDOR_CSS_PROPS: Record<string, 1> = {
 };
 
 export const SVG_TAGS = [
-  "svg",
   "svgA", // alias for <a>
+  "svgStyle", // alias for <style>
+  "svg",
   "animate",
   "animateMotion",
   "animateTransform",
@@ -80,7 +81,6 @@ export const SVG_TAGS = [
   "script",
   "set",
   "stop",
-  "style",
   "switch",
   "symbol",
   "text",
@@ -93,6 +93,7 @@ export const SVG_TAGS = [
 
 export const TAG_ALIAS = {
   svgA: "a",
+  svgStyle: "style",
 } satisfies Record<string, keyof DomElementTagNameMap>;
 
 export type TagAlias = typeof TAG_ALIAS;

@@ -107,7 +107,6 @@ export class StyleSheet {
   mediaMaxWidth(maxWidth: number | string) {
     return this.mediaRule(`max-width: ${getStyleValue("max-width", maxWidth)}`);
   }
-
   /**
    * Removes a CSS rule from the stylesheet by its index.
    * Accepts either a `CssRule` or `MediaRule` instance, which internally tracks its position.
@@ -116,9 +115,24 @@ export class StyleSheet {
    * Note: Rule indices may shift after insertion or deletion — ensure index accuracy before calling.
    *
    * @param rule - The rule instance to remove (`CssRule` or `MediaRule`).
+   * @return This StyleSheet instance for chaining.
    */
-  removeRule(rule: CssRule | MediaRule) {
+  removeRule(rule: CssRule | MediaRule): this {
     this.sheet.deleteRule(rule.index);
+    return this;
+  }
+
+  /**
+   * Removes all CSS rules from the stylesheet.
+   * Useful for resetting dynamic styles before re‑inserting new rules.
+   *
+   * @return This StyleSheet instance for chaining.
+   */
+  clear(): this {
+    while (this.length > 0) {
+      this.sheet.deleteRule(0);
+    }
+    return this;
   }
 
   /**
