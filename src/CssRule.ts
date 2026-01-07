@@ -1,27 +1,44 @@
 import { BaseStyle } from "./BaseStyle";
-import type { StyleSheet } from "./StyleSheet";
+import { StyleSheet } from "./StyleSheet";
 import type { Autocomplete, CssProperties } from "./types";
 import { camelToKebab, getStyleValue } from "./utils";
 
+/**
+ * Wrapper around a single `CSSStyleRule` within a stylesheet.
+ *
+ * Provides a fluent, type‑safe API for inspecting and manipulating CSS rules
+ * at runtime. Extends `BaseStyle` so you can apply style properties directly
+ * to the rule’s declaration block, with automatic normalization and unit
+ * handling.
+ *
+ * Features:
+ * - Access to the owning `CSSStyleSheet` via `getSheet()`.
+ * - Convenience getters for selector text and direct rule inspection.
+ * - Rule management utilities such as `remove()` for cleanup.
+ * - Selector extension helpers (`extend`, `hover`, `focus`, `focusWithin`,
+ *   `active`, `disabled`) for creating new rules based on pseudo‑classes or
+ *   combinators.
+ * - Chainable style manipulation via inherited `BaseStyle` methods.
+ */
 export class CssRule extends BaseStyle {
-  constructor(sheet: StyleSheet, index: number, rule: CSSStyleRule) {
+  /**
+   * Creates a new `CssRule` wrapper bound to the given `CSSStyleRule`.
+   *
+   * The wrapper tracks the rule’s index within its parent stylesheet and
+   * provides a fluent API for inspecting and manipulating the selector and
+   * its style declarations.
+   *
+   * @param index - The position of this rule within its parent stylesheet.
+   * @param rule - The native `CSSStyleRule` instance to wrap.
+   */
+  constructor(index: number, rule: CSSStyleRule) {
     super();
-    this._sheet = sheet;
     this._index = index;
     this._rule = rule;
   }
 
-  protected _sheet: StyleSheet;
   protected _index: number;
   protected _rule: CSSStyleRule;
-
-  /**
-   * Returns the StyleSheet instance that owns this rule.
-   * Useful for accessing rule management utilities or shared configuration.
-   */
-  get sheet() {
-    return this._sheet;
-  }
 
   /**
    * Returns the index of this rule within its parent stylesheet.
@@ -48,23 +65,43 @@ export class CssRule extends BaseStyle {
   }
 
   /**
+   * Returns a `StyleSheet` wrapper around the parent stylesheet of this rule.
+   * Useful for accessing rule management utilities or inserting new rules.
+   */
+  getSheet(): StyleSheet | null {
+    const sheet = this._rule.parentStyleSheet;
+    return sheet ? new StyleSheet(sheet) : null;
+  }
+
+  /**
    * Removes this rule from its parent stylesheet.
    * Delegates to the StyleSheet instance to ensure proper cleanup and cache invalidation.
    */
   remove() {
-    this._sheet.removeRule(this);
+    this.getSheet()?.removeRule(this);
   }
 
   /**
    * Creates a new `CssRule` by extending this rule’s selector.
    * Appends the given selector fragment to the current selector.
-   * Useful for pseudo-classes (e.g., `:hover`), combinators (e.g., ` > span`), or attribute filters (e.g., `[data-active]`).
+   * Useful for pseudo‑classes (e.g., `:hover`), combinators (e.g., ` > span`),
+   * or attribute filters (e.g., `[data-active]`).
+   *
+   * If this rule is not attached to a stylesheet (`parentStyleSheet` is `null`),
+   * an error is thrown to indicate that extension is not possible.
    *
    * @param extension - The selector fragment to append (e.g., `:hover`, ` > span`, `[data-active]`).
    * @return A new `CssRule` instance targeting the extended selector.
+   * @throws Error if the rule has no parent stylesheet.
    */
   extend(extension: string): CssRule {
-    return this.sheet.cssRule(`${this.selectorText}${extension}`);
+    const sheet = this.getSheet();
+    if (!sheet) {
+      throw new Error(
+        `CssRule: Cannot extend selector "${this.selectorText}" — rule is not attached to a stylesheet.`
+      );
+    }
+    return sheet.cssRule(`${this.selectorText}${extension}`);
   }
 
   /**

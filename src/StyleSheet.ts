@@ -1,41 +1,42 @@
 import { CssRule } from "./CssRule";
-import { DomDocument } from "./DomDocument";
 import { MediaRule } from "./MediaRule";
 import { getStyleValue } from "./utils";
 
 /**
- * Manages a dedicated `<style>` element and provides programmatic access to its CSS rules.
- * Supports dynamic insertion, retrieval, and deletion of both standard and media-specific rules,
- * with internal indexing for fast lookup and reuse.
+ * Wrapper around a native `CSSStyleSheet` object.
  *
- * This class ensures a single shared stylesheet instance via `StyleSheet.getSheet()`,
- * and maintains selector-to-index and media-to-rule maps on the global `window` object.
+ * Provides a fluent, type‑safe API for inserting, removing, and managing CSS rules
+ * at runtime. Designed for dynamic styling systems where rules need to be created,
+ * extended, or deleted programmatically without relying on inline styles.
  *
- * Designed for use with component-level styling systems or DOM abstractions that require
- * granular control over rule injection without relying on inline styles.
+ * Features:
+ * - Direct access to the underlying `CSSStyleSheet` via `sheet`.
+ * - Rule insertion helpers (`cssRule`, `mediaRule`, `mediaMinWidth`, `mediaMaxWidth`).
+ * - Rule removal via `removeRule`.
+ * - Integration with `CssRule` and `MediaRule` wrappers for chainable style manipulation.
+ * - Static `getSheet` utility to wrap an existing `<style>` element’s stylesheet.
+ *
+ * Intended for use in component‑level styling or DOM abstractions that require
+ * granular control over stylesheet contents.
  */
 export class StyleSheet {
-  constructor(el: HTMLStyleElement) {
-    this._dom = el;
+  /**
+   * Creates a new `StyleSheet` wrapper bound to the given `CSSStyleSheet`.
+   *
+   * The provided stylesheet must already be available (e.g., from a `<style>` element
+   * attached to a document). Once wrapped, you can insert, remove, and query rules
+   * using the class’s fluent API.
+   *
+   * @param sheet - The native `CSSStyleSheet` instance to wrap.
+   */
+  constructor(sheet: CSSStyleSheet) {
+    this._sheet = sheet;
   }
 
-  protected _dom;
+  protected _sheet;
 
-  /**
-   * Returns the underlying `<style>` DOM element.
-   * This element is used to inject and manage dynamic CSS rules.
-   */
-  get dom() {
-    return this._dom;
-  }
-
-  /**
-   * Returns the associated `CSSStyleSheet` object for this `<style>` element.
-   * Provides access to rule-level operations like `insertRule()` and `deleteRule()`.
-   * Assumes the sheet is available and attached to the document.
-   */
   get sheet() {
-    return this.dom.sheet!;
+    return this._sheet;
   }
 
   /**
@@ -59,11 +60,7 @@ export class StyleSheet {
   cssRule(selector: string) {
     const index = this.length;
     this.sheet.insertRule(`${selector}{}`, index);
-    return new CssRule(
-      this,
-      index,
-      this.sheet.cssRules.item(index) as CSSStyleRule
-    );
+    return new CssRule(index, this.sheet.cssRules.item(index) as CSSStyleRule);
   }
 
   /**
@@ -80,7 +77,6 @@ export class StyleSheet {
     const index = this.length;
     this.sheet.insertRule(`@media(${mediaText}){}`, index);
     return new MediaRule(
-      this,
       index,
       this.sheet.cssRules.item(index) as CSSMediaRule
     );
@@ -126,38 +122,19 @@ export class StyleSheet {
   }
 
   /**
-   * Retrieves or creates a <style> element with the given ID in the specified document
-   * and wraps it in a StyleSheet instance. If no element with the specified ID exists,
-   * a new <style> tag is created, appended to <head>, and assigned the ID.
+   * Wraps the given `<style>` element in a `StyleSheet` instance.
+   * The element must already be attached to a document so that its
+   * `sheet` property is available.
    *
-   * @param id - Optional ID of the <style> element to target. Defaults to DEFAULT_STYLE_ID.
-   * @param doc - Optional native Document to operate on. Defaults to the current window's document.
-   * @return A StyleSheet instance bound to the specified <style> element.
+   * @param el - The `<style>` element to wrap.
+   * @return A `StyleSheet` instance bound to the element’s `CSSStyleSheet`.
    */
-  static getSheet(
-    id: string = StyleSheet.DEFAULT_STYLE_ID,
-    doc?: Document
-  ): StyleSheet {
-    const domDoc = new DomDocument(doc);
-    const head = domDoc.getHead();
-    const existing = head.query<"style">(`#${id}`);
-
-    if (!existing) {
-      const style = domDoc.createElement("style");
-      style.id = id;
-      style.setAttribute("type", "text/css");
-      head.dom.append(style);
-      return new StyleSheet(style);
+  static getSheet(el: HTMLStyleElement): StyleSheet {
+    if (!el.sheet) {
+      throw new Error(
+        "StyleSheet: The provided <style> element has no associated CSSStyleSheet."
+      );
     }
-    //
-    else {
-      return new StyleSheet(existing.dom);
-    }
+    return new StyleSheet(el.sheet as CSSStyleSheet);
   }
-
-  /**
-   * The default ID used for the primary stylesheet managed by the StyleSheet class.
-   * This ensures consistent lookup and avoids collisions with other style elements in the document.
-   */
-  static DEFAULT_STYLE_ID = "__neptune-style__";
 }

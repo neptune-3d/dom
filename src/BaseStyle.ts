@@ -6,6 +6,25 @@ import type {
 } from "./types";
 import { getPxStyleValue } from "./utils";
 
+/**
+ * Abstract base class for style manipulation utilities.
+ *
+ * Provides a fluent, type‑safe API for setting, clearing, and batching CSS
+ * style properties on wrapped DOM elements. Concrete subclasses must implement
+ * `setStyleProp`, which handles the actual application of styles to the
+ * underlying element (including normalization and unit resolution).
+ *
+ * Features:
+ * - Shorthand methods for common properties (e.g., `p`, `pt`, `pr` for padding).
+ * - Batch application of styles via `style()`.
+ * - Type‑safe overloads for known CSS properties with autocompletion support.
+ * - Flexible overloads for arbitrary property names, including CSS variables
+ *   (`--my-var`) and vendor‑prefixed properties (`-webkit-line-clamp`).
+ * - Chainable methods for fluent DOM composition.
+ *
+ * Intended to be extended by higher‑level DOM wrappers (e.g., `DomElement`)
+ * that provide the concrete implementation of `setStyleProp`.
+ */
 export abstract class BaseStyle {
   protected abstract setStyleProp(
     name: Autocomplete<keyof CssProperties>,
