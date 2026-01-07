@@ -28,7 +28,6 @@ export * from "./SvgCircle";
 export * from "./SvgElement";
 export * from "./SvgGroup";
 export * from "./SvgPath";
-export * from "./SvgPathData";
 export * from "./SvgRect";
 export * from "./TextArea";
 export * from "./types";

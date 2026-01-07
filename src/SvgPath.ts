@@ -1,5 +1,4 @@
 import { BaseSvgElement } from "./BaseSvgElement";
-import type { SvgPathData } from "./SvgPathData";
 
 /**
  * Wrapper for the `<path>` SVG element, extending `BaseSvgElement<"path">` with path-specific functionality.
@@ -16,11 +15,10 @@ export class SvgPath extends BaseSvgElement<"path"> {
 
   /**
    * Sets the `d` attribute using a raw string or PathData instance.
-   * @param path - Path data string or builder.
+   * @param value - Path data string or builder.
    * @return This instance for chaining.
    */
-  d(path: string | SvgPathData): this {
-    const value = typeof path === "string" ? path : path.toString();
+  d(value: string): this {
     return this.attr("d", value);
   }
 }
