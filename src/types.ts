@@ -14,7 +14,16 @@ export type { Property as CssProperty } from "csstype";
 
 export type Autocomplete<T extends string> = T | (string & {});
 
-export type DomElementChild = DomElement<any> | Node | string | number;
+export type DomElementChild =
+  | DomElement<any>
+  | Node
+  | string
+  | number
+  | boolean
+  | null
+  | undefined;
+
+export type DomReferenceNode = Node | DomElement<any> | null;
 
 export type DomElementTagNameMap = HTMLElementTagNameMap & SvgElementTagNameMap;
 
@@ -120,7 +129,7 @@ export type LinearGradientDirection =
  * Declarative type for building a Content Security Policy.
  * Each directive maps to a space-separated string of sources or values.
  */
-export interface ContentSecurityPolicy {
+export type ContentSecurityPolicy = {
   "default-src"?: string;
   "script-src"?: string;
   "style-src"?: string;
@@ -145,7 +154,7 @@ export interface ContentSecurityPolicy {
   "block-all-mixed-content"?: string;
   "report-uri"?: string;
   "report-to"?: string;
-}
+};
 
 export type IFrameSandboxFlag =
   | "allow-forms"
@@ -265,3 +274,7 @@ export type AriaHasPopup =
  * Source: WAI-ARIA specification (current).
  */
 export type AriaLive = "off" | "polite" | "assertive";
+
+export type DomNamespaceURI =
+  | "http://www.w3.org/1999/xhtml"
+  | "http://www.w3.org/2000/svg";

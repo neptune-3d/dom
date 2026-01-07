@@ -1,6 +1,6 @@
 import { BaseDom } from "./BaseDom";
-import { SVG_TAGS, TAG_ALIAS, type TagAlias } from "./constants";
 import type { DomElementTagNameMap } from "./types";
+import { createElement, isSvgTag, normalizeTag } from "./utils";
 
 /**
  * A unified wrapper for HTML and SVG elements that provides a fluent, type-safe API
@@ -28,19 +28,10 @@ export class DomElement<
   constructor(tag: Tag, el?: DomElementTagNameMap[Tag]) {
     super();
 
-    const alias = (TAG_ALIAS as any)[tag];
+    this._tag = normalizeTag(tag) as Tag;
+    this._isSvg = isSvgTag(this._tag);
 
-    this._tag = (alias ?? tag) as Tag extends keyof TagAlias
-      ? TagAlias[Tag]
-      : Tag;
-
-    this._isSvg = SVG_TAGS.includes(this._tag);
-
-    this._dom =
-      el ??
-      ((this._isSvg
-        ? document.createElementNS("http://www.w3.org/2000/svg", this._tag)
-        : document.createElement(this._tag)) as DomElementTagNameMap[Tag]);
+    this._dom = el ?? createElement(document, tag);
   }
 
   protected _tag;

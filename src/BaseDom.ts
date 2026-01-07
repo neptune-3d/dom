@@ -1,5 +1,7 @@
 import { BaseStyle } from "./BaseStyle";
+import { DomDocument } from "./DomDocument";
 import { DomElement } from "./DomElement";
+import { DomWindow } from "./DomWindow";
 import type {
   AriaHasPopup,
   AriaLive,
@@ -9,6 +11,7 @@ import type {
   DomElementChild,
   DomElementEventMap,
   DomElementTagNameMap,
+  DomReferenceNode,
 } from "./types";
 import { camelToKebab, getStyleValue } from "./utils";
 
@@ -25,44 +28,101 @@ export abstract class BaseDom<
 
   abstract dom: E;
 
+  protected _rect: DOMRect | null = null;
+
+  protected _clientWidth: number | null = null;
+
+  protected _clientHeight: number | null = null;
+
+  /**
+   * Returns the associated `DomWindow` for this element.
+   *
+   * - Delegates to `getDocument().getWindow()`.
+   * - Ensures consistency: all window resolution logic lives in `DomDocument`.
+   *
+   * @return A `DomWindow` instance wrapping the element's window.
+   */
+  getWindow(): DomWindow {
+    return this.getDocument().getWindow();
+  }
+
+  /**
+   * Returns the associated `DomDocument` for this element.
+   *
+   * - Resolves the correct `Document` from the element's `ownerDocument`.
+   * - Wraps the native `Document` in a `DomDocument` for typed utilities.
+   *
+   * @return A `DomDocument` instance wrapping the element's document.
+   */
+  getDocument(): DomDocument {
+    return new DomDocument(this.dom.ownerDocument ?? undefined);
+  }
+
   /**
    * Returns the `clientWidth` of the element.
    * For HTML elements, this is the inner width excluding borders and scrollbars.
    * For SVG elements, this may return `0` unless the element has layout box dimensions.
+   *
+   * - By default, returns a cached value to avoid repeated layout recalculation.
+   * - Pass `force = true` to recompute and update the cache.
+   *
+   * @param force - Whether to force recomputation (default: false).
+   * @return The clientWidth of the element.
    */
-  getClientWidth(): number {
-    return (this.dom as any).clientWidth ?? 0;
+  getClientWidth(force: boolean = false): number {
+    if (force || this._clientWidth === null) {
+      this._clientWidth = this.dom.clientWidth ?? 0;
+    }
+    return this._clientWidth;
   }
 
   /**
    * Returns the `clientHeight` of the element.
    * For HTML elements, this is the inner height excluding borders and scrollbars.
    * For SVG elements, this may return `0` unless the element has layout box dimensions.
+   *
+   * - By default, returns a cached value to avoid repeated layout recalculation.
+   * - Pass `force = true` to recompute and update the cache.
+   *
+   * @param force - Whether to force recomputation (default: false).
+   * @return The clientHeight of the element.
    */
-  getClientHeight(): number {
-    return (this.dom as any).clientHeight ?? 0;
+  getClientHeight(force: boolean = false): number {
+    if (force || this._clientHeight === null) {
+      this._clientHeight = this.dom.clientHeight ?? 0;
+    }
+    return this._clientHeight;
   }
 
   /**
    * Returns the bounding box of the element using `getBoundingClientRect()`.
    * Works reliably for both HTML and SVG elements.
    *
+   * - By default, returns a cached value to avoid layout thrashing.
+   * - Pass `force = true` to recompute and update the cache.
+   *
+   * @param force - Whether to force recomputation (default: false).
    * @return A DOMRect object with `width`, `height`, `top`, `left`, etc.
    */
-  getRect(): DOMRect {
-    return this.dom.getBoundingClientRect();
+  getRect(force: boolean = false): DOMRect {
+    if (force || this._rect === null) {
+      this._rect = this.dom.getBoundingClientRect();
+    }
+    return this._rect;
   }
 
   /**
    * Returns the computed styles of this element.
    * Useful for reading resolved values of inherited, cascaded, or shorthand CSS properties.
    *
-   * Wraps `window.getComputedStyle()` and returns a `CSSStyleDeclaration` for inspection.
+   * - Delegates to `DomWindow.getComputedStyle`, which manages caching internally.
+   * - Pass `force = true` to recompute and update the cache.
    *
+   * @param force - Whether to force recomputation (default: false).
    * @return The computed style object for this element.
    */
-  getComputedStyle(): CSSStyleDeclaration {
-    return window.getComputedStyle(this.dom);
+  getComputedStyle(force: boolean = false): CSSStyleDeclaration {
+    return this.getWindow().getComputedStyle(this.dom, force);
   }
 
   /**
@@ -112,6 +172,28 @@ export abstract class BaseDom<
   }
 
   /**
+   * Returns the first child element of this DOM node.
+   * Uses `firstElementChild`, which excludes text, comment, and other non-element nodes.
+   * Returns `null` if there are no child elements.
+   *
+   * @return The first child `Element`, or `null` if none exist.
+   */
+  getFirstChildElement(): Element | null {
+    return this.dom.firstElementChild;
+  }
+
+  /**
+   * Returns the first child node of this DOM node.
+   * Uses `firstChild`, which may be an element, text node, comment, etc.
+   * Returns `null` if there are no child nodes.
+   *
+   * @return The first child `Node`, or `null` if none exist.
+   */
+  getFirstChildNode(): Node | null {
+    return this.dom.firstChild;
+  }
+
+  /**
    * Gets the textContent property of the DOM element.
    */
   getText() {
@@ -134,6 +216,48 @@ export abstract class BaseDom<
    */
   getProp(name: string): any {
     return (this.dom as any)[name];
+  }
+
+  /**
+   * Returns the `id` of the element.
+   *
+   * - Uses the DOM `id` property, which reflects the `id` attribute.
+   * - Always returns a string (empty string if no id is set).
+   * - Prefer this over `getAttr("id")` unless you need to distinguish
+   *   between a missing attribute (`null`) and an empty string.
+   *
+   * @return The element's id as a string (possibly empty).
+   */
+  getId(): string {
+    return this.dom.id;
+  }
+
+  /**
+   * Returns the `dataset` of the element.
+   *
+   * - Provides access to all `data-*` attributes as a `DOMStringMap`.
+   * - Keys are the attribute names without the `data-` prefix.
+   * - Values are always strings (or `undefined` if not present).
+   * - Useful for reading custom data attributes in a type-safe way.
+   *
+   * @return The element's dataset object.
+   */
+  getDataset(): DOMStringMap {
+    return this.dom.dataset;
+  }
+
+  /**
+   * Retrieves a single `data-*` attribute from the element's dataset.
+   *
+   * - Accepts the camelCase form of the attribute name (e.g. "userId" for `data-user-id`).
+   * - Returns the string value if present, or `undefined` if not set.
+   * - Useful for direct access without manually indexing into `.dataset`.
+   *
+   * @param key - The camelCase name of the data attribute.
+   * @return The attribute value as a string, or `undefined` if not present.
+   */
+  getDataAttr(key: string): string | undefined {
+    return this.dom.dataset[key];
   }
 
   /**
@@ -196,6 +320,37 @@ export abstract class BaseDom<
    */
   id(value: string | undefined) {
     this.dom.id = value ?? "";
+    return this;
+  }
+
+  /**
+   * Sets or clears a single `data-*` attribute on the element.
+   *
+   * - Accepts the camelCase form of the attribute name (e.g. "userId" for `data-user-id`).
+   * - Passing `undefined` or `false` removes the attribute.
+   * - Passing `true` sets the attribute with no value (presence only).
+   * - Passing a string or number sets the attribute to that value.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param key - The camelCase name of the data attribute.
+   * @param value - The value to assign, or a boolean for presence toggle.
+   * @returns This instance for chaining.
+   */
+  dataAttr(key: string, value: string | number | boolean | undefined): this {
+    const dataset = (this.dom as HTMLElement).dataset;
+
+    if (value === undefined || value === false) {
+      delete dataset[key];
+    }
+    //
+    else if (value === true) {
+      dataset[key] = "";
+    }
+    //
+    else {
+      dataset[key] = String(value);
+    }
+
     return this;
   }
 
@@ -527,6 +682,22 @@ export abstract class BaseDom<
   }
 
   /**
+   * Sets or clears the `aria-describedby` attribute on the element.
+   *
+   * - Used to indicate the element(s) that provide descriptive information for this element.
+   * - Accepts one or more element IDs (space-separated).
+   * - Passing `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - The ID or space-separated list of IDs of descriptive elements,
+   *                or `undefined` to remove the attribute.
+   * @returns This instance for chaining.
+   */
+  ariaDescribedBy(value: string | undefined): this {
+    return this.attr("aria-describedby", value);
+  }
+
+  /**
    * Sets or clears the `draggable` attribute on the element.
    *
    * - Used to indicate whether the element is draggable.
@@ -539,6 +710,21 @@ export abstract class BaseDom<
    */
   draggable(value: "true" | "false" | "auto" | undefined): this {
     return this.attr("draggable", value);
+  }
+
+  /**
+   * Sets or clears the `hidden` attribute on the element.
+   *
+   * - Used to hide the element from rendering in the document.
+   * - Passing `true` sets `hidden`.
+   * - Passing `false` or `undefined` removes the attribute.
+   * - Chainable for fluent DOM composition.
+   *
+   * @param value - `true` to hide the element, `false`/`undefined` to show it.
+   * @returns This instance for chaining.
+   */
+  hidden(value: boolean | undefined): this {
+    return this.attr("hidden", value);
   }
 
   /**
@@ -657,6 +843,75 @@ export abstract class BaseDom<
    */
   add(...nodes: DomElementChild[]) {
     this.dom.append(...nodes.map((n) => this.resolveNode(n)));
+    return this;
+  }
+
+  /**
+   * Inserts a child node before a given reference node.
+   *
+   * - `newNode` can be any DomElementChild (string, number, boolean, null, undefined, Node, DomElement).
+   * - `referenceNode` must be either:
+   *   - an existing Node,
+   *   - a DomElement wrapper (unwrapped via `.dom`),
+   *   - or null (append at the end).
+   *
+   * @param newNode - The child element or text value to insert.
+   * @param referenceNode - The existing child node before which the new node will be inserted,
+   *                        or null to append at the end.
+   * @return This DomElement instance for chaining.
+   */
+  insertBefore(
+    newNode: DomElementChild,
+    referenceNode: DomReferenceNode
+  ): this {
+    const resolvedNew = this.resolveNode(newNode);
+
+    let resolvedRef: Node | null = null;
+
+    if (referenceNode) {
+      resolvedRef = BaseDom.isBaseDom(referenceNode)
+        ? referenceNode.dom
+        : referenceNode;
+    }
+
+    this.dom.insertBefore(resolvedNew, resolvedRef);
+
+    return this;
+  }
+
+  /**
+   * Inserts a child node after a given reference node.
+   *
+   * - `newNode` can be any DomElementChild (string, number, boolean, null, undefined, Node, DomElement).
+   * - `referenceNode` must be either:
+   *   - an existing Node,
+   *   - a DomElement wrapper (unwrapped via `.dom`),
+   *   - or null (append at the end).
+   *
+   * @param newNode - The child element or text value to insert.
+   * @param referenceNode - The existing child node after which the new node will be inserted.
+   *                        If null, the new node is appended at the end.
+   * @return This DomElement instance for chaining.
+   */
+  insertAfter(newNode: DomElementChild, referenceNode: DomReferenceNode): this {
+    const resolvedNew = this.resolveNode(newNode);
+
+    let resolvedRef: Node | null = null;
+    if (referenceNode) {
+      resolvedRef = BaseDom.isBaseDom(referenceNode)
+        ? referenceNode.dom
+        : referenceNode;
+    }
+
+    if (resolvedRef && resolvedRef.parentNode === this.dom) {
+      this.dom.insertBefore(resolvedNew, resolvedRef.nextSibling);
+    }
+    //
+    else {
+      // If referenceNode is null or not a child, append at the end
+      this.dom.appendChild(resolvedNew);
+    }
+
     return this;
   }
 
@@ -785,14 +1040,14 @@ export abstract class BaseDom<
       : null;
   }
 
-  ref(refFn: (el: this) => void) {
-    refFn(this);
-    return this;
-  }
-
   protected resolveNode(child: DomElementChild): Node {
-    if (typeof child === "string" || typeof child === "number") {
-      return document.createTextNode(String(child));
+    if (
+      typeof child === "string" ||
+      typeof child === "number" ||
+      typeof child === "boolean" ||
+      child == null
+    ) {
+      return this.getDocument().createTextNode(child);
     }
     if (BaseDom.isBaseDom(child)) {
       return child.dom;

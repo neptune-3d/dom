@@ -5,7 +5,16 @@ import { BaseDom } from "./BaseDom";
  * Accepts any `HTMLBodyElement`, including from iframes or synthetic documents.
  */
 export class DomBody extends BaseDom<HTMLBodyElement> {
-  constructor(body: HTMLBodyElement) {
+  /**
+   * Creates a new `DomBody` wrapper bound to the provided `<body>` element.
+   * Defaults to the current document's `body` if none is supplied.
+   *
+   * This ensures all operations performed through the wrapper are scoped
+   * to the correct document context (main page, iframe, or synthetic document).
+   *
+   * @param body - Optional `<body>` element to wrap. Defaults to `document.body`.
+   */
+  constructor(body: HTMLBodyElement = document.body as HTMLBodyElement) {
     super();
     this._body = body;
   }
@@ -29,8 +38,9 @@ export class DomBody extends BaseDom<HTMLBodyElement> {
  *
  * Useful for global layout scaffolding, dynamic content injection, or body-wide style control.
  *
- * @return A DomBody instance wrapping `document.body`.
+ * @param body - Optional `<body>` element to wrap (defaults to `document.body`).
+ * @return A DomBody instance wrapping the given or default `<body>`.
  */
 export function $body(body?: HTMLBodyElement): DomBody {
-  return new DomBody(body ?? (document.body as HTMLBodyElement));
+  return new DomBody(body);
 }

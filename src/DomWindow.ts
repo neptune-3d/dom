@@ -1,14 +1,28 @@
 import { DomDocument } from "./DomDocument";
+
 /**
  * Wrapper for a `Window` object with typed event listener utilities.
  * Useful for managing global events like resize, scroll, or keyboard shortcuts.
  */
 export class DomWindow {
+  /**
+   * Creates a new `DomWindow` wrapper bound to the specified `Window`.
+   * Defaults to the global `window` object if none is provided.
+   *
+   * This allows you to scope window-level operations to a particular context,
+   * such as the main browsing window, an iframe, or a synthetic window created
+   * for testing. The wrapper provides typed utilities for managing global events
+   * like resize, scroll, or keyboard shortcuts.
+   *
+   * @param win - Optional `Window` instance to wrap. Defaults to the global `window`.
+   */
   constructor(win: Window = window) {
     this._window = win;
   }
 
   protected _window: Window;
+
+  protected _computedStyles = new WeakMap<Element, CSSStyleDeclaration>();
 
   /**
    * Returns the wrapped `Window` instance.
@@ -22,6 +36,30 @@ export class DomWindow {
    */
   getDocument(): DomDocument {
     return new DomDocument(this._window.document);
+  }
+
+  /**
+   * Returns the computed styles for a given element.
+   *
+   * - Wraps `window.getComputedStyle()` but uses the correct `Window` associated
+   *   with this `DomWindow` instance.
+   * - Useful for reading resolved values of inherited, cascaded, or shorthand CSS properties.
+   * - By default, caches the result to avoid repeated style recalculation.
+   * - Pass `force = true` to recompute and update the cache.
+   *
+   * @param el - The element whose styles should be computed.
+   * @param force - Whether to force recomputation (default: false).
+   * @return The computed style object for the element.
+   */
+  getComputedStyle(el: Element, force: boolean = false): CSSStyleDeclaration {
+    let style = this._computedStyles.get(el);
+
+    if (force || !style) {
+      style = this._window.getComputedStyle(el);
+      this._computedStyles.set(el, style);
+    }
+
+    return style;
   }
 
   /**

@@ -1,4 +1,5 @@
 import { CssRule } from "./CssRule";
+import { DomDocument } from "./DomDocument";
 import { MediaRule } from "./MediaRule";
 import { getStyleValue } from "./utils";
 
@@ -125,26 +126,32 @@ export class StyleSheet {
   }
 
   /**
-   * Retrieves or creates a <style> element with the given ID and wraps it in a StyleSheet instance.
-   * If no element with the specified ID exists, a new <style> tag is created, appended to <head>,
-   * and assigned the ID. This allows multiple independently managed stylesheets via custom IDs.
+   * Retrieves or creates a <style> element with the given ID in the specified document
+   * and wraps it in a StyleSheet instance. If no element with the specified ID exists,
+   * a new <style> tag is created, appended to <head>, and assigned the ID.
    *
    * @param id - Optional ID of the <style> element to target. Defaults to DEFAULT_STYLE_ID.
+   * @param doc - Optional native Document to operate on. Defaults to the current window's document.
    * @return A StyleSheet instance bound to the specified <style> element.
    */
-  static getSheet(id: string = StyleSheet.DEFAULT_STYLE_ID) {
-    const res = document.head.querySelector(`#${id}`);
+  static getSheet(
+    id: string = StyleSheet.DEFAULT_STYLE_ID,
+    doc?: Document
+  ): StyleSheet {
+    const domDoc = new DomDocument(doc);
+    const head = domDoc.getHead();
+    const existing = head.query<"style">(`#${id}`);
 
-    if (!res) {
-      const style = document.createElement("style");
+    if (!existing) {
+      const style = domDoc.createElement("style");
       style.id = id;
       style.setAttribute("type", "text/css");
-      document.head.append(style);
+      head.dom.append(style);
       return new StyleSheet(style);
     }
     //
     else {
-      return new StyleSheet(res as HTMLStyleElement);
+      return new StyleSheet(existing.dom);
     }
   }
 

@@ -1,7 +1,5 @@
-import { DomBody } from "./DomBody";
 import { DomDocument } from "./DomDocument";
 import { DomElement } from "./DomElement";
-import { DomHead } from "./DomHead";
 import { DomWindow } from "./DomWindow";
 import type { DomElementTagNameMap, IFrameSandboxFlag } from "./types";
 import { getStyleValue } from "./utils";
@@ -21,10 +19,6 @@ import { getStyleValue } from "./utils";
  *   .height(600)
  *   .allowFullscreen();
  * ```
- *
- * TODO:
- * - Add `.postMessage()` for messaging into iframe content
- * - Add `.getContentWindow()` for direct access to iframe's `contentWindow`
  */
 export class IFrame extends DomElement<"iframe"> {
   constructor() {
@@ -55,31 +49,6 @@ export class IFrame extends DomElement<"iframe"> {
   getContentDocument(): DomDocument | null {
     const doc = this.dom.contentDocument;
     return doc ? new DomDocument(doc) : null;
-  }
-
-  /**
-   * Returns a `DomBody` wrapper for the iframe's inner `<body>` element.
-   * Only works for same-origin iframes. Returns `null` if the iframe is cross-origin,
-   * not yet loaded, or has no accessible body element.
-   *
-   * This enables fluent DOM composition and styling inside the iframe when available.
-   *
-   * @return A `DomBody` instance wrapping the iframe's body, or `null` if inaccessible.
-   */
-  getBody(): DomBody | null {
-    const doc = this.getContentDocument();
-    return doc ? doc.getBody() : null;
-  }
-
-  /**
-   * Returns a `DomHead` wrapper for the iframe's inner `<head>` element.
-   * Only works for same-origin iframes. Returns `null` if the iframe is cross-origin or inaccessible.
-   *
-   * @return A `DomHead` instance wrapping the iframe's head, or `null` if inaccessible.
-   */
-  getHead(): DomHead | null {
-    const doc = this.getContentDocument();
-    return doc ? doc.getHead() : null;
   }
 
   /**

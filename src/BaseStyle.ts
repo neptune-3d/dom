@@ -1039,7 +1039,7 @@ export abstract class BaseStyle {
   translate(x: string | number, y: string | number): this {
     const xVal = typeof x === "number" ? `${x}px` : x;
     const yVal = typeof y === "number" ? `${y}px` : y;
-    return this.setStyleProp("transform", `translate(${xVal}, ${yVal})`);
+    return this.transform(`translate(${xVal}, ${yVal})`);
   }
 
   /**
@@ -1053,7 +1053,7 @@ export abstract class BaseStyle {
    */
   translateX(x: string | number): this {
     const xVal = typeof x === "number" ? `${x}px` : x;
-    return this.setStyleProp("transform", `translateX(${xVal})`);
+    return this.transform(`translateX(${xVal})`);
   }
 
   /**
@@ -1067,7 +1067,7 @@ export abstract class BaseStyle {
    */
   translateY(y: string | number): this {
     const yVal = typeof y === "number" ? `${y}px` : y;
-    return this.setStyleProp("transform", `translateY(${yVal})`);
+    return this.transform(`translateY(${yVal})`);
   }
 
   /**
@@ -1084,7 +1084,7 @@ export abstract class BaseStyle {
   scale(x: string | number, y: string | number): this {
     const xVal = typeof x === "number" ? x.toString() : x;
     const yVal = typeof y === "number" ? y.toString() : y;
-    return this.setStyleProp("transform", `scale(${xVal}, ${yVal})`);
+    return this.transform(`scale(${xVal}, ${yVal})`);
   }
 
   /**
@@ -1098,7 +1098,7 @@ export abstract class BaseStyle {
    */
   scaleX(x: string | number): this {
     const xVal = typeof x === "number" ? x.toString() : x;
-    return this.setStyleProp("transform", `scaleX(${xVal})`);
+    return this.transform(`scaleX(${xVal})`);
   }
 
   /**
@@ -1112,7 +1112,7 @@ export abstract class BaseStyle {
    */
   scaleY(y: string | number): this {
     const yVal = typeof y === "number" ? y.toString() : y;
-    return this.setStyleProp("transform", `scaleY(${yVal})`);
+    return this.transform(`scaleY(${yVal})`);
   }
 
   /**
@@ -1127,7 +1127,7 @@ export abstract class BaseStyle {
    */
   rotate(angle: string | number): this {
     const val = typeof angle === "number" ? `${angle}deg` : angle;
-    return this.setStyleProp("transform", `rotate(${val})`);
+    return this.transform(`rotate(${val})`);
   }
 
   /**
@@ -1142,7 +1142,7 @@ export abstract class BaseStyle {
    */
   rotateX(angle: string | number): this {
     const val = typeof angle === "number" ? `${angle}deg` : angle;
-    return this.setStyleProp("transform", `rotateX(${val})`);
+    return this.transform(`rotateX(${val})`);
   }
 
   /**
@@ -1157,7 +1157,7 @@ export abstract class BaseStyle {
    */
   rotateY(angle: string | number): this {
     const val = typeof angle === "number" ? `${angle}deg` : angle;
-    return this.setStyleProp("transform", `rotateY(${val})`);
+    return this.transform(`rotateY(${val})`);
   }
 
   /**
@@ -1172,7 +1172,7 @@ export abstract class BaseStyle {
    */
   rotateZ(angle: string | number): this {
     const val = typeof angle === "number" ? `${angle}deg` : angle;
-    return this.setStyleProp("transform", `rotateZ(${val})`);
+    return this.transform(`rotateZ(${val})`);
   }
 
   /**
@@ -1482,7 +1482,7 @@ export abstract class BaseStyle {
    */
   linearGradient(direction: LinearGradientDirection, ...stops: string[]): this {
     const gradient = `linear-gradient(${direction}, ${stops.join(", ")})`;
-    return this.setStyleProp("background", gradient);
+    return this.background(gradient);
   }
 
   /**

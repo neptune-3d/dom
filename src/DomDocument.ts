@@ -1,15 +1,26 @@
 import { DomBody } from "./DomBody";
 import { DomElement } from "./DomElement";
 import { DomHead } from "./DomHead";
-import type { DomElementTagNameMap } from "./types";
+import { DomWindow } from "./DomWindow";
+import type { DomElementTagNameMap, DomNamespaceURI } from "./types";
+import { createElement } from "./utils";
 
 /**
  * Wrapper for the global `document` object with typed event listener utilities.
  * Useful for managing document-level events like visibility changes, selection, or clipboard interactions.
  */
 export class DomDocument {
-  constructor(document: Document = window.document) {
-    this._document = document;
+  /**
+   * Creates a new `DomDocument` wrapper bound to the specified `Document`.
+   * Defaults to the global `window.document` if none is provided.
+   *
+   * This allows you to scope DOM operations to a particular document context,
+   * such as the main page, an iframe, or a synthetic document created for testing.
+   *
+   * @param doc - Optional `Document` instance to wrap. Defaults to `window.document`.
+   */
+  constructor(doc: Document = window.document) {
+    this._document = doc;
   }
 
   protected _document: Document;
@@ -22,6 +33,19 @@ export class DomDocument {
    */
   get dom(): Document {
     return this._document;
+  }
+
+  /**
+   * Returns the associated `DomWindow` for this document.
+   *
+   * - Resolves the correct `Window` from the document's `defaultView`.
+   * - If the document is detached and has no `defaultView`, falls back to the global `window`.
+   * - Wraps the native `Window` in a `DomWindow` for typed utilities.
+   *
+   * @return A `DomWindow` instance wrapping the document's window.
+   */
+  getWindow(): DomWindow {
+    return new DomWindow(this._document.defaultView ?? undefined);
   }
 
   /**
@@ -107,16 +131,89 @@ export class DomDocument {
         )
       : null;
   }
+
+  /**
+   * Creates a text node in the context of this document.
+   *
+   * - Accepts strings, numbers, booleans, or any value with a predictable string representation.
+   * - Ensures the node belongs to the same document as other elements you append to.
+   *
+   * @param value - The value to stringify into text.
+   * @return A native Text node belonging to this document.
+   */
+  createTextNode(value: string | number | boolean | null | undefined): Text {
+    return this._document.createTextNode(value == null ? "" : String(value));
+  }
+
+  /**
+   * Creates an element in the context of this document.
+   *
+   * - Accepts a valid HTML tag name.
+   * - Ensures the element belongs to the same document as other nodes you append to.
+   * - Returns the native HTMLElement for direct DOM manipulation.
+   *
+   * @param tagName - The tag name of the element to create (e.g., "div", "span").
+   * @return A native HTMLElement belonging to this document.
+   */
+  createElement<T extends keyof HTMLElementTagNameMap>(
+    tagName: T
+  ): HTMLElementTagNameMap[T] {
+    return this._document.createElement(tagName);
+  }
+
+  /**
+   * Creates an element in the context of this document with a specific namespace.
+   *
+   * - Use for HTML or SVG elements.
+   * - Ensures the element belongs to the same document as other nodes you append to.
+   * - Returns the native element typed according to the namespace.
+   */
+  createElementNS<T extends keyof SVGElementTagNameMap>(
+    namespaceURI: "http://www.w3.org/2000/svg",
+    qualifiedName: T
+  ): SVGElementTagNameMap[T];
+
+  createElementNS<T extends keyof HTMLElementTagNameMap>(
+    namespaceURI: "http://www.w3.org/1999/xhtml",
+    qualifiedName: T
+  ): HTMLElementTagNameMap[T];
+
+  createElementNS(
+    namespaceURI: DomNamespaceURI,
+    qualifiedName: string
+  ): Element {
+    return this._document.createElementNS(namespaceURI, qualifiedName);
+  }
+
+  /**
+   * Creates a wrapped `DomElement` in the context of this document.
+   *
+   * - Accepts a valid HTML or SVG tag name.
+   * - Ensures the element is created in this DomDocument's associated Document,
+   *   so it belongs to the same context as other nodes you append to (main page,
+   *   iframe, or synthetic document).
+   * - Uses the appropriate namespace for SVG elements automatically.
+   * - Returns a `DomElement` wrapper for fluent DOM manipulation.
+   *
+   * @param tag - The tag name of the element to create (e.g., "div", "span", "svg", "circle").
+   * @return A `DomElement` instance wrapping the created element.
+   */
+  createDomElement<T extends keyof DomElementTagNameMap>(
+    tag: T
+  ): DomElement<T> {
+    const el = createElement(this._document, tag);
+    return new DomElement<T>(tag, el);
+  }
 }
 
 /**
- * Creates a new DomDocument instance bound to the global `document` object.
- * Provides typed event listener utilities and fluent dispatching for document-level DOM events.
+ * Creates a new DomDocument instance.
+ * By default wraps the global `document`, but you can pass a custom Document
+ * (e.g. from an iframe or JSDOM) for testing or specialized contexts.
  *
- * Useful for managing visibility state, clipboard interactions, selection changes, or custom document-wide signaling.
- *
- * @return A DomDocument instance wrapping the global `document`.
+ * @param doc - Optional Document to wrap. Defaults to global `window.document`.
+ * @return A DomDocument instance wrapping the given Document.
  */
-export function $document() {
-  return new DomDocument();
+export function $document(doc?: Document): DomDocument {
+  return new DomDocument(doc ?? window.document);
 }
