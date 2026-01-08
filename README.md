@@ -31,6 +31,8 @@ const body = $body();
 
 const style = $style();
 
+// Make sure to add the <style> element to the document
+// before using its CSSStyleSheet (via our StyleSheet class).
 head.add(style);
 
 const sheet = $sheet(style);
@@ -39,13 +41,25 @@ sheet.cssRule(".shown").display("block");
 
 sheet.cssRule(".hidden").display("none");
 
-const title = $("h1").text("Hello World").fontSize(24).color("blue");
+const btnRule = sheet.cssRule(".btn").b(0).appearance("none").bgColor("white");
+
+// Adds a new ".btn:focus" rule — focus() is shorthand for rule.extend(":focus")
+btnRule.focus().outline("2px solid orange");
+
+const title = $("h1")
+  .text("Hello World")
+  // Inline styles can be set with the same fluent API as CSS rules
+  .fontSize(24)
+  .color("blue");
 
 let isToggledVisible = true;
 
 const toggled = $("div").className("shown").text("I am visible");
 
+// $btn returns a Button instance with special button helpers
+// you could still use $("button") which returns a DomElement<"button">
 const button = $btn()
+  .className("btn")
   .text("Click me")
   .on("click", () => {
     isToggledVisible = !isToggledVisible;
@@ -70,6 +84,6 @@ win.off("resize", onResize);
 
 - Fluent, chainable DOM manipulation.
 - Wrapper classes with helper methods for HTML, SVG elements ( including body and head ) as well as document and window.
-- Symmetrical styling API for both inline styles and css with chaining.
-- Separate class for unique elements like iframe, canvas, form input, select, text area ..etc elements.
+- Symmetrical styling API for both inline styles and CSS rules, with chaining.
+- Separate classes for unique elements such as `<iframe>`, `<canvas>`, form inputs, `<select>`, `<textarea>`, etc.
 - Fully written in Typescript.
