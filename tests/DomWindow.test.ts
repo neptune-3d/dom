@@ -49,38 +49,6 @@ describe("DomWindow", () => {
     div.remove();
   });
 
-  it("getComputedStyle() caches results by default", () => {
-    const div = document.createElement("div");
-    div.style.color = "blue";
-    document.body.appendChild(div);
-
-    const style1 = winWrapper.getComputedStyle(div);
-    expect(style1.color).toBe("rgb(0, 0, 255)");
-
-    // Change style but cached value should remain
-    div.style.color = "green";
-    const style2 = winWrapper.getComputedStyle(div);
-    expect(style2.color).toBe("rgb(0, 0, 255)");
-
-    div.remove();
-  });
-
-  it("getComputedStyle() recomputes when force = true", () => {
-    const div = document.createElement("div");
-    div.style.color = "blue";
-    document.body.appendChild(div);
-
-    const style1 = winWrapper.getComputedStyle(div);
-    expect(style1.color).toBe("rgb(0, 0, 255)");
-
-    // Change style
-    div.style.color = "green";
-    const style2 = winWrapper.getComputedStyle(div, true);
-    expect(style2.color).toBe("rgb(0, 128, 0)"); // resolved green
-
-    div.remove();
-  });
-
   it("on() attaches an event listener and handler is called", () => {
     const handler = vi.fn();
 

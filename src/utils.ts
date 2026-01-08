@@ -135,3 +135,20 @@ export function getDocumentWindow(doc: Document): Window {
 export function getElementDocument(el: Element): Document {
   return el.ownerDocument;
 }
+
+/**
+ * Returns true if the given element is currently focused.
+ * Works for documents, shadow roots, and gracefully handles
+ * elements not connected to the DOM.
+ *
+ * @param el - The element to check (must not be null).
+ * @return True if the element is the activeElement of its root.
+ */
+export function isElementFocused(el: Element): boolean {
+  const root = el.getRootNode();
+  // Only Document and ShadowRoot expose activeElement
+  if (!("activeElement" in root)) {
+    return false;
+  }
+  return (root as Document | ShadowRoot).activeElement === el;
+}

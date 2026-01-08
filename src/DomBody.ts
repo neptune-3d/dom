@@ -2,6 +2,7 @@ import { BaseDom } from "./BaseDom";
 import type { DomElement } from "./DomElement";
 import { queryDomElement } from "./queryDomElement";
 import type { DomElementTagNameMap } from "./types";
+import { isElementFocused } from "./utils";
 
 /**
  * Wrapper for a `<body>` element with style and DOM composition utilities.
@@ -35,6 +36,15 @@ export class DomBody extends BaseDom<HTMLBodyElement> {
   }
 
   /**
+   * Returns true if this element is currently focused.
+   * Works for documents, shadow roots, and gracefully
+   * handles elements not connected to the DOM.
+   */
+  isFocused(): boolean {
+    return isElementFocused(this.dom);
+  }
+
+  /**
    * Queries this element's subtree for a single matching descendant and wraps it in a `DomElement`.
    * Returns `null` if no match is found.
    *
@@ -47,6 +57,28 @@ export class DomBody extends BaseDom<HTMLBodyElement> {
     selector: string
   ): DomElement<T> | null {
     return queryDomElement(this.dom, selector);
+  }
+
+  /**
+   * Focuses this DOM element, if it supports focus.
+   * For non-focusable elements (like SVG or body), ensure `tabindex` is set if needed.
+   *
+   * @return This instance for chaining.
+   */
+  focus(): this {
+    this.dom.focus();
+    return this;
+  }
+
+  /**
+   * Removes focus from this DOM element, if it supports blur.
+   * For non-focusable elements, this is a no-op.
+   *
+   * @return This instance for chaining.
+   */
+  blur(): this {
+    this.dom.blur();
+    return this;
   }
 }
 

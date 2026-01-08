@@ -1,8 +1,12 @@
 import { BaseDom } from "./BaseDom";
-import { DomWindow } from "./DomWindow";
 import { queryDomElement } from "./queryDomElement";
 import type { DomElementTagNameMap } from "./types";
-import { createElement, isSvgTag, normalizeTag } from "./utils";
+import {
+  createElement,
+  isElementFocused,
+  isSvgTag,
+  normalizeTag,
+} from "./utils";
 
 /**
  * A unified wrapper for HTML and SVG elements that provides a fluent, type-safe API
@@ -40,6 +44,8 @@ export class DomElement<
   protected _isSvg;
   protected _dom;
 
+  protected _computedStyle: CSSStyleDeclaration | null = null;
+
   /**
    * Gets the tag name of the element (e.g., "div", "svg", "circle").
    */
@@ -67,14 +73,29 @@ export class DomElement<
    * Returns the computed styles of this element.
    * Useful for reading resolved values of inherited, cascaded, or shorthand CSS properties.
    *
-   * - Delegates to `DomWindow.getComputedStyle`, which manages caching internally.
+   * - Delegates to `window.getComputedStyle()` using the correct Window.
+   * - Caches the result to avoid repeated style recalculation.
    * - Pass `force = true` to recompute and update the cache.
    *
    * @param force - Whether to force recomputation (default: false).
    * @return The computed style object for this element.
    */
   getComputedStyle(force: boolean = false): CSSStyleDeclaration {
-    return new DomWindow(this.getWindow()).getComputedStyle(this.dom, force);
+    if (!force && this._computedStyle) {
+      return this._computedStyle;
+    }
+    const style = this.getWindow().getComputedStyle(this.dom);
+    this._computedStyle = style;
+    return style;
+  }
+
+  /**
+   * Returns true if this element is currently focused.
+   * Works for documents, shadow roots, and gracefully
+   * handles elements not connected to the DOM.
+   */
+  isFocused(): boolean {
+    return isElementFocused(this.dom);
   }
 
   /**
@@ -264,6 +285,7 @@ export class DomElement<
     return queryDomElement(this.dom, selector);
   }
 }
+
 /**
  * Creates a new DomElement instance for the given tag name.
  * @param tag - The HTML tag name (e.g., "div", "button", "input").

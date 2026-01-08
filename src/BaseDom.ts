@@ -259,19 +259,6 @@ export abstract class BaseDom<
   }
 
   /**
-   * Returns true if this element is currently focused.
-   * Works for documents, shadow roots, and gracefully
-   * handles elements not connected to the DOM.
-   */
-  isFocused(): boolean {
-    const root = this.dom.getRootNode();
-    if (!root || !("activeElement" in root)) {
-      return false;
-    }
-    return root.activeElement === this.dom;
-  }
-
-  /**
    * Sets the `textContent` of the element using any value.
    * If the value is `null` or `undefined`, clears the content.
    * Otherwise, converts the value to a string and assigns it.

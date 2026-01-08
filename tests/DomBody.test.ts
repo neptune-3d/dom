@@ -49,4 +49,44 @@ describe("DomBody", () => {
     expect(result).toBeInstanceOf(DomElement);
     expect(result?.dom).toBe(span);
   });
+
+  describe("focus, blur, and isFocused", () => {
+    beforeEach(() => {
+      // Ensure body is focusable
+      document.body.setAttribute("tabindex", "0");
+    });
+
+    it("focus() sets body as the active element and isFocused() returns true", () => {
+      const result = bodyWrapper.focus();
+      expect(result).toBe(bodyWrapper);
+      expect(document.activeElement).toBe(document.body);
+      expect(bodyWrapper.isFocused()).toBe(true);
+    });
+
+    it("blur() followed by focusing another element makes body not focused", () => {
+      bodyWrapper.focus();
+      expect(bodyWrapper.isFocused()).toBe(true);
+
+      // Blur body, then explicitly move focus to another element
+      const other = document.createElement("input");
+      document.body.appendChild(other);
+
+      const result = bodyWrapper.blur();
+      expect(result).toBe(bodyWrapper);
+
+      other.focus();
+      expect(document.activeElement).toBe(other);
+      expect(bodyWrapper.isFocused()).toBe(false);
+    });
+
+    it("isFocused() returns false when another element is focused", () => {
+      // If body has tabindex, it may be the active element by default in jsdom
+      const other = document.createElement("button");
+      document.body.appendChild(other);
+      other.focus();
+
+      expect(document.activeElement).toBe(other);
+      expect(bodyWrapper.isFocused()).toBe(false);
+    });
+  });
 });

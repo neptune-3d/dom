@@ -20,8 +20,6 @@ export class DomWindow {
 
   protected _window: Window;
 
-  protected _computedStyles = new WeakMap<Element, CSSStyleDeclaration>();
-
   /**
    * Returns the wrapped `Window` instance.
    */
@@ -44,25 +42,16 @@ export class DomWindow {
   /**
    * Returns the computed styles for a given element.
    *
-   * - Wraps `window.getComputedStyle()` but uses the correct `Window` associated
-   *   with this `DomWindow` instance.
+   * - Wraps `window.getComputedStyle()` but ensures the correct `Window`
+   *   associated with this `DomWindow` instance is used.
    * - Useful for reading resolved values of inherited, cascaded, or shorthand CSS properties.
-   * - By default, caches the result to avoid repeated style recalculation.
-   * - Pass `force = true` to recompute and update the cache.
+   * - Always returns a fresh `CSSStyleDeclaration` from the browser; no caching is performed.
    *
    * @param el - The element whose styles should be computed.
-   * @param force - Whether to force recomputation (default: false).
    * @return The computed style object for the element.
    */
-  getComputedStyle(el: Element, force: boolean = false): CSSStyleDeclaration {
-    let style = this._computedStyles.get(el);
-
-    if (force || !style) {
-      style = this._window.getComputedStyle(el);
-      this._computedStyles.set(el, style);
-    }
-
-    return style;
+  getComputedStyle(el: Element): CSSStyleDeclaration {
+    return this._window.getComputedStyle(el);
   }
 
   /**
