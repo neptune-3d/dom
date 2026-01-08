@@ -12,101 +12,66 @@ Install the package:
 npm install @neptune3d/dom
 ```
 
-## ✨ Create Elements
+## Usage
 
 ```ts
-import { $, $body } from "@neptune3d/dom";
+import {
+  $window,
+  $document,
+  $head,
+  $body,
+  $style,
+  $sheet,
+  $,
+  $btn,
+} from "@neptune3d/dom";
 
-const div = $("div")
-  .text("Hello world")
-  .px("1rem")
-  .bgColor("#eee")
-  .title("Click me")
-  .on("click", () => console.log("Clicked!"));
+const win = $window();
+const doc = $document();
+const head = $head();
+const body = $body();
 
-$body().add(div);
+const style = $style();
+
+head.add(style);
+
+const sheet = $sheet(style);
+
+sheet.cssRule(".shown").display("block");
+
+sheet.cssRule(".hidden").display("none");
+
+const title = $("h1").text("Hello World").fontSize(24).color("blue");
+
+let isToggledVisible = true;
+
+const toggled = $("div").className("shown").text("I am visible");
+
+const button = $btn()
+  .text("Click me")
+  .on("click", () => {
+    isToggledVisible = !isToggledVisible;
+
+    toggled.toggle(isToggledVisible ? "shown" : "hidden");
+  });
+
+body.add(title, button, toggled);
+
+const onResize = () => {
+  console.log("window has resized");
+};
+
+win.on("resize", onResize);
+
+// on cleanup
+
+win.off("resize", onResize);
 ```
 
-## 🖼 SVG Support
+## Features
 
-```ts
-const circle = $("circle")
-  .attr("cx", "50")
-  .attr("cy", "50")
-  .attr("r", "40")
-  .attr("fill", "red");
-
-const svg = $("svg").attr("width", "100").attr("height", "100").add(circle);
-
-$body().add(svg);
-```
-
-## 📋 Input Helpers
-
-```ts
-import { $input } from "@neptune3d/dom";
-
-const checkbox = $input("checkbox").on("change", (e) => {
-  console.log("Checked:", checkbox.getChecked());
-});
-
-$body().add(checkbox);
-```
-
-## 🎨 CSS Stylesheet
-
-```ts
-import { StyleSheet } from "@neptune3d/dom";
-
-const sheet = StyleSheet.getSheet();
-
-// insert a css rule
-const rule = sheet.cssRule(".list-item");
-rule.p("0.5rem").bb("1px solid #ccc");
-
-// insert a media rule
-const media = sheet.mediaRule("screen and (max-width: 600px)");
-
-// insert a css rule into the media rule
-media.cssRule(".list-item").textAlign("center").fontSize(24);
-
-// extend a css rule
-rule.extend("> div.child").opacity(0.6);
-
-// predefined extensions for common pseudo selectors / elements
-
-rule.hover().bgColor("red");
-
-rule.focus().outline("1px dashed blue");
-```
-
-## 🌍 Global Event Wrappers
-
-```ts
-import { $window, $document } from "@neptune3d/dom";
-
-$window().on("resize", (e) => console.log("Window resized"));
-$document().on("visibilitychange", () => console.log("Visibility changed"));
-```
-
-## 🎯 Popover API
-
-```ts
-const popup = $("div")
-  .text("Popover content")
-  .popover("manual")
-  .style({ padding: "1rem", background: "#222", color: "#fff" });
-
-$body().add(popup);
-
-// Show/hide programmatically
-popup.showPopover();
-popup.hidePopover();
-```
-
-## 📦 Features
-
-- Chainable DOM manipulation
-- Typed input element helpers
-- Stylesheet API support
-- Window, document, body and head wrappers
+- Fluent, chainable DOM manipulation.
+- Wrapper classes with helper methods for HTML, SVG elements ( including body and head ) as well as document and window.
+- Symmetrical styling API for both inline styles and css with chaining.
+- Separate class for unique elements like iframe, canvas, form input, select, text area ..etc elements.
+- Fully written in Typescript.
