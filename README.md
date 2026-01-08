@@ -86,4 +86,5 @@ win.off("resize", onResize);
 - Wrapper classes with helper methods for HTML, SVG elements ( including body and head ) as well as document and window.
 - Symmetrical styling API for both inline styles and CSS rules, with chaining.
 - Separate classes for unique elements such as `<iframe>`, `<canvas>`, form inputs, `<select>`, `<textarea>`, etc.
+- Stateless by design — no hidden global state is kept (beyond trivial caching and references to DOM elements), making the library simple and predictable.
 - Fully written in Typescript.
