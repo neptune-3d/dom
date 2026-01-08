@@ -4,13 +4,11 @@ Helper classes and functions for fluent DOM manipulation, styling, and event han
 
 [![NPM Version](https://img.shields.io/npm/v/%40neptune3d%2Fdom)](https://www.npmjs.com/package/@neptune3d/dom)
 
-## 🚀 Getting Started
-
-Install the package:
-
 ```bash
 npm install @neptune3d/dom
 ```
+
+> ⚠️ While this library's API is mostly stable, some parts may still change without warning.
 
 ## Usage
 
@@ -52,7 +50,7 @@ const button = $btn()
   .on("click", () => {
     isToggledVisible = !isToggledVisible;
 
-    toggled.toggle(isToggledVisible ? "shown" : "hidden");
+    toggled.className(isToggledVisible ? "shown" : "hidden");
   });
 
 body.add(title, button, toggled);
