@@ -8,7 +8,7 @@ Helper classes and functions for fluent DOM manipulation, styling, and event han
 npm install @neptune3d/dom
 ```
 
-> ⚠️ While this library's API is mostly stable, some parts may still change without warning.
+> ⚠️ While this library's API is mostly stable, some parts are still under development.
 
 ## Usage
 
