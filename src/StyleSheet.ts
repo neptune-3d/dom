@@ -134,21 +134,21 @@ export class StyleSheet {
     }
     return this;
   }
+}
 
-  /**
-   * Wraps the given `<style>` element in a `StyleSheet` instance.
-   * The element must already be attached to a document so that its
-   * `sheet` property is available.
-   *
-   * @param el - The `<style>` element to wrap.
-   * @return A `StyleSheet` instance bound to the element’s `CSSStyleSheet`.
-   */
-  static getSheet(el: HTMLStyleElement): StyleSheet {
-    if (!el.sheet) {
-      throw new Error(
-        "StyleSheet: The provided <style> element has no associated CSSStyleSheet."
-      );
-    }
-    return new StyleSheet(el.sheet as CSSStyleSheet);
+/**
+ * Factory function to wrap a <style> element in a StyleSheet instance.
+ * The element must already be attached to a document so that its
+ * `sheet` property is available.
+ *
+ * @param el - The <style> element to wrap.
+ * @return A StyleSheet instance bound to the element’s CSSStyleSheet.
+ */
+export function $sheet(el: HTMLStyleElement): StyleSheet {
+  if (!el.sheet) {
+    throw new Error(
+      "StyleSheet: The provided <style> element has no associated CSSStyleSheet."
+    );
   }
+  return new StyleSheet(el.sheet as CSSStyleSheet);
 }
