@@ -1,7 +1,4 @@
 import { BaseStyle } from "./BaseStyle";
-import { DomDocument } from "./DomDocument";
-import { DomElement } from "./DomElement";
-import { DomWindow } from "./DomWindow";
 import type {
   AriaHasPopup,
   AriaLive,
@@ -10,10 +7,14 @@ import type {
   CssProperties,
   DomElementChild,
   DomElementEventMap,
-  DomElementTagNameMap,
   DomReferenceNode,
 } from "./types";
-import { camelToKebab, getStyleValue } from "./utils";
+import {
+  camelToKebab,
+  getDocumentWindow,
+  getElementDocument,
+  getStyleValue,
+} from "./utils";
 
 const _isBaseDom = Symbol("BaseDomIdentity");
 
@@ -35,27 +36,27 @@ export abstract class BaseDom<
   protected _clientHeight: number | null = null;
 
   /**
-   * Returns the associated `DomWindow` for this element.
+   * Returns the associated native `Window` for this element.
    *
-   * - Delegates to `getDocument().getWindow()`.
-   * - Ensures consistency: all window resolution logic lives in `DomDocument`.
+   * - Resolves via the element’s `ownerDocument.defaultView`.
+   * - Falls back to the global `window` if detached.
    *
-   * @return A `DomWindow` instance wrapping the element's window.
+   * @return The native `Window` object.
    */
-  getWindow(): DomWindow {
-    return this.getDocument().getWindow();
+  getWindow(): Window {
+    return getDocumentWindow(this.getDocument());
   }
 
   /**
-   * Returns the associated `DomDocument` for this element.
+   * Returns the associated native `Document` for this element.
    *
-   * - Resolves the correct `Document` from the element's `ownerDocument`.
-   * - Wraps the native `Document` in a `DomDocument` for typed utilities.
+   * - Resolves via the element’s `ownerDocument`.
+   * - Falls back to the global `document` if detached.
    *
-   * @return A `DomDocument` instance wrapping the element's document.
+   * @return The native `Document` object.
    */
-  getDocument(): DomDocument {
-    return new DomDocument(this.dom.ownerDocument ?? undefined);
+  getDocument(): Document {
+    return getElementDocument(this.dom);
   }
 
   /**
@@ -109,20 +110,6 @@ export abstract class BaseDom<
       this._rect = this.dom.getBoundingClientRect();
     }
     return this._rect;
-  }
-
-  /**
-   * Returns the computed styles of this element.
-   * Useful for reading resolved values of inherited, cascaded, or shorthand CSS properties.
-   *
-   * - Delegates to `DomWindow.getComputedStyle`, which manages caching internally.
-   * - Pass `force = true` to recompute and update the cache.
-   *
-   * @param force - Whether to force recomputation (default: false).
-   * @return The computed style object for this element.
-   */
-  getComputedStyle(force: boolean = false): CSSStyleDeclaration {
-    return this.getWindow().getComputedStyle(this.dom, force);
   }
 
   /**
@@ -1019,27 +1006,6 @@ export abstract class BaseDom<
     return this.dom.contains(node);
   }
 
-  /**
-   * Queries this element's subtree for a single matching descendant and wraps it in a `DomElement`.
-   * Returns `null` if no match is found.
-   *
-   * This enables fluent DOM composition and manipulation within scoped components.
-   *
-   * @param selector - A valid CSS selector string.
-   * @return A `DomElement` wrapper for the matched element, or `null` if not found.
-   */
-  query<T extends keyof DomElementTagNameMap>(
-    selector: string
-  ): DomElement<T> | null {
-    const el = this.dom.querySelector(selector);
-    return el
-      ? new DomElement<T>(
-          el.tagName.toLowerCase() as T,
-          el as DomElementTagNameMap[T]
-        )
-      : null;
-  }
-
   protected resolveNode(child: DomElementChild): Node {
     if (
       typeof child === "string" ||
@@ -1047,7 +1013,9 @@ export abstract class BaseDom<
       typeof child === "boolean" ||
       child == null
     ) {
-      return this.getDocument().createTextNode(child);
+      return this.getDocument().createTextNode(
+        child == null ? "" : String(child)
+      );
     }
     if (BaseDom.isBaseDom(child)) {
       return child.dom;

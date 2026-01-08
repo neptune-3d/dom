@@ -1,4 +1,7 @@
 import { BaseDom } from "./BaseDom";
+import type { DomElement } from "./DomElement";
+import { queryDomElement } from "./queryDomElement";
+import type { DomElementTagNameMap } from "./types";
 
 /**
  * Wrapper for a `<body>` element with style and DOM composition utilities.
@@ -29,6 +32,21 @@ export class DomBody extends BaseDom<HTMLBodyElement> {
    */
   get dom(): HTMLBodyElement {
     return this._body;
+  }
+
+  /**
+   * Queries this element's subtree for a single matching descendant and wraps it in a `DomElement`.
+   * Returns `null` if no match is found.
+   *
+   * This enables fluent DOM composition and manipulation within scoped components.
+   *
+   * @param selector - A valid CSS selector string.
+   * @return A `DomElement` wrapper for the matched element, or `null` if not found.
+   */
+  query<T extends keyof DomElementTagNameMap>(
+    selector: string
+  ): DomElement<T> | null {
+    return queryDomElement(this.dom, selector);
   }
 }
 

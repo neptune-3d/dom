@@ -1,5 +1,7 @@
 import { BaseDom } from "./BaseDom";
-import type { ContentSecurityPolicy } from "./types";
+import type { DomElement } from "./DomElement";
+import { queryDomElement } from "./queryDomElement";
+import type { ContentSecurityPolicy, DomElementTagNameMap } from "./types";
 
 /**
  * Wrapper for a `<head>` element with style and DOM composition utilities.
@@ -40,14 +42,14 @@ export class DomHead extends BaseDom<HTMLHeadElement> {
    * @return This instance for chaining.
    */
   title(text: string): this {
-    let titleEl = this.query<"title">("title");
+    let titleEl = this.dom.querySelector("title");
 
     if (!titleEl) {
-      titleEl = this.getDocument().createDomElement("title");
+      titleEl = this.getDocument().createElement("title");
       this.add(titleEl);
     }
 
-    titleEl.text(text);
+    titleEl.textContent = text;
 
     return this;
   }
@@ -60,14 +62,14 @@ export class DomHead extends BaseDom<HTMLHeadElement> {
    * @return This instance for chaining.
    */
   charset(encoding: string): this {
-    let metaEl = this.query<"meta">("meta[charset]");
+    let metaEl = this.dom.querySelector("meta[charset]");
 
     if (!metaEl) {
-      metaEl = this.getDocument().createDomElement("meta");
+      metaEl = this.getDocument().createElement("meta");
       this.insertBefore(metaEl, this.getFirstChildNode());
     }
 
-    metaEl.attr("charset", encoding);
+    metaEl.setAttribute("charset", encoding);
 
     return this;
   }
@@ -80,15 +82,15 @@ export class DomHead extends BaseDom<HTMLHeadElement> {
    * @return This instance for chaining.
    */
   viewport(content: string): this {
-    let metaEl = this.query<"meta">(`meta[name="viewport"]`);
+    let metaEl = this.dom.querySelector(`meta[name="viewport"]`);
 
     if (!metaEl) {
-      metaEl = this.getDocument().createDomElement("meta");
-      metaEl.attr("name", "viewport");
+      metaEl = this.getDocument().createElement("meta");
+      metaEl.setAttribute("name", "viewport");
       this.add(metaEl);
     }
 
-    metaEl.attr("content", content);
+    metaEl.setAttribute("content", content);
 
     return this;
   }
@@ -107,15 +109,15 @@ export class DomHead extends BaseDom<HTMLHeadElement> {
    * @return This instance for chaining.
    */
   httpEquiv(httpEquiv: string, content: string): this {
-    let metaEl = this.query<"meta">(`meta[http-equiv="${httpEquiv}"]`);
+    let metaEl = this.dom.querySelector(`meta[http-equiv="${httpEquiv}"]`);
 
     if (!metaEl) {
-      metaEl = this.getDocument().createDomElement("meta");
-      metaEl.attr("http-equiv", httpEquiv);
+      metaEl = this.getDocument().createElement("meta");
+      metaEl.setAttribute("http-equiv", httpEquiv);
       this.add(metaEl);
     }
 
-    metaEl.attr("content", content);
+    metaEl.setAttribute("content", content);
 
     return this;
   }
@@ -153,15 +155,15 @@ export class DomHead extends BaseDom<HTMLHeadElement> {
    * @return This instance for chaining.
    */
   description(text: string): this {
-    let metaEl = this.query<"meta">(`meta[name="description"]`);
+    let metaEl = this.dom.querySelector(`meta[name="description"]`);
 
     if (!metaEl) {
-      metaEl = this.getDocument().createDomElement("meta");
-      metaEl.attr("name", "description");
+      metaEl = this.getDocument().createElement("meta");
+      metaEl.setAttribute("name", "description");
       this.add(metaEl);
     }
 
-    metaEl.attr("content", text);
+    metaEl.setAttribute("content", text);
 
     return this;
   }
@@ -176,15 +178,15 @@ export class DomHead extends BaseDom<HTMLHeadElement> {
    * @return This instance for chaining.
    */
   keywords(text: string): this {
-    let metaEl = this.query<"meta">(`meta[name="keywords"]`);
+    let metaEl = this.dom.querySelector(`meta[name="keywords"]`);
 
     if (!metaEl) {
-      metaEl = this.getDocument().createDomElement("meta");
-      metaEl.attr("name", "keywords");
+      metaEl = this.getDocument().createElement("meta");
+      metaEl.setAttribute("name", "keywords");
       this.add(metaEl);
     }
 
-    metaEl.attr("content", text);
+    metaEl.setAttribute("content", text);
 
     return this;
   }
@@ -208,21 +210,36 @@ export class DomHead extends BaseDom<HTMLHeadElement> {
     href: string,
     attributes: Record<string, string> = {}
   ): this {
-    let linkEl = this.query<"link">(`link[rel="${rel}"]`);
+    let linkEl = this.dom.querySelector(`link[rel="${rel}"]`);
 
     if (!linkEl) {
-      linkEl = this.getDocument().createDomElement("link");
-      linkEl.attr("rel", rel);
+      linkEl = this.getDocument().createElement("link");
+      linkEl.setAttribute("rel", rel);
       this.add(linkEl);
     }
 
-    linkEl.attr("href", href);
+    linkEl.setAttribute("href", href);
 
     for (const [key, value] of Object.entries(attributes)) {
-      linkEl.attr(key, value);
+      linkEl.setAttribute(key, value);
     }
 
     return this;
+  }
+
+  /**
+   * Queries this element's subtree for a single matching descendant and wraps it in a `DomElement`.
+   * Returns `null` if no match is found.
+   *
+   * This enables fluent DOM composition and manipulation within scoped components.
+   *
+   * @param selector - A valid CSS selector string.
+   * @return A `DomElement` wrapper for the matched element, or `null` if not found.
+   */
+  query<T extends keyof DomElementTagNameMap>(
+    selector: string
+  ): DomElement<T> | null {
+    return queryDomElement(this.dom, selector);
   }
 }
 

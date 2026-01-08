@@ -1,4 +1,6 @@
 import { BaseDom } from "./BaseDom";
+import { DomWindow } from "./DomWindow";
+import { queryDomElement } from "./queryDomElement";
 import type { DomElementTagNameMap } from "./types";
 import { createElement, isSvgTag, normalizeTag } from "./utils";
 
@@ -59,6 +61,20 @@ export class DomElement<
    */
   get dom() {
     return this._dom;
+  }
+
+  /**
+   * Returns the computed styles of this element.
+   * Useful for reading resolved values of inherited, cascaded, or shorthand CSS properties.
+   *
+   * - Delegates to `DomWindow.getComputedStyle`, which manages caching internally.
+   * - Pass `force = true` to recompute and update the cache.
+   *
+   * @param force - Whether to force recomputation (default: false).
+   * @return The computed style object for this element.
+   */
+  getComputedStyle(force: boolean = false): CSSStyleDeclaration {
+    return new DomWindow(this.getWindow()).getComputedStyle(this.dom, force);
   }
 
   /**
@@ -232,6 +248,21 @@ export class DomElement<
     (this.dom as any).togglePopover({ force, source });
     return this;
   }
+
+  /**
+   * Queries this element's subtree for a single matching descendant and wraps it in a `DomElement`.
+   * Returns `null` if no match is found.
+   *
+   * This enables fluent DOM composition and manipulation within scoped components.
+   *
+   * @param selector - A valid CSS selector string.
+   * @return A `DomElement` wrapper for the matched element, or `null` if not found.
+   */
+  query<T extends keyof DomElementTagNameMap>(
+    selector: string
+  ): DomElement<T> | null {
+    return queryDomElement(this.dom, selector);
+  }
 }
 /**
  * Creates a new DomElement instance for the given tag name.
@@ -254,11 +285,5 @@ export function $<T extends keyof DomElementTagNameMap>(tag: T) {
 export function $query<T extends keyof DomElementTagNameMap>(
   selector: string
 ): DomElement<T> | null {
-  const el = document.querySelector(selector);
-  return el
-    ? new DomElement<T>(
-        el.tagName.toLowerCase() as T,
-        el as DomElementTagNameMap[T]
-      )
-    : null;
+  return queryDomElement(document, selector);
 }

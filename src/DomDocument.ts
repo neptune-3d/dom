@@ -1,9 +1,7 @@
-import { DomBody } from "./DomBody";
 import { DomElement } from "./DomElement";
-import { DomHead } from "./DomHead";
-import { DomWindow } from "./DomWindow";
+import { queryDomElement } from "./queryDomElement";
 import type { DomElementTagNameMap, DomNamespaceURI } from "./types";
-import { createElement } from "./utils";
+import { createElement, getDocumentWindow } from "./utils";
 
 /**
  * Wrapper for the global `document` object with typed event listener utilities.
@@ -36,36 +34,39 @@ export class DomDocument {
   }
 
   /**
-   * Returns the associated `DomWindow` for this document.
+   * Returns the associated native `Window` for this document.
    *
    * - Resolves the correct `Window` from the document's `defaultView`.
    * - If the document is detached and has no `defaultView`, falls back to the global `window`.
-   * - Wraps the native `Window` in a `DomWindow` for typed utilities.
    *
-   * @return A `DomWindow` instance wrapping the document's window.
+   * @return The native `Window` object.
    */
-  getWindow(): DomWindow {
-    return new DomWindow(this._document.defaultView ?? undefined);
+  getWindow(): Window {
+    return getDocumentWindow(this.dom);
   }
 
   /**
-   * Returns a `DomBody` wrapper for the document's `<body>` element.
-   * Enables fluent DOM composition and styling for the document body.
+   * Returns the associated native `<body>` element for this document.
    *
-   * @return A `DomBody` instance wrapping the document's body.
+   * - Resolves via `document.body`.
+   * - May be `null` if the document has no body (e.g., XML documents).
+   *
+   * @return The native `HTMLBodyElement` or `null`.
    */
-  getBody(): DomBody {
-    return new DomBody(this._document.body as HTMLBodyElement);
+  getBody(): HTMLBodyElement | null {
+    return this._document.body as HTMLBodyElement;
   }
 
   /**
-   * Returns a `DomHead` wrapper for the document's `<head>` element.
-   * Enables fluent DOM composition and styling for the document head.
+   * Returns the associated native `<head>` element for this document.
    *
-   * @return A `DomHead` instance wrapping the document's head.
+   * - Resolves via `document.head`.
+   * - May be `null` if the document has no head.
+   *
+   * @return The native `HTMLHeadElement` or `null`.
    */
-  getHead(): DomHead {
-    return new DomHead(this._document.head);
+  getHead(): HTMLHeadElement | null {
+    return this._document.head;
   }
 
   /**
@@ -109,27 +110,6 @@ export class DomDocument {
   dispatch(event: Event) {
     this._document.dispatchEvent(event);
     return this;
-  }
-
-  /**
-   * Queries the document for a single matching element and wraps it in a `DomElement`.
-   * Returns `null` if no match is found.
-   *
-   * This enables fluent DOM manipulation with ergonomic chaining and type safety.
-   *
-   * @param selector - A valid CSS selector string.
-   * @return A `DomElement` wrapper for the matched element, or `null` if not found.
-   */
-  query<T extends keyof DomElementTagNameMap>(
-    selector: string
-  ): DomElement<T> | null {
-    const el = this._document.querySelector(selector);
-    return el
-      ? new DomElement<T>(
-          el.tagName.toLowerCase() as T,
-          el as DomElementTagNameMap[T]
-        )
-      : null;
   }
 
   /**
@@ -183,6 +163,21 @@ export class DomDocument {
     qualifiedName: string
   ): Element {
     return this._document.createElementNS(namespaceURI, qualifiedName);
+  }
+
+  /**
+   * Queries this element's subtree for a single matching descendant and wraps it in a `DomElement`.
+   * Returns `null` if no match is found.
+   *
+   * This enables fluent DOM composition and manipulation within scoped components.
+   *
+   * @param selector - A valid CSS selector string.
+   * @return A `DomElement` wrapper for the matched element, or `null` if not found.
+   */
+  query<T extends keyof DomElementTagNameMap>(
+    selector: string
+  ): DomElement<T> | null {
+    return queryDomElement(this.dom, selector);
   }
 
   /**

@@ -1,5 +1,3 @@
-import { DomDocument } from "./DomDocument";
-
 /**
  * Wrapper for a `Window` object with typed event listener utilities.
  * Useful for managing global events like resize, scroll, or keyboard shortcuts.
@@ -32,10 +30,15 @@ export class DomWindow {
   }
 
   /**
-   * Returns the associated `DomDocument` for this window.
+   * Returns the associated native `Document` for this window.
+   *
+   * - Resolves via the window’s `document` property.
+   * - May be `undefined` if the window is detached or not a browsing context.
+   *
+   * @return The native `Document` object, or `undefined`.
    */
-  getDocument(): DomDocument {
-    return new DomDocument(this._window.document);
+  getDocument(): Document {
+    return this._window.document;
   }
 
   /**

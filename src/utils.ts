@@ -109,3 +109,29 @@ export function createElement<Tag extends keyof DomElementTagNameMap>(
       : doc.createElement(normalized)
   ) as DomElementTagNameMap[Tag];
 }
+
+/**
+ * Resolves the associated native `Window` for a given `Document`.
+ *
+ * - Uses `document.defaultView` when available.
+ * - Falls back to the global `window` if the document is detached or synthetic.
+ *
+ * @param doc - The `Document` to resolve a window for.
+ * @return The associated `Window` object (never null).
+ */
+export function getDocumentWindow(doc: Document): Window {
+  return doc.defaultView ?? window;
+}
+
+/**
+ * Resolves the associated native `Document` for a given element.
+ *
+ * - Uses the element’s `ownerDocument`.
+ * - Guaranteed by the DOM spec: every element has an `ownerDocument`.
+ *
+ * @param el - The element to resolve a document for.
+ * @return The associated `Document` object.
+ */
+export function getElementDocument(el: Element): Document {
+  return el.ownerDocument;
+}
