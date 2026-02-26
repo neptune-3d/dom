@@ -3,7 +3,6 @@ import { DomElement } from "./DomElement";
 export class InputColor extends DomElement<"input"> {
   constructor() {
     super("input");
-
     this._dom.type = "color";
   }
 

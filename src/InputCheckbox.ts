@@ -3,7 +3,6 @@ import { DomElement } from "./DomElement";
 export class InputCheckbox extends DomElement<"input"> {
   constructor() {
     super("input");
-
     this.dom.type = "checkbox";
   }
 

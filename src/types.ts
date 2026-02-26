@@ -1,10 +1,5 @@
 import type { PropertiesFallback } from "csstype";
 import type { DomElement } from "./DomElement";
-import type { InputCheckbox } from "./InputCheckbox";
-import type { InputColor } from "./InputColor";
-import type { InputNumber } from "./InputNumber";
-import type { InputRange } from "./InputRange";
-import type { InputText } from "./InputText";
 
 export type CssProperties = PropertiesFallback<string | number> & {
   [key: `--${string}`]: string | number | undefined;
@@ -94,14 +89,6 @@ export type SvgElementTagNameMap = {
 };
 
 export type DomElementEventMap = HTMLElementEventMap & SVGElementEventMap;
-
-export type InputElementMap = {
-  color: InputColor;
-  text: InputText;
-  number: InputNumber;
-  range: InputRange;
-  checkbox: InputCheckbox;
-};
 
 /**
  * Represents valid CSS `linear-gradient` direction values.
@@ -278,3 +265,54 @@ export type AriaLive = "off" | "polite" | "assertive";
 export type DomNamespaceURI =
   | "http://www.w3.org/1999/xhtml"
   | "http://www.w3.org/2000/svg";
+
+export type KnownFileTypeSpecifier =
+  // Images
+  | ".jpg"
+  | ".jpeg"
+  | ".png"
+  | ".gif"
+  | ".bmp"
+  | ".tiff"
+  | ".webp"
+  | ".svg"
+  | "image/*"
+
+  // Documents
+  | ".pdf"
+  | ".doc"
+  | ".docx"
+  | ".odt"
+  | ".rtf"
+  | ".txt"
+  | ".xls"
+  | ".xlsx"
+  | ".csv"
+  | ".ppt"
+  | ".pptx"
+
+  // Audio
+  | ".mp3"
+  | ".wav"
+  | ".flac"
+  | ".aac"
+  | ".ogg"
+  | ".m4a"
+  | "audio/*"
+
+  // Video
+  | ".mp4"
+  | ".avi"
+  | ".mov"
+  | ".mkv"
+  | ".webm"
+  | ".wmv"
+  | ".flv"
+  | "video/*"
+
+  // Archives
+  | ".zip"
+  | ".rar"
+  | ".7z"
+  | ".tar"
+  | ".gz";

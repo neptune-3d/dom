@@ -1,9 +1,9 @@
 import { InputCheckbox } from "./InputCheckbox";
 import { InputColor } from "./InputColor";
+import { InputFile } from "./InputFile";
 import { InputNumber } from "./InputNumber";
 import { InputRange } from "./InputRange";
 import { InputText } from "./InputText";
-import type { InputElementMap } from "./types";
 
 /**
  * Creates a typed input element instance based on the specified input type.
@@ -15,28 +15,23 @@ import type { InputElementMap } from "./types";
  * - `"checkbox"` → `InputCheckbox`
  * - `"color"` → `InputColor`
  * - `"range"` → `InputRange`
- *
- * Each returned instance supports fluent styling, DOM composition, and event binding.
+ * - `"file"` -> `InputFile`
  *
  * @param type - The input type to create.
  * @return A typed input element instance matching the given type.
  */
-export function $input<T extends keyof InputElementMap>(type: T) {
-  switch (type) {
-    case "text": {
-      return new InputText() as InputElementMap[T];
-    }
-    case "number": {
-      return new InputNumber() as InputElementMap[T];
-    }
-    case "checkbox": {
-      return new InputCheckbox() as InputElementMap[T];
-    }
-    case "color": {
-      return new InputColor() as InputElementMap[T];
-    }
-    case "range": {
-      return new InputRange() as InputElementMap[T];
-    }
-  }
+export function $input<T extends keyof CM>(type: T): InstanceType<CM[T]> {
+  const InputClass = INPUT_CLASS_MAP[type];
+  return new InputClass() as InstanceType<CM[T]>;
 }
+
+const INPUT_CLASS_MAP = {
+  text: InputText,
+  number: InputNumber,
+  checkbox: InputCheckbox,
+  color: InputColor,
+  range: InputRange,
+  file: InputFile,
+} as const;
+
+type CM = typeof INPUT_CLASS_MAP;
