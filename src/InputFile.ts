@@ -13,6 +13,15 @@ export class InputFile extends DomElement<"input"> {
   }
 
   /**
+   * Returns the `name` property.
+   *
+   * @returns The `name` property.
+   */
+  getName(): string {
+    return this.dom.name;
+  }
+
+  /**
    * Returns the `files` property as a `FileList`.
    *
    * @returns The `files` property.
@@ -33,15 +42,6 @@ export class InputFile extends DomElement<"input"> {
   }
 
   /**
-   * Returns the `name` property.
-   *
-   * @returns The `name` property.
-   */
-  getName(): string {
-    return this.dom.name;
-  }
-
-  /**
    * Sets the `name` property.
    *
    * @param value The name to set.
@@ -49,6 +49,17 @@ export class InputFile extends DomElement<"input"> {
    */
   name(value: string): this {
     this.dom.name = value;
+    return this;
+  }
+
+  /**
+   * Clears the `value` by setting the
+   * property to an empty string `""`.
+   *
+   * @returns this instance for chaining.
+   */
+  clearValue(): this {
+    this.dom.value = "";
     return this;
   }
 
