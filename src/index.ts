@@ -16,6 +16,7 @@ export * from "./ImageElement";
 export * from "./input";
 export * from "./InputCheckbox";
 export * from "./InputColor";
+export * from "./InputFile";
 export * from "./InputNumber";
 export * from "./InputRange";
 export * from "./InputText";
