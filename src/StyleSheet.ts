@@ -5,29 +5,13 @@ import { getStyleValue } from "./utils";
 /**
  * Wrapper around a native `CSSStyleSheet` object.
  *
- * Provides a fluent, type‑safe API for inserting, removing, and managing CSS rules
- * at runtime. Designed for dynamic styling systems where rules need to be created,
- * extended, or deleted programmatically without relying on inline styles.
- *
- * Features:
- * - Direct access to the underlying `CSSStyleSheet` via `sheet`.
- * - Rule insertion helpers (`cssRule`, `mediaRule`, `mediaMinWidth`, `mediaMaxWidth`).
- * - Rule removal via `removeRule`.
- * - Integration with `CssRule` and `MediaRule` wrappers for chainable style manipulation.
- * - Static `getSheet` utility to wrap an existing `<style>` element’s stylesheet.
- *
- * Intended for use in component‑level styling or DOM abstractions that require
- * granular control over stylesheet contents.
+ * Contains getters and helper methods for manipulating CSS rules.
  */
 export class StyleSheet {
   /**
    * Creates a new `StyleSheet` wrapper bound to the given `CSSStyleSheet`.
    *
-   * The provided stylesheet must already be available (e.g., from a `<style>` element
-   * attached to a document). Once wrapped, you can insert, remove, and query rules
-   * using the class’s fluent API.
-   *
-   * @param sheet - The native `CSSStyleSheet` instance to wrap.
+   * @param sheet The native `CSSStyleSheet` instance to wrap.
    */
   constructor(sheet: CSSStyleSheet) {
     this._sheet = sheet;
@@ -41,7 +25,6 @@ export class StyleSheet {
 
   /**
    * Returns the number of CSS rules currently defined in the stylesheet.
-   * Useful for indexing, iteration, or conditional rule management.
    */
   get length() {
     return this.sheet.cssRules.length;
@@ -52,10 +35,9 @@ export class StyleSheet {
    * Returns a `CssRule` wrapper for fluent manipulation of the inserted rule.
    *
    * The rule is appended at the end of the current stylesheet (`insertRule()` at index `length`).
-   * This is useful for dynamically constructing scoped styles tied to specific selectors.
    *
-   * @param selector - The CSS selector to target (e.g., ".btn", "#header", "body > div").
-   * @return A `CssRule` instance representing the inserted rule.
+   * @param selector The CSS selector to target (e.g., ".btn", "#header", "body > div").
+   * @returns A `CssRule` instance representing the inserted rule.
    */
   cssRule(selector: string) {
     const index = this.length;
@@ -68,17 +50,16 @@ export class StyleSheet {
    * Returns a `MediaRule` wrapper for fluent manipulation of the inserted media block.
    *
    * The rule is appended at the end of the current stylesheet (`insertRule()` at index `length`).
-   * Useful for dynamically scoping styles to specific viewport conditions or device capabilities.
    *
    * @param mediaText - The media query string (e.g., "screen and (max-width: 600px)").
-   * @return A `MediaRule` instance representing the inserted media rule.
+   * @returns A `MediaRule` instance representing the inserted media rule.
    */
   mediaRule(mediaText: string) {
     const index = this.length;
     this.sheet.insertRule(`@media(${mediaText}){}`, index);
     return new MediaRule(
       index,
-      this.sheet.cssRules.item(index) as CSSMediaRule
+      this.sheet.cssRules.item(index) as CSSMediaRule,
     );
   }
 
@@ -89,7 +70,7 @@ export class StyleSheet {
    * Equivalent to: `mediaRule("min-width: 768px")`
    *
    * @param minWidth - The minimum width value (e.g., `768`, `"50em"`, `"80vw"`).
-   * @return A `MediaRule` instance representing the inserted media rule.
+   * @returns A `MediaRule` instance representing the inserted media rule.
    */
   mediaMinWidth(minWidth: number | string) {
     return this.mediaRule(`min-width: ${getStyleValue("min-width", minWidth)}`);
@@ -102,7 +83,7 @@ export class StyleSheet {
    * Equivalent to: `mediaRule("max-width: 600px")`
    *
    * @param maxWidth - The maximum width value (e.g., `600`, `"40em"`, `"80vw"`).
-   * @return A `MediaRule` instance representing the inserted media rule.
+   * @returns A `MediaRule` instance representing the inserted media rule.
    */
   mediaMaxWidth(maxWidth: number | string) {
     return this.mediaRule(`max-width: ${getStyleValue("max-width", maxWidth)}`);
@@ -111,11 +92,10 @@ export class StyleSheet {
    * Removes a CSS rule from the stylesheet by its index.
    * Accepts either a `CssRule` or `MediaRule` instance, which internally tracks its position.
    *
-   * This is useful for dynamically cleaning up injected styles or media blocks.
    * Note: Rule indices may shift after insertion or deletion — ensure index accuracy before calling.
    *
    * @param rule - The rule instance to remove (`CssRule` or `MediaRule`).
-   * @return This StyleSheet instance for chaining.
+   * @returns this instance for chaining.
    */
   removeRule(rule: CssRule | MediaRule): this {
     this.sheet.deleteRule(rule.index);
@@ -124,9 +104,8 @@ export class StyleSheet {
 
   /**
    * Removes all CSS rules from the stylesheet.
-   * Useful for resetting dynamic styles before re‑inserting new rules.
    *
-   * @return This StyleSheet instance for chaining.
+   * @returns this instance for chaining.
    */
   clear(): this {
     while (this.length > 0) {
@@ -137,18 +116,11 @@ export class StyleSheet {
 }
 
 /**
- * Factory function to wrap a <style> element in a StyleSheet instance.
- * The element must already be attached to a document so that its
- * `sheet` property is available.
+ * Factory to create a new `StyleSheet` object.
  *
- * @param el - The <style> element to wrap.
- * @return A StyleSheet instance bound to the element’s CSSStyleSheet.
+ * @param sheet - The native `CSSStyleSheet` instance to wrap.
+ * @returns A StyleSheet instance.
  */
-export function $sheet(el: HTMLStyleElement): StyleSheet {
-  if (!el.sheet) {
-    throw new Error(
-      "StyleSheet: The provided <style> element has no associated CSSStyleSheet."
-    );
-  }
-  return new StyleSheet(el.sheet as CSSStyleSheet);
+export function $sheet(sheet: CSSStyleSheet): StyleSheet {
+  return new StyleSheet(sheet);
 }
