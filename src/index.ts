@@ -4,6 +4,7 @@ export * from "./BaseStyle";
 export * from "./BaseSvgElement";
 export * from "./Button";
 export * from "./Canvas";
+export * from "./canvas-context-2d";
 export * from "./constants";
 export * from "./CssRule";
 export * from "./DomBody";
@@ -34,3 +35,4 @@ export * from "./SvgRect";
 export * from "./TextArea";
 export * from "./types";
 export * from "./utils";
+
