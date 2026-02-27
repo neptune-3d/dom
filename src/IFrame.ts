@@ -1,6 +1,4 @@
-import { DomDocument } from "./DomDocument";
 import { DomElement } from "./DomElement";
-import { DomWindow } from "./DomWindow";
 import type { DomElementTagNameMap, IFrameSandboxFlag } from "./types";
 import { getStyleValue } from "./utils";
 
@@ -26,29 +24,25 @@ export class IFrame extends DomElement<"iframe"> {
   }
 
   /**
-   * Returns a `DomWindow` wrapper for the iframe's `contentWindow`.
-   * Enables typed event handling and DOM access within the iframe's window context.
+   * Returns the iframe's `contentWindow` Window object.
    *
-   * ⚠️ Cross-origin iframes will restrict access to most properties for security reasons.
+   * Cross-origin iframes will restrict access to most properties for security reasons.
    *
-   * @return A `DomWindow` instance wrapping the iframe's window, or `null` if inaccessible.
+   * @returns The iframe's content Window or null if inaccessible.
    */
-  getContentWindow(): DomWindow | null {
-    const win = this.dom.contentWindow;
-    return win ? new DomWindow(win) : null;
+  getContentWindow(): Window | null {
+    return this.dom.contentWindow;
   }
 
   /**
-   * Returns a `DomDocument` wrapper for the iframe's `contentDocument`.
-   * This enables typed event handling and DOM utilities inside the iframe.
+   * Returns the iframe's `contentDocument` Document object.
    *
-   * ⚠️ Returns `null` if the iframe is cross-origin or not yet loaded.
+   * Returns `null` if the iframe is cross-origin or not yet loaded.
    *
-   * @return A `DomDocument` instance wrapping the iframe's document, or `null` if inaccessible.
+   * @return The iframe's content Document or null if inaccessible.
    */
-  getContentDocument(): DomDocument | null {
-    const doc = this.dom.contentDocument;
-    return doc ? new DomDocument(doc) : null;
+  getContentDocument(): Document | null {
+    return this.dom.contentDocument;
   }
 
   /**
@@ -220,13 +214,13 @@ export class IFrame extends DomElement<"iframe"> {
    * @return A `DomElement` wrapping the matched element, or `null` if not found or inaccessible.
    */
   queryInside<T extends keyof DomElementTagNameMap>(
-    selector: string
+    selector: string,
   ): DomElement<T> | null {
-    const el = this.getContentDocument()?.dom.querySelector(selector);
+    const el = this.getContentDocument()?.querySelector(selector);
     return el
       ? new DomElement<T>(
           el.tagName.toLowerCase() as T,
-          el as DomElementTagNameMap[T]
+          el as DomElementTagNameMap[T],
         )
       : null;
   }
@@ -250,11 +244,9 @@ export class IFrame extends DomElement<"iframe"> {
 }
 
 /**
- * Creates a new `IFrame` instance with a wrapped `<iframe>` element.
- * This provides access to the fluent iframe API, including sizing, messaging, reload strategies,
- * and DOM interaction helpers for same-origin content.
+ * Factory helper function for creating an instance of the `IFrame` class.
  *
- * @return A new `IFrame` instance.
+ * @returns A new `IFrame` instance.
  */
 export function $iframe(): IFrame {
   return new IFrame();

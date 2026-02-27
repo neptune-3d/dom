@@ -1,11 +1,7 @@
 import { DomElement } from "./DomElement";
 
 /**
- * Fluent wrapper for an `<img>` element.
- * Provides chainable methods for setting image source, dimensions, and alt text.
- * Inherits style and event utilities from `DomElement` and `BaseDom`.
- *
- * Useful for programmatically constructing image elements with ergonomic, declarative syntax.
+ * Wrapper class for an `HTMLImageElement` (or `Image`) object.
  */
 export class ImageElement extends DomElement<"img"> {
   constructor() {
@@ -96,10 +92,9 @@ export class ImageElement extends DomElement<"img"> {
 }
 
 /**
- * Creates a new `ImageElement` instance.
- * Equivalent to: `new ImageElement()`, but more expressive in fluent DOM construction.
+ * Factory helper function for creating an instance of the `ImageElement` class.
  *
- * @return A new `ImageElement` instance.
+ * @returns A new `ImageElement` instance.
  */
 export function $img() {
   return new ImageElement();

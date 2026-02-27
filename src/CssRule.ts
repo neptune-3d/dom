@@ -65,12 +65,11 @@ export class CssRule extends BaseStyle {
   }
 
   /**
-   * Returns a `StyleSheet` wrapper around the parent stylesheet of this rule.
-   * Useful for accessing rule management utilities or inserting new rules.
+   * Returns the parent `CSSStyleSheet` object if the rule is attached,
+   * or null otherwise;
    */
-  getSheet(): StyleSheet | null {
-    const sheet = this._rule.parentStyleSheet;
-    return sheet ? new StyleSheet(sheet) : null;
+  get parentSheet(): CSSStyleSheet | null {
+    return this.rule.parentStyleSheet;
   }
 
   /**
@@ -78,7 +77,7 @@ export class CssRule extends BaseStyle {
    * Delegates to the StyleSheet instance to ensure proper cleanup and cache invalidation.
    */
   remove() {
-    this.getSheet()?.removeRule(this);
+    this.parentSheet?.deleteRule(this.index);
   }
 
   /**
@@ -95,12 +94,7 @@ export class CssRule extends BaseStyle {
    * @throws Error if the rule has no parent stylesheet.
    */
   extend(extension: string): CssRule {
-    const sheet = this.getSheet();
-    if (!sheet) {
-      throw new Error(
-        `CssRule: Cannot extend selector "${this.selectorText}" — rule is not attached to a stylesheet.`
-      );
-    }
+    const sheet = new StyleSheet(this.parentSheet!);
     return sheet.cssRule(`${this.selectorText}${extension}`);
   }
 
@@ -158,7 +152,7 @@ export class CssRule extends BaseStyle {
    */
   protected setStyleProp(
     name: Autocomplete<keyof CssProperties>,
-    value: string | number | undefined
+    value: string | number | undefined,
   ): this {
     if (value === undefined) {
       this.rule.style.removeProperty(camelToKebab(name));

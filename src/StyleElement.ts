@@ -1,5 +1,4 @@
 import { DomElement } from "./DomElement";
-import { StyleSheet } from "./StyleSheet";
 
 /**
  * Wrapper for an `HtmlStyleElement`.
@@ -16,16 +15,14 @@ export class StyleElement extends DomElement<"style"> {
   }
 
   /**
-   * Returns a `StyleSheet` wrapper around this `<style>` element’s associated `CSSStyleSheet`.
-   * Useful for inserting, removing, or querying CSS rules programmatically.
+   * Returns the associated `CSSStyleSheet` object via the `sheet` field.
    *
-   * ⚠️ The `<style>` element must be attached to a document for its `sheet` property to be available.
+   * The `<style>` element must be attached to a document for its `sheet` property to be available.
    *
-   * @returns A `StyleSheet` instance wrapping the element’s `CSSStyleSheet`, or `null` if unavailable.
+   * @returns A `CSSStyleSheet` object or null if unavailable.
    */
-  getSheet(): StyleSheet | null {
-    const sheet = this.dom.sheet;
-    return sheet ? new StyleSheet(sheet) : null;
+  getSheet(): CSSStyleSheet | null {
+    return this.dom.sheet;
   }
 }
 

@@ -1,5 +1,4 @@
 import { CssRule } from "./CssRule";
-import { StyleSheet } from "./StyleSheet";
 
 /**
  * Wrapper around a single `CSSMediaRule` within a stylesheet.
@@ -80,12 +79,11 @@ export class MediaRule {
   }
 
   /**
-   * Returns a `StyleSheet` wrapper around the parent stylesheet of this rule.
-   * Useful for accessing rule management utilities or inserting new rules.
+   * Returns the parent `CSSStyleSheet` object if the rule is attached,
+   * or null otherwise;
    */
-  getSheet(): StyleSheet | null {
-    const sheet = this._rule.parentStyleSheet;
-    return sheet ? new StyleSheet(sheet) : null;
+  get parentSheet(): CSSStyleSheet | null {
+    return this.rule.parentStyleSheet;
   }
 
   /**
@@ -110,10 +108,9 @@ export class MediaRule {
 
   /**
    * Removes this rule from its parent stylesheet.
-   * Delegates to the StyleSheet instance to ensure proper cleanup and cache invalidation.
    */
   remove() {
-    this.getSheet()?.removeRule(this);
+    this.parentSheet?.deleteRule(this.index);
   }
 
   /**
