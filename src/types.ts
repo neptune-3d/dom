@@ -90,6 +90,11 @@ export type SvgElementTagNameMap = {
 
 export type DomElementEventMap = HTMLElementEventMap & SVGElementEventMap;
 
+export type DomEvent<
+  T extends keyof DomElementEventMap,
+  Tag extends keyof DomElementTagNameMap,
+> = DomElementEventMap[T] & { currentTarget: DomElementTagNameMap[Tag] };
+
 /**
  * Represents valid CSS `linear-gradient` direction values.
  * Includes keyword-based directions (e.g., "to right") and angle-based values (e.g., "45deg").
